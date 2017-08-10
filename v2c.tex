@@ -61,10 +61,10 @@ void top(_Bool clk, unsigned a) {
 \end{figure*}
 %
 %===============================================================================
-\subsection{Software-Netlist}
+\subsection{Software Netlist}
 %===============================================================================
-The hardware circuits in Verilog RTL is automatically synthesized 
-to a word level C program, called a \textit{software 
+A hardware circuits in Verilog RTL is automatically synthesized 
+into a word level C program, called a \textit{software 
 netlist}~\cite{mtk2016,mskm2016} using the tool {\em v2c}~\cite{mtk2016}. 
 {\em v2c} follows synthesis semantics and not simulation semantics.  The 
 generated code is cycle-accurate as well as bit-precise. {\em v2c} 
@@ -83,9 +83,8 @@ A \textit{software netlist} $\mathcal{SN}$ is defined as follows:
 \mathit{CAsgn} & {:}{:}{=} & (V_c := Bv) \mid (V_c := \mathit{Bool}), \quad V_c \in \mathit{Comb} \uplus \mathit{Out} \\
 \mathit{SAsgn} & {:}{:}{=} & (V_s := Bv) \mid (V_s := \mathit{Bool}), \quad V_s \in \mathit{Seq} \\
 \mathit{Bv} &  {:}{:}{=} & bv_{const} \mid bv_{var} \mid
-	\mathit{ITE}(Bool, Bv, Bv) \mid
-bv_{op}(bv_1, \ldots, bv_n), \\
-& & bv_i \in Bv, \\ 
+	\mathit{ITE}(Bool, Bv, Bv) \mid \\
+	& & bv_{op}(bv_1, \ldots, bv_n), bv_i \in Bv, \\ 
 & & bv_{op} \in \{n-\text{ary operators over bitvectors} \} \\
 \mathit{Bool} & {:}{:}{=} & \mathit{true} \mid \mathit{false} \mid \neg{Bool} \mid Bool \land Bool \mid 
 Bool \lor Bool \mid \\ 
@@ -106,8 +105,9 @@ values to external inputs. The state transition in the software netlist
 corresponds to updates to the variables in $Seq$ and explicit assignment 
 of non-deterministic values to the input variables, $In$.
 
-\subsection{Pseudo-code of Software-netlist Model:} The pseudo-code for the software-netlist 
-model generated using \emph{v2c} is shown in figure~\ref{figure:structure}.
+\subsection{Structure of Software netlist:} The pseudo-code of the software 
+netlist model generated using \emph{v2c} is shown in figure~\ref{figure:structure}.
+%
 \begin{figure}[t]
 \captionsetup{justification=justified}
 \scriptsize
@@ -195,9 +195,10 @@ ensures that an assignment to a register variable do not influence
 subsequent procedural assignments.  Figure~\ref{figure:block} illustrates
 the translation of procedural assignments (given at the top) to the
 equivalent C semantics (given at the bottom).
-
+%
 \begin{figure*}
 \scriptsize
+\center
 \begin{tabular}{l|l|l}
 \hline
 Non-blocking assignment & Blocking assignment & Continuous assignment \\
@@ -291,6 +292,7 @@ shifts and other C operators.
 
 \begin{figure*}[htbp]
 \scriptsize
+\center
 \begin{tabular}{l|l|l}
 \hline
 Bit-select & Part-select (SystemVerilog) & Concatenation \\
@@ -588,19 +590,89 @@ An example using the latter approach is given at
 %
 Modules in Verilog communicate with each other through their input or output
 ports. Most practical designs are modular in nature, where the top-level 
-module delegates specific tasks to the sub-modules through the input ports of
-sub-module and receive output from the sub-module upon completion of the 
-task.  Both the module and sub-module executes \emph{in-tandem}, that is, a
+module delegates specific tasks to the sub-modules.
+%through the input ports of sub-module and receive output from 
+%the sub-module upon completion of the task.  
+Modules and sub-modules executes \emph{in-tandem}, that is, a
 module is \emph{not} blocked when it invokes a sub-module. 
 
 
-A simple inter-modular communication is illustrated using a D-flipflop
+An example of inter-modular communication is illustrated using a D-flipflop
 circuit in Figure~\ref{figure:design-granularity}.  The top-level 
 module $\texttt{top}$ invokes the sub-module $\texttt{ff}$ which only 
-models the sequential logic.
+models the sequential logic.  The equivalent translation in C (shown in right 
+of figure~\ref{figure:design-granularity} preserves the modular structure. 
 %
-A more complex example of inter-modular communication is a \emph{combinatorial 
-feedback loop} where participating modules exchange combinatorial data until a 
-stability condition is reached. 
+Another example of inter-modular communication is a \emph{combinational feedback loop} 
+where participating modules exchange combinational data until a stability condition is reached. 
 %
-\rmcmt{translation rules to C}
+\begin{figure}
+\scriptsize
+\begin{tabular}{l|l}
+\hline
+Verilog & Software Netlist \\
+\hline
+\begin{lstlisting}[mathescape=true,language=Verilog]
+module top(Din,En,
+        clk,Dout);
+ wire cs; reg ns;
+ input clk,Din,En;
+ output Dout;
+ assign Dout = cs;
+ always @(Din or 
+        cs or En) 
+ begin
+  if (En) ns = Din;
+  else ns = cs;
+ end
+ ff ff(ns,clk,cs);
+endmodule
+
+module ff(Din,clk,
+         Dout);
+ input clk, Din;
+ output Dout; 
+ reg q;
+ assign Dout = q;
+ always 
+  @(posedge clk) 
+   q <= Din;
+endmodule
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=C,style=base]
+_Bool nondet_bool();
+struct s_ff{_Bool q;};
+struct s_en{ _Bool ns;
+struct s_ff sff; }sen;
+_Bool ff(_Bool CLK,
+_Bool Din,_Bool *Dout)
+{ _Bool qold;
+ qold = sen.sff.q;
+ sen.sff.q = Din;
+ *Dout = qold;
+ return; }
+void top(_Bool clk,
+_Bool Din,_Bool En,
+_Bool *Dout){
+ _Bool cs;
+ if(En) {
+  sen.ns = Din; 
+ else {
+  sen.ns = cs; }
+ ff(clk, sen.ns, &cs);
+ *Dout = cs; }
+int main() { 
+ _Bool clk,En,Din,out;
+ while(1) {
+  Din = nondet_bool();
+  En = nondet_bool();
+  top(clk,Din,En,&out);} 
+ return; }
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\caption{Inter-modular communication} 
+\label{figure:design-granularity}
+\end{figure} 

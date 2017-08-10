@@ -597,17 +597,19 @@ Modules and sub-modules executes \emph{in-tandem}, that is, a
 module is \emph{not} blocked when it invokes a sub-module. 
 
 
-An example of inter-modular communication is illustrated using a D-flipflop
-circuit in Figure~\ref{figure:design-granularity}.  The top-level 
-module $\texttt{top}$ invokes the sub-module $\texttt{ff}$ which only 
-models the sequential logic.  The equivalent translation in C (shown in right 
-of figure~\ref{figure:design-granularity} preserves the modular structure. 
+An example of inter-modular communication can be illustrated
+using the design in figure~\ref{figure:design-granularity}.  The top-level 
+module \texttt{main} invokes the sub-module \texttt{initial} and \texttt{M}.  
+The equivalent translation in C (shown in right of figure~\ref{figure:design-granularity} 
+preserves the modular structure. 
 %
 Another example of inter-modular communication is a \emph{combinational feedback loop} 
 where participating modules exchange combinational data until a stability condition is reached. 
 %
+\Omit{
 \begin{figure}
 \scriptsize
+\centering
 \begin{tabular}{l|l}
 \hline
 Verilog & Software Netlist \\
@@ -642,16 +644,16 @@ endmodule
 &
 \begin{lstlisting}[mathescape=true,language=C,style=base]
 _Bool nondet_bool();
-struct s_ff{_Bool q;};
-struct s_en{ _Bool ns;
-struct s_ff sff; }sen;
+struct _ff{_Bool q;};sff;
+struct _top{ _Bool ns;};stop;
 _Bool ff(_Bool CLK,
-_Bool Din,_Bool *Dout)
-{ _Bool qold;
- qold = sen.sff.q;
- sen.sff.q = Din;
+_Bool Din,_Bool *Dout) { 
+ _Bool qold;
+ qold = sff.q;
+ sff.q = Din;
  *Dout = qold;
- return; }
+ return; 
+}
 void top(_Bool clk,
 _Bool Din,_Bool En,
 _Bool *Dout){
@@ -676,3 +678,4 @@ int main() {
 \caption{Inter-modular communication} 
 \label{figure:design-granularity}
 \end{figure} 
+}

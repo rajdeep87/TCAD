@@ -1,0 +1,29 @@
+\begin{table*}
+\begin{center}
+{\scriptsize
+\begin{tabular}{|l|c|r|c!{\vrule width 1pt}Y|Y|Y!{\vrule width 1pt}Y|Y|Y|Y|Y|}
+\hline
+& & & & \multicolumn{3}{c!{\vrule width 1pt}}{Analysis using Hardware Model Checkers} & \multicolumn{5}{c|}{Analysis using Software Verifiers}\\
+\cline{5-12}
+% \cline{3-6}
+\multicolumn{1}{|c|}{Circuit} & \multicolumn{1}{c|}{Safe} & \multicolumn{1}{c|}{Bound} & \multicolumn{1}{c!{\vrule width 1pt}}{\# Properties} & \multicolumn{1}{c|}{Netlist} & \multicolumn{2}{c!{\vrule width 1pt}}{RTL} &  \multicolumn{2}{c|}{CBMC} & \multicolumn{1}{c|}{Path-Symex} & \multicolumn{2}{c|}{Astr{\'e}e}\\
+\cline{5-12}
+% \cline{8-11}
+& & & passing/failing & \multicolumn{1}{c|}{MiniSat} & \multicolumn{1}{c|}{MiniSat} & \multicolumn{1}{c!{\vrule width 1pt}}{Z3} & \multicolumn{1}{c|}{MiniSat} & \multicolumn{1}{c|}{Z3} & \multicolumn{1}{c|}{MiniSat} & \multicolumn{1}{c|}{Unbounded} & \multicolumn{1}{c|}{Bounded}\\
+% \hline
+\cline{5-12}
+\cline{1-12}
+\multicolumn{12}{|c|}{Data-path Intensive Designs} \\ \hline
+BCD\_BINARY & y & \multirow{2}{*}{8} & 4 & 0.47 & 0.46 & 0.51 & 0.14 & 0.12 & 0.13 & \textbf{0}.\textbf{06} & 0.08 \\ 
+SERIAL\_ADDER & y & \multirow{2}{*}{10} & 20 & 66.12 & 68.61 & 56.19 & 6.47 & 5.86 & \textbf{0}.\textbf{82} & \textbf{$\ast$} & 3.93\\ 
+ETHERNET MAC IP & y & \multirow{2}{*}{50} & 21 & 678.26 & 658.17 & \multirow{2}{*}{TO} & 571.84 & \multirow{2}{*}{TO} & \multirow{2}{*}{TO} & \textbf{$\ast$} & \textbf{128}.\textbf{84} \\ 
+
+\end{tabular}
+}
+\end{center}
+\vspace{-1.3mm}
+\caption[Experimental Results]{Hardware property verification for designs described at
+different levels of granularity\\
+(timeout set to 1~hour, a $\ast$ denotes ``Verification Unknown'')}
+\label{table:solver-result}
+\end{table*}

@@ -1,0 +1,27 @@
+\begin{picture}(0,0)%
+\includegraphics{property_pspdftex}%
+\end{picture}%
+\setlength{\unitlength}{4144sp}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+\begin{picture}(2513,3959)(391,-5559)
+\put(1666,-5371){\makebox(0,0)[lb]{\smash{{\SetFigFont{11}{13.2}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$S_3$}%
+}}}}
+\put(406,-3886){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\neg$ out2}%
+}}}}
+\put(1486,-1771){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}(out2 ==1 $\mapsto\; \#\# $ out3)}%
+}}}}
+\put(1576,-2311){\makebox(0,0)[lb]{\smash{{\SetFigFont{11}{13.2}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$S_0$}%
+}}}}
+\put(1576,-3301){\makebox(0,0)[lb]{\smash{{\SetFigFont{11}{13.2}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$S_1$}%
+}}}}
+\put(1576,-4336){\makebox(0,0)[lb]{\smash{{\SetFigFont{11}{13.2}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$S_2$}%
+}}}}
+\put(1486,-1996){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}(out2 ==1 $\rightarrow\;$ X out3)}%
+}}}}
+\end{picture}%

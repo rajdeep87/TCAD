@@ -1,0 +1,59 @@
+\begin{picture}(0,0)%
+\includegraphics{new_flow_pspdftex}%
+\end{picture}%
+\setlength{\unitlength}{4144sp}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+\begin{picture}(7265,2253)(-3569,-4819)
+\put(-1349,-4741){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,0}Synthesis}%
+}}}}
+\put(-1214,-4516){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,0}Yosys}%
+}}}}
+\put(-1304,-4021){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,0}EBMC}%
+}}}}
+\put(1711,-4651){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,0}ABC}%
+}}}}
+\put(1711,-4021){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,0}EBMC}%
+}}}}
+\put(-1124,-3256){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,0}v2c}%
+}}}}
+\put(-3284,-4021){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\itdefault}{\color[rgb]{0,0,0}Safety}%
+}}}}
+\put(-3554,-4246){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\itdefault}{\color[rgb]{0,0,0}Specification}%
+}}}}
+\put(226,-4651){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\mddefault}{\itdefault}{\color[rgb]{0,0,0}BLIF}%
+}}}}
+\put(136,-4066){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\mddefault}{\itdefault}{\color[rgb]{0,0,0}Word-level}%
+}}}}
+\put(181,-3121){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\mddefault}{\itdefault}{\color[rgb]{0,0,0}Software}%
+}}}}
+\put(226,-3391){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\mddefault}{\itdefault}{\color[rgb]{0,0,0}Netlist}%
+}}}}
+\put(406,-3841){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\mddefault}{\itdefault}{\color[rgb]{0,0,0}AIG/}%
+}}}}
+\put(-2519,-2806){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,.56}Parse}%
+}}}}
+\put(-674,-2806){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,.56}Synthesis }%
+}}}}
+\put(721,-2806){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,.56}Verification}%
+}}}}
+\put(-3284,-3661){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,0}  RTL}%
+}}}}
+\put(-3374,-3436){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,0}Verilog}%
+}}}}
+\put(-3239,-4516){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,0}SVA}%
+}}}}
+\put(-3329,-3166){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\mddefault}{\itdefault}{\color[rgb]{0,0,0}DUT}%
+}}}}
+\put(1666,-3301){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,0}SeaHorn, IMPARA}%
+}}}}
+\put(1711,-3076){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,0}CPAChecker, 2LS,}%
+}}}}
+\put(1666,-3571){\makebox(0,0)[lb]{\smash{{\SetFigFont{14}{16.8}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,0}Astree}%
+}}}}
+\end{picture}%

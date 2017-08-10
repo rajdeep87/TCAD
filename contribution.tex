@@ -1,0 +1,33 @@
+\section{Contribution}~\label{contribution}
+We make the following technical contributions in this paper.
+%
+\begin{enumerate}
+\item We present a formal verification flow for RTL designs using state-of-the-art 
+software verifiers.  To this end, we present an automatic translation of 
+hardware circuits described in Verilog RTL into a software representation 
+in ANSI-C using our tool \textsc{v2c}.  We call the resulting software model 
+as {\em software netlist}.  We distribute our benchmark suite containing Verilog 
+RTL designs and the equivalent C models at~\footnote{http://www.cprover.org/hardware/v2c/}. 
+
+\item We present an extensive experimental evaluation that compares formal 
+verification of RTL designs using different netlist representations at 
+-- 1) bit-level, 2) word-level and 3) software-level.  Our tool supports 
+RTL descriptions in 1364-2005 SystemVerilog standards. 
+
+\item We emperically evaluate various unbounded SAT/SMT based verification techniques, 
+such as $K$-induction, Interpolation, IC3/PDR, Abstract Interpretation for safety 
+verification of RTL designs.  To this end, we compare the performance of verification 
+tools that employ these techniques from Hardware Model Checking Competition 
+(HWMCC)~\footnote{http://fmv.jku.at/hwmcc15/} against software verifiers from Software 
+Verification Competition (SV-COMP)~\footnote{https://sv-comp.sosy-lab.org/2017/}.
+
+\Omit {
+\item Our tool also supports BDD-based model checking using a custom BDD 
+package called \textsc{Mini-BDD}. To this end, we present a comparison of 
+SAT/SMT based verification with the BDD-based model checker.  Our benchmarks 
+are drawn from safety checking track in Hardware Model Checking Competition 
+(HWMCC)~\footnote{http://fmv.jku.at/hwmcc15/} and several other open-source 
+repositories.  
+}
+
+\end{enumerate}

@@ -1,0 +1,26 @@
+\section{Definition \&Problem Statement}~\label{problem}
+%
+We formally define the safety verification of a transition system~$T$,
+commonly known as {\emph hardware model checking problem}.  We define a
+Boolean \textit{transition system}, appropriate for bit-level hardware
+modeling, as $T = \langle I,x,\delta \rangle$, where $x = x_1,x_2,...,x_n$
+is the set of program variables, which range over $\mathbb{B} =
+\{\mathit{true}, \mathit{false}\}$.  A \emph{state} $s$ of $T$ is an
+assignment of values to variable $x$, the predicate $I(x)$ is a formula over
+the variables $x$ specifying the {\emph initial state} and $\delta(x,x')$
+represents the transition relation as a Boolean formula over states $x$ and
+$x'$, where the primed variables $x'$ represent the next-state value of the
+variable $x$.  A~\emph{trace} $\gamma: s_0,s_1,...$ is an infinite sequence
+of states such that $s_0 \models I$, and for each $i \geq 0$, $(s_i,s_{i+1})
+\models \delta$.  A state $s$ is reachable in $T$ if $\exists \gamma.\, s
+\in \gamma$.  A safety property $P$ of $T$ is a boolean formula over the
+variables $x$ of $T$, which asserts that certain states $s$ of $T$ cannot be
+reached during the execution of $T$, often known as \emph{bad states}, given
+as boolean formula $B(x)$.
+
+\para{Problem Statement}
+Given a state-space over $n$ Boolean variables, the problem is to
+decide whether $T \models P$, that is, starting from initial state
+$I(x)$, whether a state in $B(x)$ can be reached following only
+transitions in $\delta(x,x')$.
+%

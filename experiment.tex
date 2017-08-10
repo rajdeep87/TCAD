@@ -1,0 +1,449 @@
+\section{Proposed Verification Tool Flow}
+%
+\begin{figure}[t]
+\centering
+\vspace*{0.3cm}
+\scalebox{.55}{\import{figures/}{new_flow.pspdftex}}
+\caption{Tool flow for hardware property verification\label{fig:toolflow}}
+\end{figure}
+%
+%===============================================================================
+\para{Software Verifiers at the heart of Hardware Verification}
+%===============================================================================
+%
+Figure~\ref{fig:toolflow} shows the tool flow for hardware RTL 
+verification at various levels of synthesized netlist representations -- 
+\emph{bit-level}, \emph{word-level}, and \emph{software netlist-level}.  
+We use \ABC to perform bit-level unbounded safety verification (shown in bottom
+flow of figure~\ref{fig:toolflow}. 
+\ABC does not support Verilog, so we use an open-source synthesis tool,
+\yosys\footnote{http://www.clifford.at/yosys/} to translate Verilog
+RTL to BLIF, which is then passed to \ABC for verification. For
+word-level unbounded verification (shown in middle flow), we use 
+word-level $k$-induction engine of \ebmc, which supports IEEE 1364.1 Verilog 2005.
+The top flow of figure~\ref{fig:toolflow} shows the software netlist based 
+verification flow.
+The tool \emph{v2c} is used to generate a software netlist model from
+Verilog RTL.  A wide range of representative unbounded
+software verification techniques are applied to determine the safety of these
+benchmarks. In particular, we use $k$-induction~\cite{SSS00}
+(implemented in the tools CBMC~\cite{cbmc.tacas:2004} and
+2LS~\cite{kiki}), interpolation
+(CPAChecker~\cite{DBLP:conf/cav/BeyerK11}, IMPARA~\cite{impara}
+implementing the IMPACT algorithm~\cite{ken}), abstract interpretation
+(Ast{\'r}ee~\cite{DBLP:conf/pldi/BlanchetCCFMMMR03}) and IC3/PDR
+(SeaHorn~\cite{DBLP:conf/cav/GurfinkelKKN15}).
+%
+%===============================================================================
+\section{Experimental Results}
+%===============================================================================
+In this section, we report experimental results for unbounded safety 
+verification of hardware RTL.  Our experimental contributions are two folds.
+%
+\begin{enumerate}
+  \item Compare off-the-shelf formal verification tools for RTL verification at 
+    \emph{bit-level}, \emph{word-level}, and \emph{software netlist level}.  
+    To this end, we compare state-of-the-art hardware model checking tools, such as 
+    \emph{ABC 1.01} (winner of HWMCC'15) and 
+    \ebmcv~\footnote{\scriptsize{www.cprover.org/hardware/ebmc}}, 
+    with various software analyzers from SV-COMP 2016, such as 
+    \emph{UltimateAutomizer 3292eade} (winner of SV-COMP'16), 
+    \emph{CPAChecker 1.4}, 
+    \emph{SeaHorn (revision 07666c810d)}, \emph{2LS 0.3.4} and a commercial abstract 
+    interpretation based tool, \emph{Astr{\'e}e}.  
+  
+ \item  Compare various unbounded verification engines such as $k$-induction, 
+    Interpolation, IC3/PDR and Abstraction Interpretation that are employed by 
+    verification tools from hardware and software domains.
+\end{enumerate}
+%
+Our experiments were performed on an Intel Xeon machine running at
+3.07\,GHz.  We restricted the resources to 5 hours and 32\,GB RAM per
+benchmark.  All our benchmarks in Verilog, software netlist models in 
+ANSI-C, scripts for running \yosys, \ABC, \ebmcv, and other software 
+verification tools are uploaded to a publicly accessible archive website.
+\footnote{\scriptsize{http://www.cprover.org/hardware/date2016/}}
+%
+%===============================================================================
+\para{Benchmarks}
+%===============================================================================
+%
+We target two different classes of circuits: data-path intensive
+circuits, including a Huffman encoder/decoder and a Digital Audio
+Input-Output chip (DAIO); and control-intensive designs,
+including a non-pipelined 3-stage processor, a Read-Copy-update
+mutual exclusion protocol, a FIFO controller, a buffer allocation model,
+and an instruction queue controller.  The safety properties are 
+specified as System Verilog assertions (SVA).  The properties are 
+instrumented as assertions in the software netlist model. The 
+benchmarks in our paper are derived from real world hardware benchmark suites, 
+including VIS Verilog models, the Texas-97 Benchmark suite, and opencores.org.
+%
+%-------------------------------------------------------------------------------
+\para{Properties}
+%-------------------------------------------------------------------------------
+The safety properties are specified as System Verilog assertions (SVA).
+The properties are instrumented as assertions in the software netlist. 
+Our tool support fragment of SVA properties. Below, we present
+an example of property monitor in software netlist corresponding 
+to the concurrent assertions in SVA.  Let us consider verification 
+of the following properties of Vending machine and Huffman 
+encoder/decoder design. Figure~\ref{figure:prop1} and 
+Figure~\ref{figure:prop2} shows the SVA property in the left and 
+the corresponding monitor for the software netlist in the right. \\
+$Assert\_1$: {\em The balance is never negative and never reaches 15.} 
+\vspace{-3mm}
+\begin{figure}[htbp]
+\scriptsize
+\begin{tabular}{l|l}
+\hline
+SVA & Monitor (in C)
+\\
+\hline
+\begin{lstlisting}[mathescape=true,language=Verilog]
+p1: assert property 
+ (@(posedge clk) 
+ vending.total[3]==0 && 
+ !(vending.total[4:0]==15)); 
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+int monitor_p1() {
+ assert((((vending.total 
+ >> 3) & 0x1) == 0) 
+ && !(vending.total 
+ & 0x1F == 15));
+ return 1;
+}
+\end{lstlisting} \\
+\hline
+\end{tabular}
+\caption{Modeling concurrent assertions in SVA as monitor in software netlist}
+\label{figure:prop1}
+\end{figure}
+%
+
+$Assert\_2$: {\em When a new transmission begins, the decoder is ready in the next clock.} 
+\begin{figure}[htbp]
+\scriptsize
+\begin{tabular}{l|l}
+\hline
+SVA & Monitor (in C)
+\\
+\hline
+\begin{lstlisting}[mathescape=true,language=Verilog]
+p2: assert property 
+ (@(posedge clk) 
+ encoder.shiftreg[9:1] 
+ == 1 |-> ##1 
+ decoder.leaf == 1);
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+int monitor_p2() {
+ if(((encoder.shiftreg >> 1) 
+ & 0x1FF) == 1) {
+  check_consequent = 1;
+  // call to top level 
+  // module of design
+  huffman(clk,addr);  
+  if(check_consequent == 1) 
+    assert(decoder.leaf == 1);
+ }
+}
+\end{lstlisting} \\
+\hline
+\end{tabular}
+\caption{Modeling temporal properties in SVA as monitor in software netlist}
+\label{figure:prop2}
+\end{figure}
+%
+%-------------------------------------------------------------------------------
+\para{Discussion}
+%-------------------------------------------------------------------------------
+Figures~\ref{fig:kind}--\ref{fig:hybrid} report the comparison of various unbounded 
+verification techniques employed by verification tools at bit-level, word-level, 
+and software-level.  We categorize the approaches into three classes:
+\begin{compactitem}
+\item $k$-induction (Figure~\ref{fig:kind})
+\item interpolation (Figure~\ref{fig:impact}), and 
+\item PDR together with other hybrid techniques (Figure~\ref{fig:hybrid}).  
+\end{compactitem}
+By hybrid techniques, we refer to predicate
+abstraction as implemented in \emph{CPAChecker} and a combination of
+$k$-induction, BMC and abstract interpretation as implemented in
+\emph{2LS}~\cite{kiki}.  On the $x$-axis is the analysis time in
+seconds and on the $y$-axis we list the benchmarks. The vertical red lines on
+the right-hand side of the diagrams show timeouts, out of memory,
+inconclusive (unknown) results, errors (crashes), and wrong results
+(tool bugs) reported by the tools. The tools can be distinguished 
+by the size of the circles as well as by colour. 
+
+\para{Analysis using $k$-induction} For safe benchmarks, the results
+for bit-level, word-level verifiers and software verifiers are
+comparable when the properties are 1-inductive or 2-step inductive.
+However, for complex safety properties, \ABC and other abstraction
+based software analyzers either timeout or took a long time to
+terminate.  We investigated the reason for higher verification times
+for some safe benchmarks, such as the FIFO controller, the RCU, and Buffer 
+Allocation.  We observe that the properties are not $k$-inductive for
+sufficiently large values of $k$, e.g.\ (k=1000) and thus tools based
+on $k$-induction either timeout or took long time to
+compute the inductive invariant sufficient to prove the property. For
+the unsafe benchmarks, for example DAIO and the traffic light controller, where
+the bugs are manifested only at 64 and 65 clock cycles respectively,
+the verification times using \ABC and \ebmc's $k$-induction engine 
+are comparable to \cbmcv and \textsc{2LS}. Figure~\ref{fig:kind} 
+reports the time taken by the $k$-induction engine in 
+\ABC, \ebmcv, \cbmcv and \textsc{2LS}.  We did not report
+the time for \emph{CPAChecker} since the results suggest that 
+its $k$-induction engine is not as mature yet. 
+
+\para{Analysis using Interpolation} Figure~\ref{fig:impact} reports
+the time taken by the interpolation engine in \ABC, \textsc{IMPARA}
+and \emph{CPAChecker}. \ABC is the fastest in 9 out of 12
+designs. However, it times out on three complex benchmarks, RCU, FIFO
+and BufAl, whereas the software interpolation tool, \textsc{IMPARA},
+which implements IMPACT algorithm solved three instances out of which
+one is the complex FIFO design; yet \textsc{IMPARA} either timed out or
+ran out of memory for the remaining designs.  \emph{CPAChecker} solved
+5 out of 12 cases.  None of the interpolation engines was able to
+prove RCU and BufAl.
+
+\para{Analysis using Hybrid techniques} Figure~\ref{fig:hybrid}
+reports the time taken by the IC3/PDR engine in \ABC, \emph{SeaHorn}
+and other hybrid techniques as implemented in \emph{CPAChecker} and
+\textsc{2LS}. \ABC~is the clear winner here; it is the only tool that
+proves the FIFO and BufAl benchmarks safe within the given 5h timeout.
+\emph{SeaHorn}'s PDR engine solves half of the benchmarks, but
+produces false negatives on the other half due to limited support for
+bitvectors. \textsc{2LS} successfully solved 8 benchmarks and times 
+out on four benchmarks.  \emph{CPAChecker}'s predicate abstraction reliably
+solves 7 benchmarks, but times out on two benchmarks and reports three
+wrong results. Note that none of the tools was able to prove RCU.
+We do not report the results using Astr{\'e}e since it requires manual
+directives for data and control partitioning to avoid imprecision;
+nonetheless it generates many false alarms for safe benchmarks.
+
+\para{Summary of the results} We investigated the reason for large
+number of timeouts, wrong results and errors produced by the software
+verifiers.  We observed that software netlists heavily use bit-level 
+operations and thus bit-precise reasoning ability is necessary for 
+the underlying verification engine. However, bit-level operations 
+are less prevalent in conventional software and hence less tested 
+in software analysis tools. Also, software verification tools 
+often use numerical abstractions, which are likely to lose 
+important bit-precise information.  As a consequence, 
+our results show that running conventional sotware verification 
+tools on software netlists exhibits many tool bugs (``wrong'').
+
+The abstraction and invariant inference techniques employed in
+software tools such as \emph{CPAChecker} and \emph{2LS} have never
+been optimized for hardware analysis. But the results in this paper
+show that these tools are within one order of magnitude compared to
+hardware model checkers for detecting bugs or proving safety for some
+of the software netlist models.  We thus believe that there is scope
+here for new tools that implement abstract interpretation using
+abstract domains developed specifically for this task, e.g.~by
+applying abstract conflict driven learning~\cite{dhk2013-popl}.
+
+%-------------------------------------------------------------------------------
+\para{Limitations of the Result}
+%-------------------------------------------------------------------------------
+Due to lack or absence of Verilog support in other open-source tools that
+participate in the HWMCC competition, like \emph{PdTrav}, \emph{IIMC} and 
+\emph{V3}, we could not run these tools on our benchmark suite. 
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}
+%\scalebox{0.9}{
+\begin{tikzpicture}[scale=0.9]
+\small
+\pgfplotstableread{
+Benchmark	ABC-kind	EBMC-kind	CBMC-kind	2LS-kind
+BufAl	15000	15000	15000	15000
+DAIO	59.92	73.62	229.72	54
+Dekker	0.17	15000	15000	15000
+FIFOs	15000	15000	15000	15000
+Heap	0.34	15000	15000	15000
+Huffman	0.02	0.01	0.21	0.24
+Ibuf	0.01	0.01	0.26	0.3
+RCU	15000	15000	15000	15000
+TicTacToe	0.01	0.01	0.23	0.25
+n-pipe-mp	0.02	0.26	0.27	0.17
+traffic-light	1.52	32.67	29.46	7.98
+Vending	0.02	0.02	0.21	0.25
+}\datatable
+
+\begin{axis}[
+    xbar, xmode=log,
+    xmin=0,         
+    ytick=data,    
+    yticklabels from table={\datatable}{Benchmark},  
+    legend style={at={(0.9,1.3)}},
+]
+\addplot [mark size=5pt,only marks, fill=yellow] table [x={ABC-kind}, y expr=\coordindex] {\datatable};    
+\addplot [mark size=4pt,only marks, fill=green!70!blue]table [x={EBMC-kind}, y expr=\coordindex] {\datatable};
+\addplot [mark size=3pt,only marks, fill=red!80!yellow] table [x={CBMC-kind}, y expr=\coordindex] {\datatable};
+\addplot [mark size=2pt,only marks, fill=blue] table [x={2LS-kind}, y expr=\coordindex] {\datatable};
+\addplot [red,sharp plot] coordinates{(15000,0) (15000,11)}
+          node [left,rotate=90] at (axis cs:9000,10) {timeout};
+\legend{{ABC-kind},{EBMC-kind},{CBMC-kind},{2LS-kind}}
+\end{axis}
+\end{tikzpicture}
+%}
+\caption{\label{fig:kind}
+Comparison of $k$-induction tools
+}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}
+%\scalebox{0.9}{
+\begin{tikzpicture}[scale=0.9]
+\small
+\pgfplotstableread{
+Benchmark	ABC-interpolation	CPA-interpolation	IMPARA-interpolation
+BufAl	15000	60000	15000
+DAIO	65.74	60000	240000
+Dekker	3.73	240000	30000
+FIFOs	15000	240000	0.39
+Heap	1215.79	60000	15000
+Huffman	0.01	3.87	0.41
+Ibuf	0.01	4.04	30000
+RCU	15000	60000	15000
+TicTacToe	0.04	3.3	7870
+non-pipe-mp	0.01	3.44	120000
+traffic-light	5.79	240000	15000
+Vending	0.01	3.65	120000
+}\datatable
+
+\begin{axis}[
+    xbar, xmode=log,
+    xmin=0,         
+    ytick=data,    
+    yticklabels from table={\datatable}{Benchmark},  
+    legend style={at={(0.9,1.2)}},
+]
+\addplot [mark size=4pt,only marks, fill=yellow] table [x={ABC-interpolation}, y expr=\coordindex] {\datatable};    
+\addplot [mark size=3pt,only marks, fill=orange]table [x={CPA-interpolation}, y expr=\coordindex] {\datatable};
+\addplot [mark size=2pt,only marks, fill=gray] table [x={IMPARA-interpolation}, y expr=\coordindex] {\datatable};
+\addplot [red,sharp plot] coordinates{(15000,0) (15000,11)}
+          node [left,rotate=90] at (axis cs:9000,11) {timeout};
+\addplot [red,sharp plot] coordinates{(30000,0) (30000,11)}
+          node [left,rotate=90] at (axis cs:19000,11) {memout};
+\addplot [red,sharp plot] coordinates{(60000,0) (60000,11)}
+          node [left,rotate=90] at (axis cs:40000,11) {unknown};
+\addplot [red,sharp plot] coordinates{(120000,0) (120000,11)}
+          node [left,rotate=90] at (axis cs:80000,11) {error};
+\addplot [red,sharp plot] coordinates{(240000,0) (240000,11)}
+          node [left,rotate=90] at (axis cs:180000,11) {wrong};
+\legend{{ABC-interpolation},{CPA-interpolation},{IMPARA}}
+\end{axis}
+\end{tikzpicture}
+%}
+\caption{\label{fig:impact}
+Comparison of interpolation-based tools
+}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}
+%\scalebox{0.9}{
+\begin{tikzpicture}[scale=0.9]
+\small
+\pgfplotstableread{
+Benchmark	ABC-pdr	SeaHorn-pdr	CPA-predabs	2LS-kiki
+BufAl	12250.5	240000	240000	15000
+DAIO	0.03	2.16	3.95	55.72
+Dekker	0.03	4.83	240000	15000
+FIFOs	3759.75	240000	15000	15000
+Heap	0.75	240000	10.09	0.91
+Huffman	0.02	0.09	4.01	0.25
+Ibuf	0.01	240000	3.95	0.73
+RCU	15000	240000	15000	15000
+TicTacToe	0.03	240000	3.29	0.21
+non-pipe-mp	0.01	0.06	3.46	0.20
+traffic-light	0.13	1.44	240000	7.48
+Vending	0.02	1.28	3.77	0.34
+}\datatable
+
+\begin{axis}[
+    xbar, xmode=log,
+    xmin=0,         
+    ytick=data,    
+    yticklabels from table={\datatable}{Benchmark},  
+    legend style={at={(0.9,1.3)}},
+]
+\addplot [mark size=5pt,only marks, fill=yellow] table [x={ABC-pdr}, y expr=\coordindex] {\datatable};    
+\addplot [mark size=4pt,only marks, fill=green!70!blue]table [x={SeaHorn-pdr}, y expr=\coordindex] {\datatable};
+\addplot [mark size=3pt,only marks, fill=orange] table [x={CPA-predabs}, y expr=\coordindex] {\datatable};
+\addplot [mark size=2pt,only marks, fill=blue] table [x={2LS-kiki}, y expr=\coordindex] {\datatable};
+\addplot [red,sharp plot] coordinates{(15000,0) (15000,11)}
+          node [left,rotate=90] at (axis cs:9000,11) {timeout};
+\addplot [red,sharp plot] coordinates{(30000,0) (30000,11)}
+          node [left,rotate=90] at (axis cs:19000,11) {memout};
+\addplot [red,sharp plot] coordinates{(60000,0) (60000,11)}
+          node [left,rotate=90] at (axis cs:40000,11) {unknown};
+\addplot [red,sharp plot] coordinates{(120000,0) (120000,11)}
+          node [left,rotate=90] at (axis cs:80000,11) {error};
+\addplot [red,sharp plot] coordinates{(240000,0) (240000,11)}
+          node [left,rotate=90] at (axis cs:180000,11) {wrong};
+\legend{{ABC-pdr},{SeaHorn-pdr},{CPA-predabs},{2LS-kiki}}
+\end{axis}
+\end{tikzpicture}
+%}
+\caption{\label{fig:hybrid}
+Comparison of hybrid techniques
+}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%% Plot runtimes %%%%%%%%%%%%%%%%%%%%%%%
+\input{plot-runtimes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\para{Analysis of the results}
+%
+\input{table}
+\rmcmt{partition the result into bit-level and software-level}
+
+\rmcmt{Best HW runtime versus Best Software runtimes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\para{Effect of Trace partitioning for Precise analysis in Astr{\'e}e}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\para{Sources of Imprecision:}  There can be various sources of imprecision in abstract 
+interpretation.  Few commonly known sources of imprecision may occur from  
+\emph{control-flow join}, \emph{loop widening} or use of \emph{imprecise abstract domain}.  
+We analyzed the structure of software netlist models to detect the potential sources of 
+imprecision that may occur during the analysis using Astr{\'e}e.  Recall that the software 
+netlist model retains the control structure of the input RTL design.  Hence, if the original 
+RTL has loops or conditional branches inside a module, a software netlist also preserves the 
+similar control structure.   
+
+structure to properties 
+\rmcmt{Standard Static Analysis is Imprecise, but can we do better than bit
+blasting ?} 
+
+\para{Idea} Partition the traces so that we can prove correctness for each partition.
+\para{Solution} To be effecient, we want partitions that are just precise
+enough. 
+
+
+
+
+%===============================================================================
+\section{Conclusions}
+%===============================================================================
+We present an approach to unbounded safety verification for hardware
+designs given in Verilog RTL, at the heart of which are software
+verifiers.  We present a comparison of unbounded verification
+techniques at bit-level, word-level and \emph{software netlist} level.
+The range of software verification techniques is vast; this paper can
+thus only be an initial step.  We will evaluate further software
+verification techniques and their application to hardware property
+checking and co-verification workloads as future work.
+

@@ -1,0 +1,51 @@
+\section{Introduction}\label{sec:intro}
+%
+\begin{figure}[htbp]
+\centering
+\vspace*{0.3cm}
+\scalebox{.45}{\import{figures/}{work-flow.pspdftex}}
+\caption{Conventional flow for hardware property verification\label{fig:desc}}
+\end{figure}
+%
+\para{Design representation} Given a hardware design in Verilog RTL, formal
+verification tools use different internal representations for the design, at 
+differing levels of design granularity: \emph{bit level}, \emph{word level}, 
+\emph{term level} or \emph{software level}.  Figure~\ref{fig:desc} lists 
+some of the design representations commonly used.  
+
+\Omit{
+Most formal verification 
+tools for hardware~\cite{abc,DBLP:conf/fmcad/BradleyM07,vis} synthesize
+the input design into a bit-level netlist, typically represented as
+\emph{AIG}, and stored in formats such as \emph{BLIF}, \emph{EDIF},
+\emph{PLA} or \emph{BAF}.  This approach misses the opportunity to exploit
+the word-level structure of the input RTL design.  Tools based on word-level
+representations may use \emph{BTOR} or another intermediate word-level
+format, which enables the use of word-level decision procedures, such as 
+Satisfiability Modulo Theory (SMT) solvers, in the back-end of these tools.  
+UCLID~\cite{uclid} uses term-level models represented in its custom CLU 
+language, which are obtained from the word-level RTL description by 
+data-path abstraction and abstracting functional blocks by uninterpreted 
+functions.  The generated partially interpreted term-level abstract model 
+is then solved using SMT solvers.  The work of~\cite{mkm2015} presents a 
+bounded safety verification framework for complex hardware design at 
+different levels of granularity: word level, Netlist/AIGs and bit-precise 
+software models.
+}
+A survey of bounded and unbounded SAT-based hardware model checking techniques 
+is proposed in~\cite{charme05}.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                             What's New 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Our previous works~\cite{mkm2015,mskm2016,mtk2016} present some preliminary results 
+for bounded and unbounded safety verification of RTL using software verifiers.  
+The results presented in these works were restricted to a smaller set of benchmarks and fewer application 
+of tools.  However, this paper presents verification of a wider range of 
+RTL benchmarks with more application of verification tools.  
+In this paper, we present an unified framework for RTL verification by synthesizing 
+them to different netlist representations at -- bit, word and software level. We 
+also present an extensive experimental evaluation of the proposed verification flow 
+on a total of \rmcmt{41} benchmarks obtained from various sources.

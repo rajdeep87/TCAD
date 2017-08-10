@@ -1,0 +1,606 @@
+\section{Synthesizing software netlist from RTL}\label{sec:v2c}
+%
+\begin{figure*}[t]
+\scriptsize  
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+  Verilog & Formal Semantics & Synthesized Hardware & Software netlist \\
+\hline
+\begin{lstlisting}[mathescape=true,language=Verilog]
+module top(clk, a);
+input clk, a;
+reg b,d,e; 
+wire c,cond;
+assign c = e ? 1'b0:d;
+assign cond = a;
+always @(posedge clk) 
+ begin
+  b<=a;
+  if(cond && b)
+   e<=b;
+  else 
+   e<=0;
+  d<=c;
+ end
+endmodule
+\end{lstlisting}
+&
+\begin{minipage}{4.2cm}
+%\centering
+\scalebox{.5}{\import{figures/}{semantics.pspdftex}}
+\end{minipage}
+&
+\begin{minipage}{4.0cm}
+\centering
+\scalebox{.5}{\import{figures/}{ckt.pspdftex}}
+\end{minipage}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+struct state_elements_top {
+ unsigned int b, d, e; };
+struct state_elements_top  u1;
+void top(_Bool clk, unsigned a) {
+  _Bool c,cond;
+  _Bool b_old=u1.b;
+  cond = a;
+  c = (u1.e)?0:u1.d;
+  u1.b = a;
+  if(cond && b_old)
+    u1.e = b_old;
+  else
+    u1.e = 0;
+  u1.d = c;  
+}
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\caption{Circuit to Software}
+\label{ex1}
+\end{figure*}
+%
+%===============================================================================
+\subsection{Software-Netlist}
+%===============================================================================
+The hardware circuits in Verilog RTL is automatically synthesized 
+to a word level C program, called a \textit{software 
+netlist}~\cite{mtk2016,mskm2016} using the tool {\em v2c}~\cite{mtk2016}. 
+{\em v2c} follows synthesis semantics and not simulation semantics.  The 
+generated code is cycle-accurate as well as bit-precise. {\em v2c} 
+automatically translates concurrent statements in Verilog such as 
+procedural blocks and continuous assignments to a semantically 
+equivalent C program. 
+%
+\begin{definition} 
+A \textit{software netlist} $\mathcal{SN}$ is defined as follows:
+%
+\[ 
+\begin{array}[t]{@{}lll}
+\mathcal{SN} & {:}{:}{=} & \mathit{Modules} \\
+\mathit{Modules} & {:}{:}{=} & \epsilon \mid \mathit{moduleName(Var_1,\dots,Var_n)} \{ Asgn \} \;\; Modules \\
+\mathit{Asgn} &  {:}{:}{=} & \mathit{CAsgn} \mid \mathit{SAsgn} | moduleName(Var_1,\dots,Var_n)\\
+\mathit{CAsgn} & {:}{:}{=} & (V_c := Bv) \mid (V_c := \mathit{Bool}), \quad V_c \in \mathit{Comb} \uplus \mathit{Out} \\
+\mathit{SAsgn} & {:}{:}{=} & (V_s := Bv) \mid (V_s := \mathit{Bool}), \quad V_s \in \mathit{Seq} \\
+\mathit{Bv} &  {:}{:}{=} & bv_{const} \mid bv_{var} \mid
+	\mathit{ITE}(Bool, Bv, Bv) \mid
+bv_{op}(bv_1, \ldots, bv_n), \\
+& & bv_i \in Bv, \\ 
+& & bv_{op} \in \{n-\text{ary operators over bitvectors} \} \\
+\mathit{Bool} & {:}{:}{=} & \mathit{true} \mid \mathit{false} \mid \neg{Bool} \mid Bool \land Bool \mid 
+Bool \lor Bool \mid \\ 
+& & Bv\; relop\; Bv, relop \in \{<,\leq,=,>,\geq\} \\
+\end{array}
+\]
+%
+Here, $\mathit{In}$, $\mathit{Out}$, $\mathit{Seq}$, $\mathit{Comb}$
+are programs variables that model \emph{input}, \emph{output}, 
+\emph{sequential/state-holding} and \emph{combinational/stateless} 
+signals in the circuit.  $Asgn$ is a finite set of assignments 
+to $Out$, $Seq$ and $Comb$. 
+\end{definition} 
+%
+A state transition in HW can be described by a set of register updates,
+defined by the next-state function, and assignment of non-deterministic 
+values to external inputs. The state transition in the software netlist 
+corresponds to updates to the variables in $Seq$ and explicit assignment 
+of non-deterministic values to the input variables, $In$.
+
+\subsection{Pseudo-code of Software-netlist Model:} The pseudo-code for the software-netlist 
+model generated using \emph{v2c} is shown in figure~\ref{figure:structure}.
+\begin{figure}[t]
+\captionsetup{justification=justified}
+\scriptsize
+\begin{tabular}{l}
+\hline
+ Pseudo-code for software-netlist model \\
+\hline
+\begin{lstlisting}[mathescape=true,language=C]
+// parameter definition
+// macro definition
+struct state_elements_design
+  // declare all state-holding elements
+  // of the current module 
+};
+struct state_elements_design sdesign;
+int initial_block() { //initialization of nets }
+// Input are passed by value and output by reference
+int design (data_type input, data_type *output) {
+
+  // shadow variable declaration
+  declare shadow variables for 
+  non-blocking assignments to 
+  the register elements  
+  
+  // continuous assignments
+  Place all continuous statements which 
+  are only dependant on input
+ 
+  // always block 
+  Place the always block respecting
+  intra-modular dependencies
+  // procedural statements are bit-precise
+
+  // continuous assignments
+  Place all continuous statements which 
+  are updated by signals that are 
+  driven from the always block
+
+  // Module instantiations 
+  Place all module instances 
+  with proper mapping of 
+  input and output ports
+
+} // end of design module
+
+int main() {
+  // local varaibles 
+  declare all local variables 
+  which are passed to the design 
+  initial_block(); // call to initial block
+  // check if the design is sequential.
+  // if so, then put a  while(1) wrapper
+  while(1) {
+   // nondeterministic assignments
+   nondeterministically assign inputs values  
+   // call the design
+   design(input, &output);
+  }
+ 
+  // Assertions 
+  Place the C assertions here 
+} //end main 
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\caption{Skeleton of the software-netlist model generated using \emph{v2c}}
+\label{figure:structure}
+\end{figure}
+%
+%%===============================================================================\
+\para{Procedural Assignments:}
+%%===============================================================================\
+%
+Procedural assignments are used within Verilog always and initial blocks and
+are of two types: \emph{blocking} and \emph{non-blocking}.  Blocking
+assignments are executed in sequential order.  However, the effect of
+blocking assignments is visible immediately, whereas the effect of
+non-blocking assignments is delayed until all events triggered are
+processed.  This form of parallelism in procedural assignments are modeled
+in \emph{v2c} by first storing the value of register variables in auxiliary
+variables in the beginning of the clock cycle.  Each read access to the
+register variables are then replaced by these auxiliary variables.  This
+ensures that an assignment to a register variable do not influence
+subsequent procedural assignments.  Figure~\ref{figure:block} illustrates
+the translation of procedural assignments (given at the top) to the
+equivalent C semantics (given at the bottom).
+
+\begin{figure*}
+\scriptsize
+\begin{tabular}{l|l|l}
+\hline
+Non-blocking assignment & Blocking assignment & Continuous assignment \\
+\hline
+\begin{lstlisting}[mathescape=true,language=Verilog]
+reg [7:0] x,y,z;
+wire in = 1'b1;
+always @(posedge clk) begin
+ x <= in;
+ y <= x;
+ z <= y;
+end
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=Verilog]
+reg [7:0] x,y,z;
+wire in = 1'b1;
+always @(posedge clk) begin
+ x = in;
+ y = x;
+ z = y;
+end
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=Verilog]
+wire in;
+reg a,b,t;
+wire a = in;
+wire c = b; wire d = c; 
+always @(posedge clk) begin
+ b <= a;
+ t <= b;
+end 
+\end{lstlisting}
+\\
+\hline 
+\begin{lstlisting}[mathescape=true,language=C]
+struct smain { 
+unsigned char x,y,z; } sm;
+unsigned char xs,ys,zs;
+ _Bool in = 1;
+// save register variables
+ xs=sm.x;ys=sm.y;zs=sm.z;
+// update register variables
+ sm.x = in;
+ sm.y = xs;
+ sm.z = ys;
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+struct smain {
+unsigned char x,y,z;}sm;
+ _Bool in = 1;
+// clocked block
+ sm.x = in;
+ sm.y = sm.x;
+ sm.z = sm.y;
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+struct smain {
+_Bool a,b,t; } sm;
+_Bool in,c,d,as,bs,cs,ds,ts;
+sm.a = in;//continuous assign
+// save register variables
+as=sm.a;bs=sm.b;ts=sm.t;
+// clocked block
+sm.b = as; sm.t = bs;
+// continuous assignment 
+c = sm.b; d = c;
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\caption{Tanslation of non-blocking, blocking and continuous assignments}
+\label{figure:block}
+\end{figure*}
+
+%%===============================================================================\
+\para{Bit-precise code generation:}
+%%===============================================================================\
+\emph{v2c} generates a bit-precise software netlist model in~C.  The tool
+automatically handles complex bit-level operators in Verilog like
+bit-select or part-select operators from a vector, concatenation operators,
+reduction OR and other operators.  \emph{v2c} retains the word-level structure 
+of the Verilog RTL and generates vectored expressions. 
+Figure~\ref{figure:bit} shows Verilog code (at the top) and the generated C
+expressions (at the bottom), which are combinations of bit-wise and
+arithmetic operators like bit-wise OR, AND, multiplication, subtraction,
+shifts and other C operators.
+
+\begin{figure*}[htbp]
+\scriptsize
+\begin{tabular}{l|l|l}
+\hline
+Bit-select & Part-select (SystemVerilog) & Concatenation \\
+\hline
+\begin{lstlisting}[mathescape=true,language=Verilog]
+wire [7:0] in1,in2;
+reg [7:0] out1,out2;
+out1[7:5] = in1[4:2];
+out2[6] = in2[4];
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=Verilog]
+reg [31:0] in, out;
+for(i=0;i<=3;i++) begin
+out[8*i +: 8]=in[8*i +: 8];
+end
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=Verilog]
+wire [7:0] in1, in2;
+reg [9:0] out;
+out = {in2[5:2],in1[6:1]};
+\end{lstlisting}
+\\
+\hline
+\begin{lstlisting}[mathescape=true,language=C]
+unsigned char in1,in2;
+struct smain { 
+ unsigned char out1,out2; } sm;
+sm.out1 = sm.out1 & 0x1f | 
+(((in1 & 0x1c)>>2)<<5);
+sm.out2 = (sm.out2 & 0xbf)| 
+(((in2 & 0x10)>>4)<<6); 
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+struct smain {
+ unsigned int in,out; } sm;
+for(i=0;i<=3;i++) {
+ x=8*i+(8-1); y=8*i;
+ sm.out=(sm.out&!(2^31-2^y))
+ |(sm.in&(2^31-2^y)); }
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+unsigned char in1,in2;
+struct smain { 
+ unsigned char out; } sm;
+sm.out = (((in2 >> 2)
+ & 0xF) << 6)|
+ ((in1 >> 1) & 0x3F);
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\caption{Handling Bit-select, part-select from vectors and concatenation operator}
+\label{figure:bit}
+\end{figure*}
+%
+%%===============================================================================\
+\subsection{Dependency Analysis}
+%%===============================================================================\
+%
+A hardware circuit specified in Verilog RTL may have two types of dependencies -- 
+1) \emph{Intra-modular dependency} and b) \emph{Inter-modular dependency}. 
+%
+\subsubsection{Intra-Modular Dependency Analysis}
+%
+The intra-modular dependencies may occur due to the communication between
+combinational blocks (continuous assignments) and sequential or clocked 
+procedural blocks.  The following three cases summarizes the various sources of 
+intra-modular dependencies in Verilog and provides the equivalent translation 
+to a software netlist model.  Other forms of intra-modular dependencies are 
+simply variants of these and can be handled appropriately.
+Figure~\ref{dp1}, figure~\ref{dp2} and figure~\ref{dp3} graphically 
+illustrate the intra-modular dependencies
+where box denote the input, a bold circle denote a wire and a normal circle
+denote a latch, bold edges denote the dependencies between two wires or a latch 
+and a wire with the arrow pointing towards the wire and normal edges denote the 
+dependencies between two latches or a wire and a latch with the arrow pointing
+towards the latch. The dotted arrows denote the dependencies with an input.
+\\
+%
+\noindent \textbf{Scenario A}  A wire, say $x$,  assigned in a continuous assignment 
+statement, say $A$, appears in the right-hand side of another continuous assignment 
+statement, say $B$.  This is illustrated in Figure~\ref{dp1}.\\
+
+\noindent \textbf{Translation A} The variable assignment $A$ is placed before the other assignment $B$ 
+which reads $x$.  \\
+
+\noindent \textbf{Scenario B} A wire, say $x$, appearing in the right-hand side of a 
+continuous assignment, say $A$, is driven by an always block.  This is illustrated in 
+Figure~\ref{dp2}.\\
+
+\noindent \textbf{Translation B} This gives an ordering where the continuous assignment is 
+placed after the always block to capture the updated value of $x$. \\
+
+\noindent \textbf{Scenario C} A latch, say $x$, appearing in procedural block, 
+say $A$, is assigned directly by the input signal and $x$ is then read inside 
+another procedural block. This is illustrated in Figure~\ref{dp3}.\\
+
+\noindent \textbf{Translation C} The assignment to $x$ is placed before the second 
+procedural block that reads $x$.\\
+
+%
+%\textbf{Dependencies among combinational assignments}
+\begin{figure}
+\scriptsize  
+\centering
+\begin{tabular}{l|l|l}
+\hline
+ Verilog & Dataflow Graph & Software netlist \\
+\hline
+\begin{lstlisting}[mathescape=true,language=Verilog]
+module main();
+wire x;
+wire [1:0] y;
+assign x=1'b1;
+assign y=x+1'b1;
+\end{lstlisting}
+&
+\begin{minipage}{2.0cm}
+\centering
+\scalebox{.5}{\import{figures/}{dp1.pspdftex}}
+\end{minipage}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+int main() {
+ bool x;
+ unsigned char y;
+ x=1;
+ y=(x+1)&0x3;
+ assert(y==2);
+}
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\caption{Dependencies between combinational elements}
+\label{dp1}
+\end{figure}
+
+%
+%\textbf{A latch fed by the output of a combinational gate}
+\begin{figure}
+\scriptsize  
+\begin{tabular}{l|l|l}
+\hline
+  Verilog & Dataflow Graph & Software netlist \\
+\hline
+\begin{lstlisting}[mathescape=true,language=Verilog]
+module M(in1, in2, 
+      out1, out2);
+input in1, in2;
+output reg out1,
+output reg out2;
+wire t1;
+assign t1=out1;
+always @(in1) begin
+out1 <= in1;
+end
+always@(t1) begin
+out2 <= t1;
+end
+endmodule
+\end{lstlisting}
+&
+\begin{minipage}{1.8cm}
+\centering
+\scalebox{.5}{\import{figures/}{dp2.pspdftex}}
+\end{minipage}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+int M(
+bool in1,bool in2, 
+bool *out1,
+bool *out2) 
+{
+ bool t1;
+ *out1=in1;
+ t1=*out1;
+ *out2=t1;
+}
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\caption{Dependencies between latches and combinational logic}
+\label{dp2}
+\end{figure}
+
+
+%\textbf{A latch fed by the output of another latch}
+%
+\begin{figure}
+\scriptsize
+\begin{tabular}{l|l|l}
+\hline
+  Verilog & Dataflow Graph & Software netlist \\
+\hline
+\begin{lstlisting}[mathescape=true,language=Verilog]
+module M(in1, in2, 
+      out1, out2);
+input in1, in2;
+output reg out1, out2;
+
+always @(in1) begin
+out1 <= in1;
+end
+
+always@(out1) begin
+out2 <= out1;
+end
+endmodule
+\end{lstlisting}
+&
+\begin{minipage}{2.0cm}
+\centering
+\scalebox{.5}{\import{figures/}{dp3.pspdftex}}
+\end{minipage}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+int M(
+bool in1,bool in2, 
+bool *out1,*out2) {
+ *out1=in1;
+ *out2=*out1;
+}
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\caption{Dependencies between latches}
+\label{dp3}
+\end{figure}
+%
+\Omit{
+\textbf{A latch fed by combinational inputs}
+%
+\begin{figure}[t]
+\scriptsize
+\begin{tabular}{l|l|l}
+\hline
+  Verilog & Dataflow Graph & Software netlist \\
+\hline
+\begin{lstlisting}[mathescape=true,language=Verilog]
+module M(in1, in2, out1, out2);
+input in1, in2;
+output reg out1, out2;
+
+always @(in1) begin
+out1 <= in1;
+end
+
+always@(in2) begin
+out2 <= in2;
+end
+endmodule
+\end{lstlisting}
+&
+\begin{minipage}{3.0cm}
+\centering
+\scalebox{.5}{\import{chapter3/figures/}{dp1.pspdftex}}
+\end{minipage}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+int M(bool in1, bool in2, 
+      bool *out1, *out2) {
+ *out1=in1;
+ *out2=in2;
+}
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\caption{Dependencies between latch and combinational inputs}
+\label{dp4}
+\end{figure}
+}
+%
+\Omit{For designs with inter-modular combinational paths or combinational loops,
+the combinational signals (wire variables) may settle after several
+executions before the next clock cycle.  The combinational exchanges between
+modules depends on the stability condition for the combinational signals and
+thus it is necessary to execute the combinational logic until the stability
+condition is reached.  Determining such stability condition for large
+circuits is hard.  An alternative way to handle combinational exchanges
+between modules is by using assumptions over the signals that encode
+combinational logic in the respective modules following synthesis semantics. 
+An example using the latter approach is given at
+\url{http://www.cprover.org/hardware/v2c/}.
+}
+%
+\subsubsection{Inter-Modular Dependency Analysis}
+%
+Modules in Verilog communicate with each other through their input or output
+ports. Most practical designs are modular in nature, where the top-level 
+module delegates specific tasks to the sub-modules through the input ports of
+sub-module and receive output from the sub-module upon completion of the 
+task.  Both the module and sub-module executes \emph{in-tandem}, that is, a
+module is \emph{not} blocked when it invokes a sub-module. 
+
+
+A simple inter-modular communication is illustrated using a D-flipflop
+circuit in Figure~\ref{figure:design-granularity}.  The top-level 
+module $\texttt{top}$ invokes the sub-module $\texttt{ff}$ which only 
+models the sequential logic.
+%
+A more complex example of inter-modular communication is a \emph{combinatorial 
+feedback loop} where participating modules exchange combinatorial data until a 
+stability condition is reached. 
+%
+\rmcmt{translation rules to C}

@@ -1,0 +1,38 @@
+\section{Hardware Synthesis}\label{sec:abstraction}
+%
+Formal verification tools~\cite{abc,DBLP:conf/fmcad/BradleyM07,vis} for 
+hardware typically synthesize an input design given in RTL into a netlist.  
+This section briefly describes various netlist formats at -- \emph{bit-level},
+\emph{word-level}, \emph{term-level} and \emph{software-level}.  
+%
+%
+\subsection{Bit-level Synthesis}
+A bit-level netlist is typically represented in \emph{AIG} (And-Inverter Graph), 
+and stored in formats such as \emph{AIGER}, \emph{BLIF}, 
+\emph{EDIF}, \emph{PLA} or \emph{BAF}.  This approach misses 
+the opportunity to exploit the word-level structure of the 
+input RTL design.  
+
+\subsection{Word-level Synthesis}
+A word-level netlist is typically represented in \emph{BTOR} or 
+some word-level format that resembles SMT-LIB language~\ref{}.  
+This enables the use of word-level decision procedures, such as 
+Satisfiability Modulo Theory (SMT) solvers, in the back-end of these tools.  
+
+\subsection{Term-level Synthesis}
+A term-level synthesis generates a term-level model represented 
+in its custom language called counter arithmetic with lambda 
+expressions and uninterpreted functions (CLU)~\cite{uclid}.  Tools 
+like UCLID~\cite{uclid} uses term-level models, which are obtained 
+from the word-level RTL description by data-path abstraction and 
+abstracting functional blocks by uninterpreted functions.  The 
+generated partially interpreted term-level abstract model is then 
+solved using SMT solvers.  
+
+\subsection{Software-level Synthesis}
+Most recently, synthesis of RTL to a software program is presented 
+in our previous works~\cite{mkm2015,mtk2016}.  This new flow enables application 
+of classical software verification techniques like abstract interpretation, path-based 
+symbolic execution and others, which has never been applied to RTL verification.  
+In the subsequent section, we describe the synthesis of software netlist 
+from hardware RTL in details.     

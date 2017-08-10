@@ -1,0 +1,242 @@
+% ---------------------------------------------------------------------
+% Journal article on the hardware property checking via software netlists.
+%
+% Time-stamp: <2016-03-22 09:26:52 melham>
+%
+%   - 14 pages maximum, including everything
+%   - TCAD requires 30% new content.
+%   - page charges apply
+% ---------------------------------------------------------------------
+
+% For final copy to IEEE
+\documentclass[journal]{IEEEtran}
+
+% For the initial submission
+%\documentclass[journal,draftclsnofoot,onecolumn]{IEEEtran}
+
+% ---------------------------------------------------------------------
+% External packages - keep these minimal!
+% ---------------------------------------------------------------------
+\usepackage{graphicx}
+\usepackage{import}
+\usepackage{times}
+\usepackage{microtype}
+\usepackage{array}
+\usepackage{graphicx,wrapfig}
+\usepackage{cite}
+\usepackage{tikz}
+\usepackage{amsthm}
+\usepackage{caption}
+\usepackage{multirow}
+\usetikzlibrary{plotmarks}
+\usepackage{pgfplotstable}
+\usepackage{pgfplots}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{stmaryrd}
+%\usepackage{mathptm}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{verbatim}
+\usepackage{comment}
+\usepackage{psfrag}
+\usepackage{epsfig}
+\usepackage{wasysym} 
+%\usepackage{subfigure}
+\usepackage{paralist}
+\usepackage[algo2e,linesnumbered,ruled,lined]{algorithm2e}
+\usepackage{hyperref}
+\usepackage[subnum]{cases}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{dcolumn}
+\newcolumntype{Y}{D..{5.2}}
+\newcolumntype{R}{D..{2.2}}
+\newcolumntype{"}{@{\hskip\tabcolsep\vrule width 1pt\hskip\tabcolsep}}
+\makeatother
+
+\newcommand{\tool}[1]{\textsc{#1}\xspace}
+\newcommand{\cbmcv}{\tool{cbmc 5.0}}
+\newcommand{\symex}{\tool{path-symex}}
+\newcommand{\ebmc}{\tool{ebmc}}
+\newcommand{\hector}{\tool{hector}}
+\newcommand{\slec}{\tool{slec}}
+\newcommand{\symexv}{\tool{path-symex 5.0}}
+\newcommand{\ebmcv}{\tool{ebmc 4.2}}
+\newcommand{\hwcbmcv}{\tool{hw-cbmc 5.0}}
+\newcommand{\verifox}{\tool{verifox 0.5}}
+\newcommand{\acdcl}{\tool{acdcl}}
+\newcommand{\summarizer}{\tool{summarizer 1.0}}
+%\newcommand{\v{2}c}{\tool{v2c 0.4}}
+\newcommand{\ABC}{\tool{ABC}}
+\newcommand{\yosys}{\tool{Yosys 0.5}}
+\newcommand{\longversion}[1]{}
+
+\newcommand{\Omit}[1]{}
+\newcommand{\Remote}[1]{}
+%\newcommand{\mydef}[1]{\begin{definition}#1\end{definition}}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+ 
+
+\newcommand{\rmcmt}[1]{{\color{magenta}{#1}}}%#1
+
+\lstdefinestyle{base}{
+  language=C,
+  emptylines=1,
+  breaklines=true,
+  escapeinside={(*}{*)},
+  basicstyle=\ttfamily\color{black},
+  moredelim=**[is][\color{magenta}]{~}{~},
+  %moredelim=**[is][\color{red}]{@}{@},
+  moredelim=**[is][\color{blue}]{'}{'}
+}
+
+
+% Use millimetres as unit of length, of course.
+% ---------------------------------------------------------------------
+\setlength{\unitlength}{1mm}
+
+% ---------------------------------------------------------------------
+% Any macros we define will ultimately go here. Only absolutely 
+% essential macros to be used!
+% ---------------------------------------------------------------------
+\input{symbols}
+
+% ---------------------------------------------------------------------
+% Start of document
+% ---------------------------------------------------------------------
+\begin{document}
+
+% ---------------------------------------------------------------------
+% Title, authors, abstract, keywords
+% ---------------------------------------------------------------------
+%\title{Formal Verification of Hardware RTL \\ Using Different Synthesized Representations} 
+\title{Moving beyond Bits and Words to Software}
+\author{Rajdeep Mukherjee, 
+        Peter Schrammel,
+        Daniel Kroening, 
+        Tom Melham, \\
+        Michael Tautschnig,
+        Eugene Goldberg and
+        Antoine M{\'i}ne
+        \thanks{R. Mukherjee, D. Kroening and T. Melham are at 
+                University of Oxford, Department of Computer Science,
+                Wolfson Building, Parks Road,
+                Oxford, OX1 3QD, England.}
+        \thanks{P. Schrammel is at School of Informatics, University of Sussex, 
+                Chichester 2 2R302, Sussex, UK}
+        \thanks{E. Goldberg is at Diffblue Limited, Oxford, UK}
+        \thanks{M. Tautschnig is at 
+                School of Electronic Engineering and Computer Science,
+                Queen Mary University of London
+                Mile End Road, London E1 4NS, UK}
+        \thanks{A. M{\'i}ne is at Engineering School, UPMC University, Paris}}
+\markboth{IEEE Transactions on Computer-Aided Design of Integrated
+          Circuits And Systems, Vol. XX, No. Y, Month 2004}%
+         {Mukherjee et al.: Hardware Propety Verification using Software Analyzers}
+
+% Create the title
+\maketitle
+% \IEEEpeerreviewmaketitle
+
+\begin{abstract}
+A folk wisdom in formal hardware verification community is to synthesize a 
+hardware design into bit-level netlist and use propositional satisfiability 
+solvers (SAT) to reason about the correctness of bit-blasted verification 
+conditions generated from the netlist representation using a bounded or unbounded 
+verification algorithm.  However, most bit-level verification algorithms heavily 
+relies on the SAT solvers to generate invariants or finding counterexamples. 
+%
+An alternative approach is to synthesize a design into word-level netlist which 
+is then solved using a Satisfiability Modulo Theory (SMT) solver.  However, 
+word-level verification flow has not seen much adoption in commercial EDA tools 
+due to the performance bottleneck of word-level SMT solvers.  The tight coupling 
+between verification procedure and SAT/SMT solvers often limits the scalability 
+of these tools.   
+%
+
+
+In this paper, we present a novel formal verification flow that synthesize a 
+Register Transfer Level (RTL) design into a software like representation and 
+expressed in ANSI-C, which we call \emph{software netlist}. 
+The software netlist representation allows us to leverage various software verification 
+technologies inlcuding abstract interpretation techniques which was never applied to 
+RTL verification.  
+%
+This paper experimentally evaluates formal RTL verification 
+%formal verification of hardware design expressed in Verilog Register Transfer Level (RTL) 
+at different levels of granularity -- \emph{bit-level}, \emph{word-level} and \emph{software-level}.  
+To this end, we present an emperical evaluation of various unbounded formal 
+verification algorithms such as predicate abstraction, $k$-induction, 
+interpolation, IC3/PDR and Abstract Interpretation; and we compare the performance 
+of verification tools from the Software Verification Competition (SV-COMP'16) and 
+Hardware Model Checking Competition (HWMCC'16) that use these techniques.  
+Our benchmarks are drawn from real world hardware benchmark suite, such as 
+VIS verilog models, the Texas-97 Benchmark suite, Hardware Model Checking 
+Competition 2015, and opencores.org. Experimental evaluation suggests that 
+SAT-based software verification tools can be successfully used for RTL 
+verification but they are \rmcmt{1.5X} slower compared to bit-level hardware model checker
+because they are never optimized for hardware designs.  On the contrary, 
+the runtimes of state-of-the-art abstract interpretation tool, Astr{\'e}e, are comparable to 
+bit-level harware tools. 
+\end{abstract}
+
+\begin{IEEEkeywords}
+Formal verification, Verilog RTL, SAT, SMT.
+\end{IEEEkeywords}
+
+% ---------------------------------------------------------------------
+% Start of text.
+% ---------------------------------------------------------------------
+
+%Surely we will cite this~\cite{Clarke:TCA:2004}.
+
+\input{intro}    % Motivation, vision, and contributions
+%\input{related_work}
+\input{contribution}
+\input{problem_statement}
+\input{abstraction}
+\input{v2c}      % The v2c tool
+\input{methodology}
+\input{equivalence} % Equivalence of Hardware and Software
+\input{experiment}    % Conclusions
+\input{concl}    % Conclusions
+
+% ---------------------------------------------------------------------
+% Un-numbered section of acknowledgments
+% ---------------------------------------------------------------------
+
+\section*{Acknowledgments}
+
+% ---------------------------------------------------------------------
+% Bibliography
+% ---------------------------------------------------------------------
+
+\bibliographystyle{IEEEtran}
+\bibliography{biblio}
+
+% ---------------------------------------------------------------------
+% Biographies of authors.
+% ---------------------------------------------------------------------
+
+% \begin{IEEEbiography}{Rajdeep Mukherjee}
+% \end{IEEEbiography}
+
+% \begin{IEEEbiography}{Peter Schrammel}
+% \end{IEEEbiography}
+
+% \begin{IEEEbiography}{Tom Melham}
+% \end{IEEEbiography}
+
+% \begin{IEEEbiography}{Daniel Kroening}
+% \end{IEEEbiography}
+
+% \begin{IEEEbiography}{Michael Tautschnig}
+% \end{IEEEbiography}
+
+\end{document}
+
+

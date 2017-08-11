@@ -598,84 +598,11 @@ module is \emph{not} blocked when it invokes a sub-module.
 
 
 An example of inter-modular communication can be illustrated
-using the design in figure~\ref{figure:design-granularity}.  The top-level 
+using the design in figure~\ref{figure:prop1}.  The top-level 
 module \texttt{main} invokes the sub-module \texttt{initial} and \texttt{M}.  
-The equivalent translation in C (shown in right of figure~\ref{figure:design-granularity} 
+The equivalent translation in C (shown in right of figure~\ref{figure:prop1} 
 preserves the modular structure. 
 %
 Another example of inter-modular communication is a \emph{combinational feedback loop} 
-where participating modules exchange combinational data until a stability condition is reached. 
+where participating modules exchange combinational data until a stability condition is reached.  
 %
-\Omit{
-\begin{figure}
-\scriptsize
-\centering
-\begin{tabular}{l|l}
-\hline
-Verilog & Software Netlist \\
-\hline
-\begin{lstlisting}[mathescape=true,language=Verilog]
-module top(Din,En,
-        clk,Dout);
- wire cs; reg ns;
- input clk,Din,En;
- output Dout;
- assign Dout = cs;
- always @(Din or 
-        cs or En) 
- begin
-  if (En) ns = Din;
-  else ns = cs;
- end
- ff ff(ns,clk,cs);
-endmodule
-
-module ff(Din,clk,
-         Dout);
- input clk, Din;
- output Dout; 
- reg q;
- assign Dout = q;
- always 
-  @(posedge clk) 
-   q <= Din;
-endmodule
-\end{lstlisting}
-&
-\begin{lstlisting}[mathescape=true,language=C,style=base]
-_Bool nondet_bool();
-struct _ff{_Bool q;};sff;
-struct _top{ _Bool ns;};stop;
-_Bool ff(_Bool CLK,
-_Bool Din,_Bool *Dout) { 
- _Bool qold;
- qold = sff.q;
- sff.q = Din;
- *Dout = qold;
- return; 
-}
-void top(_Bool clk,
-_Bool Din,_Bool En,
-_Bool *Dout){
- _Bool cs;
- if(En) {
-  sen.ns = Din; 
- else {
-  sen.ns = cs; }
- ff(clk, sen.ns, &cs);
- *Dout = cs; }
-int main() { 
- _Bool clk,En,Din,out;
- while(1) {
-  Din = nondet_bool();
-  En = nondet_bool();
-  top(clk,Din,En,&out);} 
- return; }
-\end{lstlisting}
-\\
-\hline
-\end{tabular}
-\caption{Inter-modular communication} 
-\label{figure:design-granularity}
-\end{figure} 
-}

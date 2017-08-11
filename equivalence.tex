@@ -1,4 +1,4 @@
-\section{Equivalence of Hardware and Software Netlist}
+\section{Equivalence of RTL and Software Netlist}
 %
 The consistency between two designs can be established in several ways. 
 For example, few common notion of consistency criteria are \emph{behavioral}, 
@@ -28,35 +28,36 @@ may require some additional logic in Circuit A to determine the condition for
 stuttering.  
 
 
-In this paper, we assume a restricted notion of cycle-accurate-equivalence
-between a hardware RTL and a software netlist to establish their consistency.  
-We describe this next. 
+In this paper, we consider an equivalence between RTL and software netlist 
+based on the properties to be verified.  We describe this next.
+% 
 %%%%%%%%%%%%%%%%%% RESTRICTED CYCLE ACCURATE EQUIVALENCE %%%%%%%%%%%%%%%%%
-\rmcmt{Observability Preserving Equivalence}
-\para{Cycle-accurate-Property-Equivalence}
+\para{Property-based Observable Equivalence}
 %
-Recall that a software netlist is derived from a hardware circuit for the
-purposes of formal verification.  To this end, the design properties 
-(temporal or non-temporal) over RTL signals that captures hardware behaviors 
-are translated into assertions over the corresponding software variables and 
-checked for consistency against the software
-netlist model.  Thus, our notion of cycle-accurate-equivalence is 
-limited to the signals that are observable in the property.  
-We call this equivalence criteria \emph{cycle-accurate property-equivalence}.  
+Recall that a software netlist is derived from a hardware RTL for the
+purposes of formal verification.  To this end, the formal specification or 
+properties (temporal or non-temporal) over RTL signals that captures hardware behaviors 
+are translated into assertions over the corresponding software variables in 
+software netlist and checked for consistency against the software
+netlist model.  Thus, our notion of equivalence is based on the signals 
+that are observable in the property.  We call this equivalence criteria 
+\emph{property-based observable equivalence}.  
 Intuitively, this means that the state of latches and wires 
-present in the property match with the corresponding variables in software 
+present in the property must match with the corresponding variables in software 
 netlist model at some designated clock cycle.  The effect of a clock cycle 
 in the software netlist model is simulated through an invocation of the top 
-level procedure which corresponds to the top level module of the hardware circuit. 
-\rmcmt{Note that a software netlist is synthesized from a hardware
+level procedure which corresponds to the top level module of the RTL. The 
+proposed notion of equivalence is sufficient for the purposes of property-based 
+verification.
+\Omit{Note that a software netlist is synthesized from a hardware
 RTL for the purposes of formal verification, just like a bit-level netlist or
 word-level netlist are synthesized from an RTL. So, the proposed consistency 
-criteria is sufficient for this purpose.  Techniques for translation
-validation~\cite{} that check the consistency between a RTL and software 
-is a different problem and beyond the scope of this work.}
+criteria is sufficient for this purpose.}  
+Techniques such as translation validation~\cite{} that check the 
+consistency between a RTL and a software is a different problem and beyond the scope of this work.
 %
-\begin{definition} (Cycle-accurate-Property-Equivalent) 
-  Two designs $C_1$ and $C_2$ are \emph{Cycle-accurate-Property-Equivalent} with
+\begin{definition} (Property-based Observable Equivalent) 
+  Two designs $C_1$ and $C_2$ are \emph{property-based observable equivalent} with
   respect to a property $P$ if the following conditions holds true. 
   \begin{enumerate}
     \item For a non-temporal property $P$, the result of analysis of $P$ must
@@ -67,13 +68,13 @@ is a different problem and beyond the scope of this work.}
   \end{enumerate}
 \end{definition}
 %
-Two designs $C_1$ and $C_2$ are \emph{not} cycle-accurate property equivalent 
+Two designs $C_1$ and $C_2$ are \emph{not} property-based observable equivalent 
 with respect to a non-temporal property $P$ if there exists a clock cycle where 
 the result of analysis of $P$ does not match.  Intuitively, this means that 
 there exists some latches or wires and a cycle $N$ where the observable signals in $P$ 
 does not match in $C_1$ and $C_2$, resulting in inconsistent result of anaysis of $P$. 
 %
-Whereas, two designs $C_1$ and $C_2$ are \emph{not} cycle-accurate property equivalent 
+Whereas, two designs $C_1$ and $C_2$ are \emph{not} property-based observable equivalent 
 with respect to a temporal property $P$ if there exists a \emph{designated} clock cycle 
 where the result of analysis of $P$ does not match. 
 

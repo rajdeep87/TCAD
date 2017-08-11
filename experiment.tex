@@ -8,36 +8,44 @@
 \end{figure}
 %
 %===============================================================================
-\para{Software Verifiers at the heart of Hardware Verification}
+%\para{Software Verifiers at the heart of Hardware Verification}
 %===============================================================================
 %
 Figure~\ref{fig:toolflow} shows the tool flow for hardware RTL 
 verification at various levels of synthesized netlist representations -- 
 \emph{bit-level}, \emph{word-level}, and \emph{software netlist-level}.  
-We use \ABC to perform bit-level unbounded safety verification (shown in bottom
-flow of figure~\ref{fig:toolflow}. 
+The bottom flow of figure~\ref{fig:toolflow} shows the bit-level 
+verification flow using \ABC.
 \ABC does not support Verilog, so we use an open-source synthesis tool,
 \yosys\footnote{http://www.clifford.at/yosys/} to translate Verilog
-RTL to BLIF, which is then passed to \ABC for verification. For
-word-level unbounded verification (shown in middle flow), we use 
-word-level $k$-induction engine of \ebmc, which supports IEEE 1364.1 Verilog 2005.
-The top flow of figure~\ref{fig:toolflow} shows the software netlist based 
-verification flow.
-The tool \emph{v2c} is used to generate a software netlist model from
-Verilog RTL.  A wide range of representative unbounded
-software verification techniques are applied to determine the safety of these
-benchmarks. In particular, we use $k$-induction~\cite{SSS00}
+RTL to BLIF or AIGER, which is then passed to \ABC for verification. 
+Given a design in Verilog RTL, \yosys bit-blasts it into a bit-level netlist 
+along with the property and the resultant netlist is expressed in And-Inverter 
+Graph.  The AIG is represented in AIGER format which is one of the standard 
+and most prevelant format used by majority of verification tools.
+
+
+Whereas, the middle flow of figure~\ref{fig:toolflow} shows the 
+word-level verification using the tool \ebmc~\footnote{}.  \ebmc 
+supports IEEE 1364.1 Verilog 2005, and synthesize it to a bit-level 
+netlist represented in AIGER or a word-level netlist represented in 
+SMT-LIB2 format.  The top flow of figure~\ref{fig:toolflow} shows a
+verification flow that synthesize a software netlist from RTL using 
+the tool \emph{v2c}.  A wide range of representative software 
+verification techniques are applied to determine the safety of the
+software netlist models. In particular, we use $k$-induction~\cite{SSS00}
 (implemented in the tools CBMC~\cite{cbmc.tacas:2004} and
 2LS~\cite{kiki}), interpolation
 (CPAChecker~\cite{DBLP:conf/cav/BeyerK11}, IMPARA~\cite{impara}
 implementing the IMPACT algorithm~\cite{ken}), abstract interpretation
-(Ast{\'r}ee~\cite{DBLP:conf/pldi/BlanchetCCFMMMR03}) and IC3/PDR
-(SeaHorn~\cite{DBLP:conf/cav/GurfinkelKKN15}).
+(Ast{\'r}ee~\cite{DBLP:conf/esop/CousotCFMMMR05}), IC3/PDR
+(SeaHorn~\cite{DBLP:conf/cav/GurfinkelKKN15}) and automata-based 
+trace abstraction (UltimateAutomizer~\cite{DBLP:conf/tacas/HeizmannDGLMSP16}).
 %
 %===============================================================================
 \section{Experimental Results}
 %===============================================================================
-In this section, we report experimental results for unbounded safety 
+In this section, we report experimental results for \emph{unbounded} safety 
 verification of hardware RTL.  Our experimental contributions are two folds.
 %
 \begin{enumerate}
@@ -49,7 +57,8 @@ verification of hardware RTL.  Our experimental contributions are two folds.
     with various software analyzers from SV-COMP 2016, such as 
     \emph{UltimateAutomizer 3292eade} (winner of SV-COMP'16), 
     \emph{CPAChecker 1.4}, 
-    \emph{SeaHorn (revision 07666c810d)}, \emph{2LS 0.3.4} and a commercial abstract 
+    \emph{SeaHorn (revision 07666c810d)}, \emph{2LS 0.3.4}, 
+    and a commercial abstract 
     interpretation based tool, \emph{Astr{\'e}e}.  
   
  \item  Compare various unbounded verification engines such as $k$-induction, 

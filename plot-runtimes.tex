@@ -15,10 +15,10 @@ solid, every mark/.append style={solid, fill=black}, mark=otimes*,, mark
     xlabel={Benchmark Number},
     ylabel={Time (seconds)},
     domain = 1:40,
-    xmin=1, xmax=40,
+    xmin=1, xmax=34,
     ymin=0, ymax=200,
     %ytick={0,20,...,200},
-    xtick={1,5,10,...,40},
+    xtick={1,5,10,...,34},
     width=15cm, height= 7cm,
     ymode = log,
     %log basis x={2},
@@ -33,14 +33,14 @@ solid, every mark/.append style={solid, fill=black}, mark=otimes*,, mark
   %\addplot table [only marks, y=Time, x=Benchmarks]{plotdata/cbmc.dat};
 	%\addlegendentry{CBMC}
   
-  \addplot table [only marks, y=Time, x=Benchmarks]{plotdata/abc.dat};
-  \addlegendentry{ABC}
+  \addplot table [only marks, y=Time, x=Benchmark]{plotdata/ultimate.dat};
+  \addlegendentry{UltimateAutomizer}
   
-  \addplot table [only marks, y=Time, x=Benchmarks]{plotdata/astree.dat};
+  \addplot table [only marks, y=Time, x=Benchmark]{plotdata/astree.dat};
   \addlegendentry{Astr{\'e}e}
 	
   \end{axis}  
 \end{tikzpicture}
 \caption{\label{fig:runtimes}
-  Runtime Comparison between ABC and Astr{\'e}e}
+  Runtime Comparison between UltimateAutomizer and Astr{\'e}e}
 \end{figure}

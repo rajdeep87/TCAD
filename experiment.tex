@@ -12,7 +12,7 @@
 %===============================================================================
 %
 Figure~\ref{fig:toolflow} shows the tool flow for hardware RTL 
-verification at various levels of synthesized netlist representations -- 
+verification at various levels -- 
 \emph{bit-level}, \emph{word-level}, and \emph{software netlist-level}.  
 The bottom flow of figure~\ref{fig:toolflow} shows the bit-level 
 verification flow using \ABC.
@@ -26,8 +26,8 @@ and most prevelant format used by majority of verification tools.
 
 
 Whereas, the middle flow of figure~\ref{fig:toolflow} shows the 
-word-level verification using the tool \ebmc~\footnote{}.  \ebmc 
-supports IEEE 1364.1 Verilog 2005, and synthesize it to a bit-level 
+word-level verification using the tool \ebmc~\footnote{\scriptsize{www.cprover.org/hardware/ebmc}}. 
+\ebmc supports IEEE 1364.1 Verilog 2005, and synthesize it to a bit-level 
 netlist represented in AIGER or a word-level netlist represented in 
 SMT-LIB2 format.  The top flow of figure~\ref{fig:toolflow} shows a
 verification flow that synthesize a software netlist from RTL using 
@@ -71,26 +71,25 @@ Our experiments were performed on an Intel Xeon machine running at
 benchmark.  All our benchmarks in Verilog, software netlist models in 
 ANSI-C, scripts for running \yosys, \ABC, \ebmcv, and other software 
 verification tools are uploaded to a publicly accessible archive website.
-\footnote{\scriptsize{http://www.cprover.org/hardware/date2016/}}
+\footnote{\scriptsize{http://www.cprover.org/hardware/tcad/}}
 %
 %===============================================================================
 \para{Benchmarks}
 %===============================================================================
 %
 We target two different classes of circuits: data-path intensive
-circuits, including a Huffman encoder/decoder and a Digital Audio
+circuits, including Huffman encoder/decoder and a Digital Audio
 Input-Output chip (DAIO); and control-intensive designs,
 including a non-pipelined 3-stage processor, a Read-Copy-update
 mutual exclusion protocol, a FIFO controller, a buffer allocation model,
-and an instruction queue controller.  The safety properties are 
-specified as System Verilog assertions (SVA).  The properties are 
-instrumented as assertions in the software netlist model. The 
-benchmarks in our paper are derived from real world hardware benchmark suites, 
-including VIS Verilog models, the Texas-97 Benchmark suite, and opencores.org.
+and an instruction queue controller.  The benchmarks in our paper 
+are derived from real world hardware benchmark suites, including VIS 
+Verilog models, the Texas-97 Benchmark suite, and opencores.org.
 %
 %-------------------------------------------------------------------------------
 \para{Properties}
 %-------------------------------------------------------------------------------
+%
 The safety properties are specified as System Verilog assertions (SVA).
 The properties are instrumented as assertions in the software netlist. 
 Our tool support fragment of SVA properties. Below, we present
@@ -230,38 +229,10 @@ bitvectors. \textsc{2LS} successfully solved 8 benchmarks and times
 out on four benchmarks.  \emph{CPAChecker}'s predicate abstraction reliably
 solves 7 benchmarks, but times out on two benchmarks and reports three
 wrong results. Note that none of the tools was able to prove RCU.
-We do not report the results using Astr{\'e}e since it requires manual
-directives for data and control partitioning to avoid imprecision;
-nonetheless it generates many false alarms for safe benchmarks.
+%We do not report the results using Astr{\'e}e since it requires manual
+%directives for data and control partitioning to avoid imprecision;
+%nonetheless it generates many false alarms for safe benchmarks.
 
-\para{Summary of the results} We investigated the reason for large
-number of timeouts, wrong results and errors produced by the software
-verifiers.  We observed that software netlists heavily use bit-level 
-operations and thus bit-precise reasoning ability is necessary for 
-the underlying verification engine. However, bit-level operations 
-are less prevalent in conventional software and hence less tested 
-in software analysis tools. Also, software verification tools 
-often use numerical abstractions, which are likely to lose 
-important bit-precise information.  As a consequence, 
-our results show that running conventional sotware verification 
-tools on software netlists exhibits many tool bugs (``wrong'').
-
-The abstraction and invariant inference techniques employed in
-software tools such as \emph{CPAChecker} and \emph{2LS} have never
-been optimized for hardware analysis. But the results in this paper
-show that these tools are within one order of magnitude compared to
-hardware model checkers for detecting bugs or proving safety for some
-of the software netlist models.  We thus believe that there is scope
-here for new tools that implement abstract interpretation using
-abstract domains developed specifically for this task, e.g.~by
-applying abstract conflict driven learning~\cite{dhk2013-popl}.
-
-%-------------------------------------------------------------------------------
-\para{Limitations of the Result}
-%-------------------------------------------------------------------------------
-Due to lack or absence of Verilog support in other open-source tools that
-participate in the HWMCC competition, like \emph{PdTrav}, \emph{IIMC} and 
-\emph{V3}, we could not run these tools on our benchmark suite. 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}
@@ -408,24 +379,22 @@ Vending	0.02	1.28	3.77	0.34
 Comparison of hybrid techniques
 }
 \end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%% Plot runtimes %%%%%%%%%%%%%%%%%%%%%%%
 \input{plot-runtimes}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\para{Analysis of Abstraction based tools}
 %
-\para{Analysis of the results}
-%
-%\input{table}
-\rmcmt{partition the result into bit-level and software-level}
+Figure~\ref{fig:runtimes} gives the runtime comparsion between Ultimate Automizer 
+and Astr{\'e}e.  Both tools operate on an over-approximate abstraction of the concrete
+program.  We now discuss the analysis using these abstraction based tools.
 
-\rmcmt{Best HW runtime versus Best Software runtimes}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \para{Effect of Trace partitioning for Precise analysis in Astr{\'e}e}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-\para{Sources of Imprecision:}  There can be various sources of imprecision in abstract 
-interpretation.  Few commonly known sources of imprecision may occur from  
+\para{Sources of Imprecision}  There can be various sources of imprecision in abstract 
+interpretation.  Few common sources of imprecision may occur due to   
 \emph{control-flow join}, \emph{loop widening} or use of \emph{imprecise abstract domain}.  
 We analyzed the structure of software netlist models to detect the potential sources of 
 imprecision that may occur during the analysis using Astr{\'e}e.  Recall that the software 
@@ -433,15 +402,43 @@ netlist model retains the control structure of the input RTL design.  Hence, if 
 RTL has loops or conditional branches inside a module, a software netlist also preserves the 
 similar control structure.   
 
-structure to properties 
-\rmcmt{Standard Static Analysis is Imprecise, but can we do better than bit
-blasting ?} 
+\Omit{Standard Static Analysis is Imprecise, but can we do better than bit
+blasting ? 
 
 \para{Idea} Partition the traces so that we can prove correctness for each partition.
 \para{Solution} To be effecient, we want partitions that are just precise
 enough. 
+}
+\Omit{Best HW runtime versus Best Software runtimes}
 
+\para{Summary of the results} We investigated the reason for large
+number of timeouts, wrong results and errors produced by the software
+verifiers.  We observed that software netlists heavily use bit-level 
+operations and thus bit-precise reasoning ability is necessary for 
+the underlying verification engine. However, bit-level operations 
+are less prevalent in conventional software and hence less tested 
+in software analysis tools. Also, software verification tools 
+often use numerical abstractions, which are likely to lose 
+important bit-precise information.  As a consequence, 
+our results show that running conventional sotware verification 
+tools on software netlists exhibits many tool bugs (``wrong'').
 
+The abstraction and invariant inference techniques employed in
+software tools such as \emph{CPAChecker} and \emph{2LS} have never
+been optimized for hardware analysis. But the results in this paper
+show that these tools are within one order of magnitude compared to
+hardware model checkers for detecting bugs or proving safety for some
+of the software netlist models.  We thus believe that there is scope
+here for new tools that implement abstract interpretation using
+abstract domains developed specifically for this task, e.g.~by
+applying abstract conflict driven learning~\cite{dhk2013-popl}.
+
+%-------------------------------------------------------------------------------
+\para{Limitations of the Result}
+%-------------------------------------------------------------------------------
+Due to lack or absence of Verilog support in other open-source tools that
+participate in the HWMCC competition, like \emph{PdTrav}, \emph{IIMC} and 
+\emph{V3}, we could not run these tools on our benchmark suite. 
 
 
 %===============================================================================
@@ -451,8 +448,10 @@ We present an approach to unbounded safety verification for hardware
 designs given in Verilog RTL, at the heart of which are software
 verifiers.  We present a comparison of unbounded verification
 techniques at bit-level, word-level and \emph{software netlist} level.
+
+\Omit{
 The range of software verification techniques is vast; this paper can
 thus only be an initial step.  We will evaluate further software
 verification techniques and their application to hardware property
 checking and co-verification workloads as future work.
-
+}

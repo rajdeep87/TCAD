@@ -114,6 +114,7 @@
 % ---------------------------------------------------------------------
 %\title{Formal Verification of Hardware RTL \\ Using Different Synthesized Representations} 
 \title{Moving beyond Bits and Words to Software}
+\Omit{
 \author{Rajdeep Mukherjee, 
         Peter Schrammel,
         Daniel Kroening, 
@@ -136,14 +137,14 @@
 \markboth{IEEE Transactions on Computer-Aided Design of Integrated
           Circuits And Systems, Vol. XX, No. Y, Month 2004}%
          {Mukherjee et al.: Hardware Propety Verification using Software Analyzers}
-
+}
 % Create the title
 \maketitle
 % \IEEEpeerreviewmaketitle
 
 \begin{abstract}
 A folk wisdom in formal hardware verification community is to synthesize a 
-hardware design into bit-level netlist and use propositional satisfiability 
+hardware design into bit-level netlist.  This technique uses propositional satisfiability 
 solvers (SAT) to reason about the correctness of bit-blasted verification 
 conditions generated from the netlist representation using a bounded or unbounded 
 verification algorithm.  However, most bit-level verification algorithms heavily 
@@ -166,21 +167,21 @@ technologies inlcuding abstract interpretation techniques which was never applie
 RTL verification.  
 %
 This paper experimentally evaluates formal RTL verification 
-%formal verification of hardware design expressed in Verilog Register Transfer Level (RTL) 
 at different levels of granularity -- \emph{bit-level}, \emph{word-level} and \emph{software-level}.  
 To this end, we present an emperical evaluation of various unbounded formal 
-verification algorithms such as predicate abstraction, $k$-induction, 
-interpolation, IC3/PDR and Abstract Interpretation; and we compare the performance 
+verification algorithms such as Predicate Abstraction, $k$-induction, 
+Interpolation, IC3/PDR and Abstract Interpretation; and we compare the performance 
 of verification tools from the Software Verification Competition (SV-COMP'16) and 
 Hardware Model Checking Competition (HWMCC'16) that use these techniques.  
 Our benchmarks are drawn from real world hardware benchmark suite, such as 
 VIS verilog models, the Texas-97 Benchmark suite, Hardware Model Checking 
-Competition 2015, and opencores.org. Experimental evaluation suggests that 
-SAT-based software verification tools can be successfully used for RTL 
-verification but they are \rmcmt{1.5X} slower compared to bit-level hardware model checker
-because they are never optimized for hardware designs.  On the contrary, 
-the runtimes of state-of-the-art abstract interpretation tool, Astr{\'e}e, are comparable to 
-bit-level harware tools. 
+Competition 2015, and opencores.org.  Though software verifiers are never 
+optimized for RTL verification, experimental evaluation suggests that 
+SAT/SMT-based software verification tools are within one order of magnitude 
+compared to the bit-level hardware model checkers.  However, the performance 
+of abstraction based software verification techniques, such abstract 
+interpretation and automata-theoretic trace abstractions, are comparable 
+to bit-level harware tools. 
 \end{abstract}
 
 \begin{IEEEkeywords}

@@ -4,16 +4,14 @@ The consistency between two designs can be established in several ways.
 For example, few common notion of consistency criteria are \emph{behavioral}, 
 \emph{cycle-accurate}, \emph{non-cycle accurate} or \emph{functional}
 consistency.  The consistency between a reference model and an implementation
-model is performed through systematic equivalence checking~\cite{}.  Equivalence
-checking between a timed and untimed model is a hard
-problem~\cite{}.  Sequential equivalence checking techniques are used to check 
-the equivalence between an asynchronous event driven semantics of C and synchronous 
-clock driven semantics of Verilog~\cite{}.
+model is performed through systematic equivalence checking~\cite{CKY03,DBLP:conf/date/KoelblJJP09,DBLP:journals/tcad/StoffelK04,DBLP:conf/date/Eijk98,DBLP:conf/iccd/BaumgartnerMPKJ06}.  Equivalence checking between a timed and untimed model is a hard
+problem~\cite{kuehlmann2002combinational}.  Sequential equivalence checking techniques 
+are used to check the equivalence between an asynchronous event driven semantics of C and synchronous 
+clock driven semantics of Verilog~\cite{CKY03, DBLP:conf/iccd/BaumgartnerMPKJ06}.
 
 
 %%%%%%%%%%%%%%%%%% CYCLE ACCURATE EQUIVALENCE %%%%%%%%%%%%%%%%%
-Two designs are said to be \emph{cycle-accurate-equivalent}~\cite{cycle} \rmcmt{more
-reference} if they produce the same output using the same number of clock cycles.   
+Two designs are said to be \emph{cycle-accurate-equivalent}~\cite{cycle,kuehlmann2002combinational} if they produce the same output using the same number of clock cycles.   
 
 %%%%%%%%%%%%%%%%%% NON-CYCLE ACCURATE EQUIVALENCE %%%%%%%%%%%%%%%%%
 Whereas, two designs are \emph{not cycle-accurate-equivalent}~\cite{cycle} if they require 
@@ -218,10 +216,10 @@ int main()
 %%%%%%%%%%%%%%%%%% LTL Semantics to C %%%%%%%%%%%%%%%%%
 \para{Properties}
 %
-In this paper, we used System Verilog Assertions to express properties about 
-the RTL design that we are interested to verify.  The SVA properties are translated 
-into an intemediate Linear Temporal Logic (LTL)~\cite{} representation.  
-LTL is a modal logic that is commonly used to reason about a hardware 
+In this paper, we used System Verilog Assertions to express properties of 
+RTL design that we are interested to verify.  The SVA properties are translated 
+into an intemediate Linear Temporal Logic (LTL)~\cite{DBLP:journals/jacm/SistlaC85} 
+representation.  LTL is a modal logic that is commonly used to reason about a hardware 
 transition system.  The modalities in LTL refers to
 temporal operators like $G$ (global), $F$ (eventaul), $X$ (next) and $U$
 (until).  An LTL formula may contain propositional symbols, boolean or temporal

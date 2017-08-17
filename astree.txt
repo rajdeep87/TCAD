@@ -1,0 +1,57 @@
+The imprecision can occur due to insufficient loop unrolling, array smashing as well as from control-flow joins
+
+
+although one can theoretically get an arbitrary high precision by partitioning such that all relevant (or in the extreme: possible) execution paths are considered separately, that is not feasible in practice considering the analysis times. Hence, as you outlined, the trick is to find the "right" partitioning that is as imprecise as possible, but can still show the desired result. This is a challenging task. Astrée does not collect data about state-space coverage of variables to help you find a good partitioning. I can, however, offer you to have look at your analysis in order to check whether a different partitioning would enable the analysis to prove more of the properties that you are seeking to verify. Just send me an ".aaf"-export of your analysis project in such cases.
+
+There is no dedicated abstract domain for bit-wise operations available to Astrée. So the analyser has to rely on value intervals, modulo information, and relations (see Chapter "10.1.3.21 relational" of the user manual for a brief list of traceable relations).
+
+If you activate the partitioning option, Astrée will automatically insert __ASTREE_partition_control directives according to a set of heuristics. A subset of which can be explicitly (de-)activated under the advanced menu of said option. Astrée does not partition "everything" if this option is activated as this would in practice be too costly. Such a high precision is also normally not required for a runtime error analysis. With Astrée, you would normally start with just the partitioning heuristics and manually add partitioning directives in places where false alarms occur due to a loss of precision resulting from merging data-flow information of several control-flow paths (traces).
+
+ Astrée did have such a feature that printed hints where/what could be annotated to prevent false alarms (by backward slicing from an alarm to check whether smashed arrays or non-unrolled loops influenced the analysis result). 
+
+Now, there are two manual partition strategy that one can use in Astree to recover from precision loss.
+1> control-flow partition
+2> partition over all relevant variable values
+
+Could you please give an example for specifying partition over variable values in Astree and 
+how one can write such partition directives efficiently. For example, if there is a variable called "mode"
+in the program and assuming it can take a value between 1 to 5, then one way I can write such partition
+is by using __ASTREE_known_facts((mode==1)); , __ASTREE_known_facts((mode==2)); etc. 
+But how to keep the program traces separate for each value of mode is the question? Do I need separate
+Astree runs for each value of mode?
+
+Regarding the control-flow partition, can we use multiple __ASTREE_partition_begin __ASTREE_partition_end
+block in the same program depending on which block of code requires more precise analysis. Also, the directive
+__ASTREE_partition_control can be used to split traces and merge them only after the assertion. For example, 
+for the code below, what would happen when __ASTREE_partition_control directive is inside a while loop? 
+Does it merge after all the loop iterations or after every loop iterations?
+
+L1: x=0, y=0;
+L2: while(1) {
+L3: __ASTREE_partition_control 
+L4: if(x > 0)
+L5:  y = x+y;
+L6: else 
+L7:  y = 1;
+L8: assert(y>=0);
+L9: } 
+
+> Do I need separate Astree runs for each value of mode?
+
+No, Astrée can analyze all traces in one run. In your example, you could use __ASTREE_partition_begin((mode)); to tell Astrée to keep all five traces for all five possible values of mode apart until the next merge point (i.e., the end of a function, a loop, a sub-statement or a merge directive). This of course requires Astrée to "know" that mode is in [1;5].
+
+You find examples and more detailed explanations regarding the partitioning over variable values in Section 8.10.1.6 of the user manual.
+
+> Does it merge after all the loop iterations or after every loop iterations?
+
+Information is merged after every loop iteration.
+
+You can also use multiple, even nested partitioning directives. The analysis times may of course drastically increase if you create too many partitions. 
+
+5> If my program has lot of bitwise operations like shifting and bit manipulation, which domain is normally activated to handle these stuffs. 
+This is covered by the default (i.e. always active) domains for integer values: interval domain (intv), integer congruences (congruence), integer bitfields (bitfield), and finite sets (of possible values; set).
+
+6> For the simple program below I need to specify unroll bound to avoid false alarm. In fact, for most of the programs, bounded loops always need to 
+   be unrolled in Astree to avoid false alarms. Is there any other way I can partition the simple program below  and avoid explicit unrolling of loops always. 
+
+Report in the paper abstract domains that are used by Astree

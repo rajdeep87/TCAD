@@ -26,7 +26,8 @@ and most prevelant format used by majority of verification tools.
 
 
 Whereas, the middle flow of figure~\ref{fig:toolflow} shows the 
-word-level verification using the tool \ebmc~\footnote{\scriptsize{www.cprover.org/hardware/ebmc}}. 
+word-level verification using the tool 
+\ebmc~\footnote{\scriptsize{www.cprover.org/hardware/ebmc}}. 
 \ebmc supports IEEE 1364.1 Verilog 2005, and synthesize it to a bit-level 
 netlist represented in AIGER or a word-level netlist represented in 
 SMT-LIB2 format.  The top flow of figure~\ref{fig:toolflow} shows a
@@ -169,9 +170,22 @@ int monitor_p2() {
 %-------------------------------------------------------------------------------
 \para{Discussion}
 %-------------------------------------------------------------------------------
+We classify the analysis results into two categories -- 1) \emph{precise} tools 
+that do not use any abstraction (in section~\ref{precise}), and \emph{abstraction} 
+based tools that use approximate analysis (in section~\ref{abstraction}). 
+%
+\subsection{Analysis Using Precise tools}~\label{precise}
+%
 Figures~\ref{fig:kind}--\ref{fig:hybrid} report the comparison of various unbounded 
 verification techniques employed by verification tools at bit-level, word-level, 
-and software-level.  We categorize the approaches into three classes:
+and software-level.  The plots in these figures reports the runtimes of~12 
+representative circuits which are most difficult to solve out of a total 40 
+circuits.  Note that \ABC does not implement word-level verification flow, 
+so we perform word-level verification using our in-house tool \ebmc.
+Figures~\ref{fig:kind}--\ref{fig:hybrid} reports the best runtimes 
+among the bit-level and word-level hardware verification tools.  
+%
+We categorize the unbounded approaches into three classes:
 \begin{compactitem}
 \item $k$-induction (Figure~\ref{fig:kind})
 \item interpolation (Figure~\ref{fig:impact}), and 
@@ -229,6 +243,12 @@ bitvectors. \textsc{2LS} successfully solved 8 benchmarks and times
 out on four benchmarks.  \emph{CPAChecker}'s predicate abstraction reliably
 solves 7 benchmarks, but times out on two benchmarks and reports three
 wrong results. Note that none of the tools was able to prove RCU.
+
+The bit-level hardware tools performed better than word-level hardware 
+verification in all cases.  So, we only report the bit-level results 
+obtained using \ABC in Figures~\ref{fig:kind}--\ref{fig:hybrid}.
+
+
 %We do not report the results using Astr{\'e}e since it requires manual
 %directives for data and control partitioning to avoid imprecision;
 %nonetheless it generates many false alarms for safe benchmarks.

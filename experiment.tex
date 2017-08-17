@@ -78,14 +78,17 @@ verification tools are uploaded to a publicly accessible archive website.
 \para{Benchmarks}
 %===============================================================================
 %
-We target two different classes of circuits: data-path intensive
+We verified a total of 40 circuits given in Verilog RTL.  Out of 40, 27 
+are \emph{safe} benchmarks and 13 are \emph{unsafe}.  The benchmarks in 
+our paper are derived from real world hardware benchmark suites, including 
+VIS Verilog models, the Texas-97 Benchmark suite, and opencores.org. We synthesize 
+each benchmarks into three different netlist formats -- AIGER, SMT-LIB2, ANSI-C.
+We classify our benchmarks into two different classes -- data-path intensive
 circuits, including Huffman encoder/decoder and a Digital Audio
 Input-Output chip (DAIO); and control-intensive designs,
 including a non-pipelined 3-stage processor, a Read-Copy-update
 mutual exclusion protocol, a FIFO controller, a buffer allocation model,
-and an instruction queue controller.  The benchmarks in our paper 
-are derived from real world hardware benchmark suites, including VIS 
-Verilog models, the Texas-97 Benchmark suite, and opencores.org.
+and an instruction queue controller.   
 %
 %-------------------------------------------------------------------------------
 \para{Properties}
@@ -171,8 +174,9 @@ int monitor_p2() {
 \para{Discussion}
 %-------------------------------------------------------------------------------
 We classify the analysis results into two categories -- 1) \emph{precise} tools 
-that do not use any abstraction (in section~\ref{precise}), and \emph{abstraction} 
-based tools that use approximate analysis (in section~\ref{abstraction}). 
+that do not use any abstraction and performs precise reasoning using SAT/SMT solvers 
+(in section~\ref{precise}), and \emph{abstraction} based tools that performs 
+approximate analysis without using SAT/SMT solvers (in section~\ref{abstraction}). 
 %
 \subsection{Analysis Using Precise tools}~\label{precise}
 %
@@ -402,18 +406,80 @@ Comparison of hybrid techniques
 %%%%%%%%%%%%%%%%%%% Plot runtimes %%%%%%%%%%%%%%%%%%%%%%%
 \input{plot-runtimes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Analysis Using Abstraction based tools}
+\subsection{Analysis Using Abstraction based tools}~\label{abstraction}
 %
-Figure~\ref{fig:runtimes} gives the runtime comparsion between Ultimate Automizer 
-and Astr{\'e}e.  Both tools operate on an over-approximate abstraction of the concrete
-program.  We now discuss the analysis using these abstraction based tools.
+Figure~\ref{fig:runtimes} gives the runtime comparsion between UltimateAutomizer 
+and Astr{\'e}e.  Both tools operate on an over-approximate abstraction of the 
+concrete program.  
+Astr{\'e}e performed better than UltimateAutomizer for the unsafe benchmarks.
+For safe benchmarks that are hard to proof, UltimateAutomizer was able to infer 
+the necessary invariants required to prove the property within feasible time 
+while Astr{\'e}e either timed out or was too imprecise to prove the property. 
+
+We now discuss the analysis using these abstraction based tools.
+
+\para{Abstract Interpretation Using Astr{\'e}e}
+%
+Astr{\'e}e~\ref{DBLP:conf/esop/CousotCFMMMR05} is a commercial abstract 
+interpretation tool developed by AbsInt~\footnote{https://www.absint.com/}.  
+It is primarily used for static analysis of safety-critical softwares 
+such as avionics software~\ref{DBLP:journals/corr/abs-cs-0701193}.
+Astr{\'e}e employs numeric abstract domains, such as intervals that  
+abstract variable values as ranges, as well as relational domains that  
+infer linear relationships between variables. These abstractions are  
+well-suited for programs performing integer and float arithmetic, but  
+less so for bit-level Boolean operators, bit-shifts, and bitfields  
+packing several values in words. Moreover, Astr{\'e}e features BDD-based  
+abstract domains that can represent non-convex invariants, but they  
+are currently limited to Boolean variables and cannot perform  
+bit-blasting on integer variables.  Many inductive invariants required  
+by the benchmarks cannot be represented, and so not inferred, using 
+current abstractions in Astr{\'e}e.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\para{Effect of Trace partitioning for Precise analysis in Astr{\'e}e}
+%\para{Effect of Trace partitioning for Precise analysis in Astr{\'e}e}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-\para{Sources of Imprecision}  There can be various sources of imprecision in abstract 
+\para{Handling Imprecision in Astr{\'e}e}
+%
+Given that many abstract domains can only represent convex  
+(non-disjunctive) numeric properties, control-flow joins and loop  
+widening are a major cause of precision loss.  Astr{\'e}e partially  
+alleviates the problem through BDD-based domains and 
+trace-partitioning~\cite{DBLP:journals/toplas/RivalM07}
+(providing a level of path-sensitivity). To prevent scalability issues, 
+these costly techniques are enabled locally, through automatic heuristics 
+or user guidance. We ran the analysis using the existing heuristics that 
+target automatically-generated software netlist obtained from \textsc{v2c}. 
+
+
+With trace partitioning, Astr{\'e}e automatically insert 
+\texttt{\_\_ASTREE\_partition\_control} directives according to a set of 
+heuristics.  Astr{\'e}e does not partition ``everything" since this would 
+be too expensive in practise. Such a high precision is also normally not 
+required for a runtime error analysis. Astr{\'e}e normally start with exisitng 
+partitioning heuristics and manually add partitioning directives in places 
+where false alarms occur due to a loss of precision resulting from merging 
+data-flow information of several control-flow paths (traces).
+There are two manual partitioning strategies in Astr{\'e}e - 
+1) control-flow partition and 2) partition over all relevant variable values.
+
+
+A classic example of control partitioning is to analyze each branches of a 
+control-flow path separately so as to prevent joins at the control-flow merge 
+point.  An example of variable partitioning is as follows. Consider a variable 
+named \texttt{mode} that can assume values between 1 and 5.  A partitioning directive 
+\texttt{\_\_ASTREE\_partition\_begin((mode));} tells Astr{\'e}e to keep all 
+five traces for all five possible values of mode apart 
+until the next merge point (i.e., the end of a function, a loop, a sub-statement 
+or a merge directive). This of course requires Astr{\'e}e to know that mode is 
+in the range $[1;5]$.
+
+
+
+\Omit{
+There can be various sources of imprecision in abstract 
 interpretation.  Few common sources of imprecision may occur due to   
 \emph{control-flow join}, \emph{loop widening} or use of \emph{imprecise abstract domain}.  
 We analyzed the structure of software netlist models to detect the potential sources of 
@@ -421,6 +487,10 @@ imprecision that may occur during the analysis using Astr{\'e}e.  Recall that th
 netlist model retains the control structure of the input RTL design.  Hence, if the original 
 RTL has loops or conditional branches inside a module, a software netlist also preserves the 
 similar control structure.   
+}
+
+
+
 
 \Omit{Standard Static Analysis is Imprecise, but can we do better than bit
 blasting ? 
@@ -431,14 +501,13 @@ enough.
 }
 \Omit{Best HW runtime versus Best Software runtimes}
 
-\Omit{
 \para{Summary of the results} We investigated the reason for large
 number of timeouts, wrong results and errors produced by the software
 verifiers.  We observed that software netlists heavily use bit-level 
 operations and thus bit-precise reasoning ability is necessary for 
 the underlying verification engine. However, bit-level operations 
 are less prevalent in conventional software and hence less tested 
-in software analysis tools. Also, software verification tools 
+in software analysis tools. Also, abstract interpretation based tools 
 often use numerical abstractions, which are likely to lose 
 important bit-precise information.  As a consequence, 
 our results show that running conventional sotware verification 
@@ -449,10 +518,12 @@ software tools such as \emph{CPAChecker} and \emph{2LS} have never
 been optimized for hardware analysis. But the results in this paper
 show that these tools are within one order of magnitude compared to
 hardware model checkers for detecting bugs or proving safety for some
-of the software netlist models.  We thus believe that there is scope
+of the software netlist models.  
+\rmcmt{
+We thus believe that there is scope
 here for new tools that implement abstract interpretation using
 abstract domains developed specifically for this task, e.g.~by
-applying abstract conflict driven learning~\cite{dhk2013-popl}.
+applying abstract conflict driven learning~\cite{dhk2013-popl}.}
 
 %-------------------------------------------------------------------------------
 \para{Limitations of the Result}
@@ -460,7 +531,7 @@ applying abstract conflict driven learning~\cite{dhk2013-popl}.
 Due to lack or absence of Verilog support in other open-source tools that
 participate in the HWMCC competition, like \emph{PdTrav}, \emph{IIMC} and 
 \emph{V3}, we could not run these tools on our benchmark suite. 
-}
+
 
 %===============================================================================
 \section{Conclusions}

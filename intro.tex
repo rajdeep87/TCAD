@@ -7,33 +7,44 @@
 \caption{Conventional flow for hardware property verification\label{fig:desc}}
 \end{figure}
 %
-\para{Design representation} Given a hardware design in Verilog RTL, formal
-verification tools use different internal representations for the design, at 
-differing levels of design granularity: \emph{bit level}, \emph{word level}, 
-\emph{term level} or \emph{software level}.  Figure~\ref{fig:desc} lists 
-some of the design representations commonly used.  
 
-\Omit{
-Most formal verification 
-tools for hardware~\cite{abc,DBLP:conf/fmcad/BradleyM07,vis} synthesize
-the input design into a bit-level netlist, typically represented as
-\emph{AIG}, and stored in formats such as \emph{BLIF}, \emph{EDIF},
-\emph{PLA} or \emph{BAF}.  This approach misses the opportunity to exploit
-the word-level structure of the input RTL design.  Tools based on word-level
-representations may use \emph{BTOR} or another intermediate word-level
-format, which enables the use of word-level decision procedures, such as 
-Satisfiability Modulo Theory (SMT) solvers, in the back-end of these tools.  
-UCLID~\cite{uclid} uses term-level models represented in its custom CLU 
+Early tools for formal property checking of hardware converted the design 
+given in Verilog or VHDL at register transfer level into a bit-level netlist, 
+typically represented using And-Inverter graphs (AIGs) and stored in formats 
+such as \emph{BLIF}, \emph{EDIF},\emph{PLA} or \emph{BAF}.  This approach misses 
+the opportunity to 
+exploit the word-level structure of designs given at the RTL.  
+Tools based on word-level representation of the transition 
+relation may synthesize the RTL into \emph{BTOR} or SMT-LIB format.  
+This change in the representation has enabled the use of modern solvers for
+Satisfiability Modulo Theories (SMT)~\cite{decision_procedures} in the
+back-end of the tools~\cite{DBLP:conf/lpar/AndrausLS08,soc-keating,DBLP:conf/mtv/SunkariCVM07,DBLP:conf/cav/Bjesse08}.  
+The performance of word-level symbolic execution
+engines is determined by the level of abstraction of the symbolic
+expressions and the power of the rewrite engine used by the SMT solvers. 
+Tools implementing this approach scale up to block level or small IP
+level~\cite{soc-keating,DBLP:conf/mtv/SunkariCVM07},
+for example, a FIFO controller or transceiver/receiver of a USB IP.  They
+generally do not scale to large IPs, subsystems, or full SoCs.
+Tools based on term-level synthesis, such as 
+UCLID~\cite{uclid}, uses term-level models represented in its custom CLU 
 language, which are obtained from the word-level RTL description by 
 data-path abstraction and abstracting functional blocks by uninterpreted 
 functions.  The generated partially interpreted term-level abstract model 
-is then solved using SMT solvers.  The work of~\cite{mkm2015} presents a 
-bounded safety verification framework for complex hardware design at 
-different levels of granularity: word level, Netlist/AIGs and bit-precise 
-software models.
-}
-A survey of bounded and unbounded SAT-based hardware model checking techniques 
-is proposed in~\cite{charme05}.
+is then solved using SMT solvers.  Figure~\ref{fig:desc} gives a hardware 
+property verification flow. 
+
+Consider Bounded Model Checking (BMC) as an exemplar of the way
+contemporary formal verifiers for hardware work (Figure~\ref{fig:desc}). 
+The input Verilog design is first translated into a transition
+relation at register-transfer level, in which one transition 
+corresponds to one clock cycle.  The transition relation for a system 
+and its specification are jointly unwound up to a user-defined depth to 
+form a word-level formula.  This formula is then given to a 
+suitable SMT solver. If the formula is determined to be satisfiable, 
+then there is a bug and the verifier extracts a trace of the circuit leading to
+the bug from the satisfying assignment.  
+
 
 
 
@@ -44,11 +55,25 @@ Our previous works~\cite{mkm2015,mskm2016,mtk2016} present preliminary results
 for bounded and unbounded safety verification of RTL using software verifiers.  
 The results presented in these works were restricted to a smaller set of 
 benchmarks and fewer application of verification tools.  However, this paper 
-presents a more detailed analysis of a range of precise and abstraction based 
-software verification tools on a wide variety of circuits for the purposes of 
-RTL verification.  Also, this paper presents a formal notion of equivalence 
-between a RTL and software netlist model. 
-%In this paper, we present an unified framework for RTL verification by synthesizing 
-%them to different netlist representations at -- bit, word and software level. We 
-%also present an extensive experimental evaluation of the proposed verification flow 
-%on a total of \rmcmt{41} benchmarks obtained from various sources.
+present a formal description of algorithms used by various bounded and unbounded 
+verification engines and a more detailed analysis of a range of precise and 
+abstraction based software verification tools on a wide variety of circuits 
+drawn from various sources.  This paper also present a formal notion 
+of equivalence between a RTL and software netlist model for the purposes 
+of RTL verification. 
+
+
+The natural software language for our representation is C, so
+our approach bears some resemblance to methods for verifying system-level or
+transaction-level descriptions of hardware written in C/C++ or SystemC.  Of
+course the idea of raising the level of abstraction above RTL by expressing designs in software
+has been
+widely advocated already---we will mention only~\cite{soc-keating}, which
+highlights verification-related benefits in the context of SoC design.  But we
+emphasise that these abstract models are usually written \emph{manually} and are 
+expensive to maintain---and often disconnected from a 'golden' RTL design model from
+which the chip is ultimately realised.  Our method, by contrast, 
+aims at a fully automatic verification technique for existing Verilog RTL, expressed at
+the register-transfer level of abstraction.
+
+

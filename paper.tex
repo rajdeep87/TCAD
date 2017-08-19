@@ -151,34 +151,45 @@ An alternative approach is to synthesize a design into word-level netlist which
 is then solved using a Satisfiability Modulo Theory (SMT) solver.  However, 
 word-level verification flow has not seen much adoption in commercial EDA tools 
 due to the performance bottleneck of word-level SMT solvers.  The tight coupling 
-between verification procedure and SAT/SMT solvers often limits the scalability 
+between the verification algorithm and SAT/SMT solvers often limits the scalability 
 of these tools.   
 %
 
 
 In this paper, we present a novel formal verification flow that synthesize a 
 Register Transfer Level (RTL) design into a software like representation and 
-expressed in ANSI-C, which we call \emph{software netlist}. 
+expressed in ANSI-C. We call this \emph{software netlist}. 
 The software netlist representation allows us to leverage various software verification 
 technologies inlcuding abstract interpretation techniques which was never applied to 
 RTL verification.  
 %
+
+	
 This paper experimentally evaluates formal RTL verification 
-at different levels of granularity -- \emph{bit-level}, \emph{word-level} and \emph{software-level}.  
+at different levels of granularity -- \emph{bit-level}, \emph{word-level} 
+and \emph{software-level}.  
 To this end, we present an emperical evaluation of various unbounded formal 
 verification algorithms such as Predicate Abstraction, $k$-induction, 
 Interpolation, IC3/PDR and Abstract Interpretation; and we compare the performance 
 of verification tools from the Software Verification Competition (SV-COMP'16) and 
 Hardware Model Checking Competition (HWMCC'16) that use these techniques.  
-Our benchmarks are drawn from real world hardware benchmark suite, such as 
-VIS verilog models, the Texas-97 Benchmark suite, Hardware Model Checking 
-Competition 2015, and opencores.org.  Though software verifiers are never 
-optimized for RTL verification, experimental evaluation suggests that 
-SAT/SMT-based software verification tools are within one order of magnitude 
-compared to the bit-level hardware model checkers.  However, the performance 
-of abstraction based software verification techniques, such abstract 
-interpretation and automata-theoretic trace abstractions, are comparable 
-to bit-level harware tools. 
+%Our benchmarks are drawn from real world hardware benchmark suite, such as 
+%VIS verilog models, the Texas-97 Benchmark suite, Hardware Model Checking 
+%Competition 2015, and opencores.org.  
+	
+Though software verifiers are never optimized for RTL verification, 
+experimental evaluation on a range of benchmarks suggests that the 
+software verification techniques can be successfully used for bounded 
+and unbounded RTL verification. The runtimes of SAT/SMT-based software 
+verification tools are within one order of magnitude compared to the 
+bit-level hardware model checkers.  However, abstraction based software 
+verification techniques, such as abstract interpretation and 
+automata-theoretic program verification, though operate 
+on an overapproximate representation and hence less precise, but the runtimes
+of these tools are comparable to bit-level harware tools.  To the best of our 
+knowledge, this is the first exhaustive analysis of most state-of-the-art 
+verification techniques employed by verification tools from HWMCC and SV-COMP
+for the purposes of RTL verification. 
 \end{abstract}
 
 \begin{IEEEkeywords}

@@ -7,15 +7,33 @@ This section briefly describes various netlist formats at -- \emph{bit-level},
 %
 %
 \subsection{Bit-level Synthesis}
-A bit-level netlist is typically represented in \emph{AIG} (And-Inverter Graph), 
-and stored in formats such as \emph{AIGER}, \emph{BLIF}, 
-\emph{EDIF}, \emph{PLA} or \emph{BAF}.  This approach misses 
-the opportunity to exploit the word-level structure of the 
-input RTL design.  
+A bit-level netlist is typically represented in \emph{AIG} 
+(And-Inverter Graph), and stored in formats such as 
+\emph{AIGER}, \emph{BLIF}, \emph{EDIF}, \emph{PLA} or \emph{BAF}.  
+This approach misses the opportunity to exploit the word-level 
+structure of the input RTL design.  The netlist captures the 
+effect of one clock period on the state-holding elements.  The 
+netlist consists of a network of and-gates, inverters, and memory 
+elements referred to as registers.
 
 \subsection{Word-level Synthesis}
-A word-level netlist is typically represented in \emph{BTOR} or 
-some word-level format that resembles SMT-LIB language~\footnote{http://smtlib.cs.uiowa.edu/}.  
+Word-level reasoning engines have motivated the use of word-level
+representations for the transition
+relation~\cite{DBLP:conf/mtv/SunkariCVM07,soc-keating}. The use of the term
+``word'' refers to a \textit{bit-vector} encoding of the registers 
+wires, rather than representing them as individual bits.  
+\Omit{
+Consider the Verilog example in the left-hand column of
+Figure~\ref{figure:word}.  The circuit has two state-holding registers, each
+of four bits.  Thus, two next-state functions are generated, denoted by $x'$
+and $y'$.  The branching in the input Verilog program yields expressions
+with the $ite$ operator.  
+}
+As in the case of the netlist-based transition relation, the word-level 
+transition relation encodes the effect of one clock period on the 
+state-holding elements. A word-level netlist is typically represented 
+in \emph{BTOR} or some word-level format that resembles SMT-LIB 
+language~\footnote{http://smtlib.cs.uiowa.edu/}.  
 This enables the use of word-level decision procedures, such as 
 Satisfiability Modulo Theory (SMT) solvers, in the back-end of these tools.  
 
@@ -32,7 +50,7 @@ solved using SMT solvers.
 \subsection{Software-level Synthesis}
 Most recently, synthesis of RTL to a software program is presented 
 in our previous works~\cite{mkm2015,mtk2016}.  This new flow enables application 
-of classical software verification techniques like abstract interpretation, path-based 
+of classical software verification techniques such as abstract interpretation, path-based 
 symbolic execution and others, which has never been applied to RTL verification.  
 In the subsequent section, we describe the synthesis of software netlist 
 from hardware RTL in details.     

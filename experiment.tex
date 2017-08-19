@@ -411,17 +411,22 @@ Comparison of hybrid techniques
 Figure~\ref{fig:runtimes} gives the runtime comparsion between UltimateAutomizer 
 and Astr{\'e}e.  Both tools operate on an over-approximate abstraction of the 
 concrete program.  
-Astr{\'e}e performed better than UltimateAutomizer for the unsafe benchmarks.
+
 For safe benchmarks that are hard to proof, UltimateAutomizer was able to infer 
 the necessary invariants required to prove the property within feasible time 
 while Astr{\'e}e either timed out or was too imprecise to prove the property. 
 \rmcmt{comparision with ABC, quantitative comparison}
 
-Astr{\'e}e reported false alarm for 7 benchmarks out of 35. All these 7 benchmarks 
-are safe.  We investigate the reason for the false alarm and observe that the 
-bit manipulating nature of these programs prevent Astr{\'e} from inferring the 
-necessary invariants required to prove the property using the existing set of 
-abstract domains.
+Astr{\'e}e reported a total of 7 false alarm out of 35 benchmarks.  
+We investigate the reason for the false alarm and observe 
+that the bit manipulating nature of these programs prevent Astr{\'e} from 
+inferring the necessary invariants required to prove the property using the 
+existing set of abstract domains.  Whereas, UltimateAutomizer timed out in~14 
+out of 30 benchmarks. For safe benchmarks that are hard to proof, UltimateAutomizer 
+was able to infer the necessary invariants required to prove the property within 
+feasible time, while Astr{\'e}e was too imprecise to prove the property. 
+Astr{\'e}e performed better than UltimateAutomizer for the unsafe benchmarks.  
+Astr{\'e}e reported bugs in all 8 unsafe benchmarks. 
 
 
 We now discuss the analysis using these abstraction based tools.

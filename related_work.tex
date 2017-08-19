@@ -12,3 +12,81 @@
 %      Software verification Literature
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Table~\ref{timeline} provides a summary of technology transfer between the 
+hardware verification community and software verification community over the past 
+two decades.  The table provides the reference to the very first technique proposed 
+in the literature in either community but there are subsequent works that
+follows up from these.  For example, techniques like predicate abstraction, 
+IC3 or Property Directed Reachability (PDR), $k$-induction, and 
+interpolation-based approaches have all made their way from the hardware 
+to the software domain; but path-wise symbolic execution and abstract 
+interpretation have been primarily used for software verification.
+%
+\begin{table}[]
+\centering
+\scriptsize
+\caption{Technology transfer between the Hardware and Software Verification Community}
+\label{timeline}
+\begin{tabular}{p{0.2\textwidth}|p{0.2\textwidth}}
+\toprule
+  Hardware Verification & Software Verification \\
+  \midrule
+  \begin{itemize}
+  \item Symbolic Model Checking without BDDs 
+    by Biere et. al.~\cite{tacas99}, 1999
+\end{itemize}
+ & 
+ \begin{itemize}
+  \item Model Checking for finite state concurrent systems by Clarke et
+    al.~\cite{clarke86}, 1986
+  \item Symbolic Model Checking by McMillan et. al.~\cite{mcmillan96}, 1996
+\end{itemize} \\ \hline
+
+ \begin{itemize}
+ \item Predicate Abstraction by Graf et. al.~\cite{cav97}, 1997
+ \item CEGAR in SMV for verifying Fujitsu IP core by Clarke et.
+   al.~\cite{cav2000}, 2000 
+ %\item CEGAR for Verilog by Kroening et. al.~\cite{tacas07}, 2007
+ \end{itemize}
+  &
+  \begin{itemize}
+    \item Predicate Abstraction for C program by Ball et. al.~\cite{pldi01},
+      2001
+    \item SLAM project by Ball et. al.~\cite{popl02}, 2002
+  \end{itemize} \\ \hline
+ 
+  \begin{itemize}
+    \item Checking safety properties using Induction and SAT solver by
+      St$\mathring{\text{a}}$lmarck et. al.~\cite{fmcad2000}, 2000
+   \end{itemize}
+   & 
+   \begin{itemize}
+     \item Automatic analysis of scratch-pad memory code for heterogeneous
+       multicore processors by Donaldson et. al.~\cite{tacas10}, 2010
+     \item Software verification using k-induction by Donaldson et.
+       al.~\cite{sas2011}, 2011
+   \end{itemize} \\ \hline
+   
+   \begin{itemize}
+     \item Interpolation and SAT-based model checking for verifying commercial
+       microprocessor by McMillan et. al.~\cite{cav03}, 2003
+   \end{itemize}
+   & 
+   \begin{itemize}
+     \item Lazy abstraction with interpolants by McMillan et. al.~\cite{cav06}, 2006
+     \item Interpolation based software verification with Wolverine by Kroening
+       et. al.~\cite{cav11}, 2011
+   \end{itemize} \\ \hline
+   
+   \begin{itemize}
+     \item Checking safety by inductive generalizations of counterexample to
+       induction by Bradley et. al.~\cite{fmcad07}, 2007
+   \end{itemize}
+   &
+   \begin{itemize}
+    \item Software Model Checking via IC3 by Cimatti et. al.~\cite{cav12ic3}, 2012
+   \end{itemize} \\ \hline
+\bottomrule
+\end{tabular}
+\end{table}
+%

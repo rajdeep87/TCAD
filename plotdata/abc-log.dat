@@ -1,0 +1,84 @@
+Starting to processing 139442p0/main.aig at Thu 10 Aug 06:10:10 BST 2017
+Property proved.  Time =     0.22 sec
+runsolver_cputime: 0.258761
+Starting to processing 6s33/main.aig at Thu 10 Aug 06:10:10 BST 2017
+runsolver_cputime: 3589.47
+Starting to processing Arbiter/main.aig at Thu 10 Aug 07:10:12 BST 2017
+Output 0 of miter "main" was asserted in frame 0.  Time =     0.01 sec
+runsolver_cputime: 0.05212
+Starting to processing b02/main.aig at Thu 10 Aug 07:10:12 BST 2017
+runsolver_cputime: 0.038561
+Starting to processing b03/main.aig at Thu 10 Aug 07:10:12 BST 2017
+Property proved.  Time =     0.02 sec
+runsolver_cputime: 0.056408
+Starting to processing b06/main.aig at Thu 10 Aug 07:10:12 BST 2017
+Property proved.  Time =     0.01 sec
+runsolver_cputime: 0.051549
+Starting to processing b07/main.aig at Thu 10 Aug 07:10:12 BST 2017
+Property proved.  Time =     0.01 sec
+runsolver_cputime: 0.051195
+Starting to processing b08/main.aig at Thu 10 Aug 07:10:12 BST 2017
+Property proved.  Time =     0.01 sec
+runsolver_cputime: 0.051017
+Starting to processing BufAl/main.aig at Thu 10 Aug 07:10:12 BST 2017
+Output 1 of miter "main" was asserted in frame 0.  Time =     0.01 sec
+runsolver_cputime: 0.049248
+Starting to processing CRC/main.aig at Thu 10 Aug 07:10:12 BST 2017
+runsolver_cputime: 0.038745
+Starting to processing DAIO/main.aig at Thu 10 Aug 07:10:12 BST 2017
+Property proved.  Time =     0.01 sec
+runsolver_cputime: 0.054525
+Starting to processing FIFO/main.aig at Thu 10 Aug 07:10:12 BST 2017
+Output 0 of miter "main" was asserted in frame 0.  Time =     0.01 sec
+runsolver_cputime: 0.052785
+Starting to processing Ibuf/main.aig at Thu 10 Aug 07:10:13 BST 2017
+Property proved.  Time =     0.01 sec
+runsolver_cputime: 0.05592
+Starting to processing non-pipelined-microprocessor/main.aig at Thu 10 Aug 07:10:13 BST 2017
+Output 0 of miter "main" was asserted in frame 0.  Time =     0.01 sec
+runsolver_cputime: 0.049585
+Starting to processing RCU/main.aig at Thu 10 Aug 07:10:13 BST 2017
+Output 1 of miter "main" was asserted in frame 0.  Time =     0.01 sec
+runsolver_cputime: 0.055152
+Starting to processing Rrobin/main.aig at Thu 10 Aug 07:10:13 BST 2017
+Property proved.  Time =     0.01 sec
+runsolver_cputime: 0.05159
+Starting to processing Spinner/main.aig at Thu 10 Aug 07:10:13 BST 2017
+Property proved.  Time =     0.01 sec
+runsolver_cputime: 0.053942
+Starting to processing TicTacToe/main.aig at Thu 10 Aug 07:10:13 BST 2017
+Output 1 of miter "main" was asserted in frame 0.  Time =     0.01 sec
+runsolver_cputime: 0.049402
+Starting to processing traffic_light_example/main.aig at Thu 10 Aug 07:10:13 BST 2017
+Property proved.  Time =     0.01 sec
+runsolver_cputime: 0.052547
+Starting to processing TreeArb/main.aig at Thu 10 Aug 07:10:13 BST 2017
+Property proved.  Time =     0.01 sec
+runsolver_cputime: 0.053149
+Starting to processing Vlunc/main.aig at Thu 10 Aug 07:10:13 BST 2017
+Output 0 of miter "main" was asserted in frame 0.  Time =     0.01 sec
+runsolver_cputime: 0.048522
+Starting to processing Vsa16/main.aig at Thu 10 Aug 07:10:13 BST 2017
+Output 1 of miter "main" was asserted in frame 0.  Time =     0.02 sec
+runsolver_cputime: 0.063927
+Starting to processing DAIO/main.aig at Thu 10 Aug 12:08:42 BST 2017
+Output 0 of miter "main" was asserted in frame 0.  Time =     0.01 sec
+runsolver_cputime: 0.052721
+Starting to processing Dekker/main.aig at Thu 10 Aug 12:08:42 BST 2017
+Output 0 of miter "main" was asserted in frame 0.  Time =     0.01 sec
+runsolver_cputime: 0.049816
+Starting to processing FIFO/main.aig at Thu 10 Aug 12:08:42 BST 2017
+Output 0 of miter "main" was asserted in frame 0.  Time =     0.01 sec
+runsolver_cputime: 0.052975
+Starting to processing Ibuf/main.aig at Thu 10 Aug 12:08:42 BST 2017
+Output 0 of miter "main" was asserted in frame 0.  Time =     0.01 sec
+runsolver_cputime: 0.050689
+Starting to processing non-pipelined-microprocessor/main.aig at Thu 10 Aug 12:08:42 BST 2017
+Output 0 of miter "main" was asserted in frame 0.  Time =     0.01 sec
+runsolver_cputime: 0.051531
+Starting to processing NullModem/main.aig at Thu 10 Aug 12:08:42 BST 2017
+Output 0 of miter "main" was asserted in frame 0.  Time =     0.01 sec
+runsolver_cputime: 0.049566
+Starting to processing Rotate/main.aig at Thu 10 Aug 12:08:42 BST 2017
+Output 0 of miter "main" was asserted in frame 2.  Time =     0.01 sec
+runsolver_cputime: 0.052164

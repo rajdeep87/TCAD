@@ -1,8 +1,6 @@
 % ---------------------------------------------------------------------
 % Journal article on the hardware property checking via software netlists.
 %
-% Time-stamp: <2016-03-22 09:26:52 melham>
-%
 %   - 14 pages maximum, including everything
 %   - TCAD requires 30% new content.
 %   - page charges apply
@@ -140,7 +138,7 @@
 % \IEEEpeerreviewmaketitle
 
 \begin{abstract}
-A folk wisdom in formal hardware verification community is to synthesize a 
+Folk wisdom in formal hardware verification community is to synthesize a 
 hardware design into bit-level netlist.  This technique uses propositional satisfiability 
 solvers (SAT) to reason about the correctness of bit-blasted verification 
 conditions generated from the netlist representation using a bounded or unbounded 
@@ -182,14 +180,14 @@ experimental evaluation on a range of benchmarks suggests that the
 software verification techniques can be successfully used for bounded 
 and unbounded RTL verification. The runtimes of SAT/SMT-based software 
 verification tools are within one order of magnitude compared to the 
-bit-level hardware model checkers.  However, abstraction based software 
-verification techniques, such as abstract interpretation and 
-automata-theoretic program verification, though operate 
-on an overapproximate representation and hence less precise, but the runtimes
-of these tools are comparable to bit-level harware tools.  To the best of our 
-knowledge, this is the first exhaustive analysis of most state-of-the-art 
-verification techniques employed by verification tools from HWMCC and SV-COMP
-for the purposes of RTL verification. 
+bit-level hardware model checkers.  However, the runtimes of 
+abstraction-based techniques, such as abstract interpretation and 
+automata-theoretic verification, though operate on an overapproximate 
+representation and hence less precise, are comparable to bit-level 
+harware tools.  To the best of our knowledge, this is the first 
+exhaustive analysis of the state-of-the-art verification techniques 
+employed by verification tools from hardware and software domains 
+(HWMCC'16 and SV-COMP'16) for the purposes of RTL verification. 
 \end{abstract}
 
 \begin{IEEEkeywords}

@@ -162,13 +162,23 @@ of concrete and symbolic execution and property based pruning.
 \para{Automata based Trace Abstraction with Interpolants}
 %-------------------------------------------------------------------------------
 %
-The automata-theoretic approach to program verification~\cite{DBLP:conf/cav/HeizmannHP13} construct 
-an automaton to represent program traces along with the negation of the assertion and checks if the 
-language of the automaton is empty. One of the automata-theoretic approach for program verification 
-is implemented in a tool called \emph{UltimateAutomizer}~\cite{DBLP:conf/tacas/HeizmannDGLMSP16}. 
-It obtains a proof for a single trace and trace abstraction generalizes 
-these proofs and combines them.  Each iteration of the 
-algorithm tries to obtain loop invariants for the path program
+Automata-theoretic approaches to program verification~\cite{DBLP:conf/cav/KupfermanV00,
+DBLP:books/sp/cstoday95/Vardi95,DBLP:conf/cav/HeizmannHP13} construct 
+an automaton that represent a program together with its specification.
+The negation of the specification is encoded via error locations in the automaton, 
+that is, the error location is an accepting state.  The program satisfies the 
+specification iff each trace accepted by the automaton is infeasible.
+%
+One of the automata-theoretic approach for program verification 
+is implemented in a tool called 
+\emph{UltimateAutomizer}~\cite{DBLP:conf/tacas/HeizmannDGLMSP16}. 
+The technique in~\cite{DBLP:conf/tacas/HeizmannDGLMSP16} decompose a 
+program into sets of traces and the decomposition is guided by proofs that 
+is obtained for single traces. For correct programs, every non-empty set 
+of error traces is an abstraction of the feasible error traces.  
+%It obtains a proof for a single trace and trace abstraction generalizes 
+%these proofs and combines them.  
+Each iteration of the algorithm tries to obtain loop invariants for the path program
 induced by the current counterexample.  This may be done through different techniques 
 which can be applied iteratively. Each technique provides a set of Hoare triples that constitutes a proof of
 safety for the current counterexample.
@@ -176,7 +186,4 @@ As soon as a technique yields loop invariants, the algorithm uses these loop
 invariants during the refinement and generalization step of trace abstraction.  If all the 
 techniques have been exhausted and a loop invariant has not been obtained yet, the algorithm
 use some or all (depending on the strategy) of the obtained hoare triples and 
-refine or generalize with them.
-
-
-
+refine or generalize with them.  Note that refinement reduces the number of error traces. 

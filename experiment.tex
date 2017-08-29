@@ -621,11 +621,17 @@ As a consequence, many inductive invariants required by the bit-manipulating
 benchmarks cannot be represented, and so not inferred, using current abstractions 
 in Astr{\'e}e.  An abstract domain for this purpose must keep 
 precise relations between the bits of an integer (possibly some 
-form of BDD on the bits of the variable).  We thus believe that there 
-is scope here for new tools that implement abstract interpretation using
-abstract domains developed specifically for this task, e.g.~by
-applying abstract conflict driven learning~\cite{dhk2013-popl}.
-
+form of BDD on the bits of the variable).  Astr{\'e}e has already been 
+refined for avionics and space software by adding few domain-specific 
+abstract domains which were very effective in removing some classes of 
+false alarms~\cite{DBLP:journals/ftpl/BertraneCCFMMR15}.  We thus believe 
+that there is scope here for new abstract domains targeting hardware 
+designs while still remaining within the scope of traditional abstract 
+interpreter. 
+%
+%that implement abstract interpretation using
+%abstract domains developed specifically for this task, e.g.~by
+%applying abstract conflict driven learning~\cite{dhk2013-popl}.  
 \Omit{
 %-------------------------------------------------------------------------------
 \para{Limitations of the Result}

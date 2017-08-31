@@ -1,14 +1,20 @@
-\section{Hardware Synthesis}\label{sec:abstraction}
+\section{Verilog RTL to C Program}\label{sec:abstraction}
 %
 Formal verification tools~\cite{abc,DBLP:conf/fmcad/BradleyM07,vis} for 
-hardware typically synthesize an input design given in RTL into a netlist.  
-This section briefly describes various netlist formats at -- \emph{bit-level},
-\emph{word-level}, \emph{term-level} and \emph{software-level}.  
+hardware typically synthesize an input design given in RTL into a netlist  
+%This section briefly describes various netlist formats 
+at -- \emph{bit-level} or \emph{word-level}. 
 %
 %
+More recently, synthesis of RTL to a software program is presented 
+in our previous works~\cite{mkm2015,mtk2016}.  This new flow enables application 
+of classical software verification techniques such as abstract interpretation, path-based 
+symbolic execution and others, which has never been applied to RTL verification.  
+In the subsequent section, we describe the synthesis of software netlist 
+from hardware RTL in details.     
+\Omit{
 \subsection{Bit-level Synthesis}
-Logic synthesis~\cite{ls1,ls2} is an important step in automatic circuit verification. 
-A network derived from compiling hardware RTL expressed in HDL such 
+Logic synthesis~\cite{ls1,ls2} is an important step in automatic circuit verification.  A network derived from compiling hardware RTL expressed in HDL such 
 as Veriog or VHDL is synthesized into a netlist represented in 
 And-Inverter Graph \emph{(AIG)}, before performing technology mapping.   
 The syntheis of RTL into bit-level netlist represented as AIG can be 
@@ -20,7 +26,7 @@ and-gates, inverters, and memory elements referred to as registers.
 This approach misses the opportunity to exploit the word-level 
 structure of the input RTL design.  
 
-\subsection{Word-level Synthesis}
+%\subsection{Word-level Synthesis}
 Word-level reasoning engines have motivated the use of word-level
 representations for the transition
 relation~\cite{DBLP:conf/mtv/SunkariCVM07,soc-keating}. The use of the term
@@ -63,11 +69,7 @@ from the word-level RTL description by data-path abstraction and
 abstracting functional blocks by uninterpreted functions.  The 
 generated partially interpreted term-level abstract model is then 
 solved using SMT solvers.  
+}
 
-\subsection{Software-level Synthesis}
-Most recently, synthesis of RTL to a software program is presented 
-in our previous works~\cite{mkm2015,mtk2016}.  This new flow enables application 
-of classical software verification techniques such as abstract interpretation, path-based 
-symbolic execution and others, which has never been applied to RTL verification.  
-In the subsequent section, we describe the synthesis of software netlist 
-from hardware RTL in details.     
+%\subsection{Software-level Synthesis}
+%

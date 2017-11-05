@@ -141,6 +141,7 @@
 % \IEEEpeerreviewmaketitle
 
 \begin{abstract}
+\Omit{
 Folk wisdom in formal hardware verification community is to synthesize a 
 hardware design into bit-level netlist.  This technique uses propositional satisfiability 
 solvers (SAT) to reason about the correctness of bit-blasted verification 
@@ -164,33 +165,51 @@ The software netlist representation allows us to leverage various software verif
 technologies inlcuding abstract interpretation techniques which was never applied to 
 RTL verification.  
 %
-
+}
 	
-This paper experimentally evaluates formal RTL verification by 
-synthesizing the RTL design into two different netlist representations -- 
+This paper experimentally evaluates formal verification of hardware design at 
+Register Transfer Level (RTL) description 
+by synthesizing the RTL design into two different netlist representations -- 
 \emph{bit-level netlist} and \emph{software netlist}.  The bit-level 
-netlist is expressed in AIGER format, whereas the software 
-netlist is expressed in C language. 
+netlist is expressed in AIGER format, whereas the software netlist 
+is expressed in C language. 
 %and is an \emph{exact} representation of the RTL design. 
 %
 Conventional tools for RTL verification typically reason over 
-the bit-level netlist by translating it to a CNF formula following 
+the bit-level netlist by translating them into CNF formula following 
 Tseitin transformation.  
 %   
 On the other hand, the software netlist representation allows us 
 to leverage various software verification technologies 
-inlcuding abstract interpretation techniques which was never 
-applied to RTL verification. 
+inlcuding abstract interpretation and automata-theoretic 
+trace abstraction techniques which was never applied to RTL verification. 
 % 
-To this end, we present an emperical evaluation of various unbounded formal 
-verification algorithms such as Predicate Abstraction, $k$-induction, 
-Interpolation, IC3/PDR and Abstract Interpretation; and we compare the performance 
-of verification tools from the Software Verification Competition (SV-COMP'16) and 
-Hardware Model Checking Competition (HWMCC'16) that use these techniques.  
+To this end, we classify verification technologies on the bit-level netlist 
+and software netlist into two categories based on the underlying decision 
+procedures used -- {\em precise} and {\em abstraction}.  Precise tools employ 
+propositional SAT/SMT solvers which are used by techniques such as Bounded Model 
+Checking (BMC), 
+$k$-induction, Interpolation, IC3/PDR and others.  By contrast, abstraction-based tools 
+use various convex and non-convex abstract domains which are used by techniques such as 
+predicate abstraction and abstract interpretation. 
+%
+%present an emperical evaluation of various unbounded formal 
+%verification algorithms such as Predicate Abstraction, $k$-induction, Interpolation, IC3/PDR 
+%and Abstract Interpretation; 
+This paper present the comparison of precise and abstraction-based verification tools 
+from the Software Verification Competition (SV-COMP'16) and Hardware Model Checking Competition 
+(HWMCC'16) for the purposes of RTL verification.  Experimental evaluation on a range of RTL 
+benchmarks suggest that a commercial abstract interpretation tool Astr{\'e}e performs best among 
+all software analyzers for verification of software netlist generated from the RTL.  On the other hand, 
+the PDR engine of the well-known bit-level hardware model checking tool \textsc{ABC} performs best 
+among the hardware tools. Furthermore, the performance of Astr{\'e}e is comparable to \textsc{ABC} 
+for most of our benchmarks.
+    
 %Our benchmarks are drawn from real world hardware benchmark suite, such as 
 %VIS verilog models, the Texas-97 Benchmark suite, Hardware Model Checking 
 %Competition 2015, and opencores.org.  
 	
+\Omit{
 Though software verifiers are never optimized for RTL verification, 
 experimental evaluation on a range of benchmarks suggests that the 
 software verification techniques can be successfully used for bounded 
@@ -204,6 +223,7 @@ harware tools.  To the best of our knowledge, this is the first
 exhaustive analysis of the state-of-the-art verification techniques 
 employed by verification tools from hardware and software domains 
 (HWMCC'16 and SV-COMP'16) for the purposes of RTL verification. 
+}
 \end{abstract}
 
 \begin{IEEEkeywords}

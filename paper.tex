@@ -76,6 +76,7 @@
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
 \newtheorem{example}{Example}
+%\newtheorem{example}{Example}[section]
  
 
 \newcommand{\rmcmt}[1]{{\color{magenta}{#1}}}%#1
@@ -117,8 +118,7 @@
         Peter Schrammel,
         Daniel Kroening, 
         Tom Melham, \\
-        Antoine M{\'i}ne,
-        Michael Tautschnig and
+        Antoine M{\'i}ne and
         Eugene Goldberg
         \thanks{R. Mukherjee, D. Kroening and T. Melham are at 
                 University of Oxford, Department of Computer Science,
@@ -127,10 +127,6 @@
         \thanks{P. Schrammel is at School of Informatics, University of Sussex, 
                 Chichester 2 2R302, Sussex, UK}
         \thanks{E. Goldberg is at Diffblue Limited, Oxford, UK}
-        \thanks{M. Tautschnig is at 
-                School of Electronic Engineering and Computer Science,
-                Queen Mary University of London
-                Mile End Road, London E1 4NS, UK}
         \thanks{A. M{\'i}ne is at Engineering School, UPMC University, Paris}}
 \markboth{IEEE Transactions on Computer-Aided Design of Integrated
           Circuits And Systems, Vol. XX, No. Y, Month 2004}%
@@ -233,18 +229,15 @@ Formal verification, Verilog RTL, SAT, SMT.
 % ---------------------------------------------------------------------
 % Start of text.
 % ---------------------------------------------------------------------
-
-%Surely we will cite this~\cite{Clarke:TCA:2004}.
-
 \input{intro}    % Motivation, vision, and contributions
-\input{related_work}
 \input{contribution}
 \input{problem_statement}
 \input{abstraction}
 \input{v2c}      % The v2c tool
 \input{methodology}
 \input{equivalence} % Equivalence of Hardware and Software
-\input{experiment}    % Conclusions
+\input{experiment}   
+\input{related_work}
 \input{concl}    % Conclusions
 
 % ---------------------------------------------------------------------

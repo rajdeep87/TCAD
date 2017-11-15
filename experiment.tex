@@ -11,37 +11,41 @@
 %\para{Software Verifiers at the heart of Hardware Verification}
 %===============================================================================
 %
-Figure~\ref{fig:toolflow} shows the tool flow for hardware RTL 
-verification at various levels -- 
-\emph{bit-level}, \emph{word-level}, and \emph{software netlist-level}.  
-The bottom flow of figure~\ref{fig:toolflow} shows the bit-level 
+Figure~\ref{fig:toolflow} gives the tool flow for hardware RTL 
+verification using bit-level netlist, word-level netlist and software netlist.  
+The bottom flow of Figure~\ref{fig:toolflow} shows the bit-level 
 verification flow using \ABC.
 \ABC does not support Verilog, so we use an open-source synthesis tool,
 \yosys\footnote{http://www.clifford.at/yosys/} to translate Verilog
-RTL to BLIF or AIGER, which is then passed to \ABC for verification. 
-Given a design in Verilog RTL, \yosys bit-blasts it into a bit-level netlist 
-along with the property and the resultant netlist is expressed in And-Inverter 
-Graph.  The AIG is represented in AIGER format which is one of the standard 
-and most prevelant format used by majority of verification tools.
-
-
-Whereas, the middle flow of figure~\ref{fig:toolflow} shows the 
-word-level verification using the tool 
-\ebmc~\footnote{\scriptsize{www.cprover.org/hardware/ebmc}}. 
-\ebmc supports IEEE 1364.1 Verilog 2005, and synthesize it to a bit-level 
-netlist represented in AIGER or a word-level netlist represented in 
-SMT-LIB2 format.  The top flow of figure~\ref{fig:toolflow} shows a
-verification flow that synthesize a software netlist from RTL using 
-the tool \emph{v2c}.  A wide range of representative software 
-verification techniques are applied to determine the safety of the
-software netlist models. In particular, we use $k$-induction~\cite{SSS00}
+RTL to BLIF or AIGER~\footnote{http://fmv.jku.at/aiger/FORMAT-20070427.pdf} 
+which is then passed to \ABC for verification. 
+%Given a design in Verilog RTL, \yosys bit-blasts it into a bit-level netlist 
+%along with the property and the resultant netlist is expressed in AIG.  
+%The AIG is represented in AIGER format  which is one of the standards 
+%andmost prevalant format used by the majority of verification tools.
+Whereas, the middle flow of Figure~\ref{fig:toolflow} shows the 
+bit/word-level verification using the tool 
+\ebmc~\footnote{www.cprover.org/hardware/ebmc}. 
+\ebmc supports IEEE 1364.1 Verilog 2005 standards.  \ebmc synthesize 
+the design in Verilog into a bit-level netlist represented in AIGER or a 
+word-level netlist represented in format that resembles the 
+SMT-LIB standard. The word-level synthesis flow in \ebmc is not mature yet. 
+So, we only use the bit-level flow in \ebmc. 
+%
+The top flow of Figure~\ref{fig:toolflow} shows the verification 
+of the software netlist designs. 
+%verification which translate RTL into software netlist using the tool \emph{v2c}.  
+%
+A wide range of representative software 
+verification techniques is applied to determine the safety of the
+software netlist. In particular, we use $k$-induction~\cite{SSS00}
 (implemented in the tools CBMC~\cite{cbmc.tacas:2004} and
-2LS~\cite{kiki}), interpolation
+2LS~\cite{BJKS15}), interpolation
 (CPAChecker~\cite{DBLP:conf/cav/BeyerK11}, IMPARA~\cite{impara}
-implementing the IMPACT algorithm~\cite{ken}), abstract interpretation
+implementing the IMPACT algorithm~\cite{cav03}), Abstract Interpretation
 (Ast{\'r}ee~\cite{DBLP:conf/esop/CousotCFMMMR05}), IC3/PDR
-(SeaHorn~\cite{DBLP:conf/cav/GurfinkelKKN15}) and automata-based 
-trace abstraction (UltimateAutomizer~\cite{DBLP:conf/tacas/HeizmannDGLMSP16}).
+(SeaHorn~\cite{DBLP:conf/cav/GurfinkelKKN15}) and Automata-theoretic 
+verification (UltimateAutomizer~\cite{DBLP:conf/tacas/HeizmannDGLMSP16}).
 %
 %===============================================================================
 \section{Experimental Results}
@@ -50,8 +54,8 @@ In this section, we report experimental results for \emph{unbounded} safety
 verification of hardware RTL.  Our experimental contributions are two folds.
 %
 \begin{enumerate}
-  \item Compare off-the-shelf formal verification tools for RTL verification at 
-    \emph{bit-level}, \emph{word-level}, and \emph{software netlist level}.  
+  \item Compare off-the-shelf formal verification tools for RTL verification
+    using \emph{bit-level netlist}, and \emph{software netlist}.  
     To this end, we compare state-of-the-art hardware model checking tools, such as 
     \emph{ABC 1.01} (winner of HWMCC'15) and 
     \ebmcv~\footnote{\scriptsize{www.cprover.org/hardware/ebmc}}, 
@@ -69,10 +73,11 @@ verification of hardware RTL.  Our experimental contributions are two folds.
 %
 Our experiments were performed on an Intel Xeon machine running at
 3.07\,GHz.  We restricted the resources to 5 hours and 32\,GB RAM per
-benchmark.  All our benchmarks in Verilog, software netlist models in 
-ANSI-C, scripts for running \yosys, \ABC, \ebmcv, and other software 
-verification tools are uploaded to a publicly accessible archive website.
-\footnote{\scriptsize{http://www.cprover.org/hardware/tcad/}}
+benchmark.  All our benchmarks in Verilog, software netlist in C, 
+scripts for running \yosys, \ABC, \ebmcv, and other software 
+verification tools are available here.~\footnote{\scriptsize{https://github.com/rajdeep87/TCAD-experiments}}
+%to a publicly accessible archive website.
+%\footnote{\scriptsize{http://www.cprover.org/hardware/tcad/}}
 %
 %===============================================================================
 \para{Benchmarks}
@@ -94,22 +99,30 @@ and an instruction queue controller.
 \para{Properties}
 %-------------------------------------------------------------------------------
 %
-The safety properties are specified as System Verilog assertions (SVA).
-The properties are instrumented as assertions in the software netlist. 
-Our tool support fragment of SVA properties. Below, we present
-an example of property monitor in software netlist corresponding 
-to the concurrent assertions in SVA.  Let us consider verification 
-of the following properties of Vending machine and Huffman 
-encoder/decoder design. Figure~\ref{figure:prop1} and 
-Figure~\ref{figure:prop2} shows the SVA property in the left and 
-the corresponding monitor for the software netlist in the right. \\
+The safety properties are specified as System Verilog Assertions.
+The SVA properties are translated into C assertions and instrumented 
+in the software netlist. 
+%
+Below, we present few examples of the concurrent assertions in SVA 
+and corresponding assertions in the software netlist design.  
+
+
+Figure~\ref{figure:prop1} and Figure~\ref{figure:prop2} gives 
+the SVA property on the left and the corresponding assertions 
+in software netlist on the right for the vending machine benchmark 
+and Huffman encoder/decoder benchmark, respectively. For the purpose 
+of illustration we give partial code fragments for the software 
+netlist designs.
+%
+\begin{example}~\label{safety-prop}
 $Assert\_1$: {\em The balance is never negative and never reaches 15.} 
-\vspace{-3mm}
+%\vspace{-3mm}
 \begin{figure}[htbp]
+\centering
 \scriptsize
 \begin{tabular}{l|l}
 \hline
-SVA & Monitor (in C)
+SVA & Assertion (in C)
 \\
 \hline
 \begin{lstlisting}[mathescape=true,language=Verilog]
@@ -120,27 +133,28 @@ p1: assert property
 \end{lstlisting}
 &
 \begin{lstlisting}[mathescape=true,language=C]
-int monitor_p1() {
  assert((((vending.total 
  >> 3) & 0x1) == 0) 
  && !(vending.total 
  & 0x1F == 15));
- return 1;
-}
 \end{lstlisting} \\
 \hline
 \end{tabular}
-\caption{Modeling concurrent assertions in SVA as monitor in software netlist}
+\caption{Modeling concurrent SVA in software netlist}
 \label{figure:prop1}
 \end{figure}
 %
-
-$Assert\_2$: {\em When a new transmission begins, the decoder is ready in the next clock.} 
+\end{example}
+%
+\begin{example}~\label{safety-propnew}
+$Assert\_2$: {\em When a new transmission begins, the decoder is ready in the next clock.}
+%
 \begin{figure}[htbp]
+\centering
 \scriptsize
 \begin{tabular}{l|l}
 \hline
-SVA & Monitor (in C)
+SVA & Assertion (in C)
 \\
 \hline
 \begin{lstlisting}[mathescape=true,language=Verilog]
@@ -152,23 +166,21 @@ p2: assert property
 \end{lstlisting}
 &
 \begin{lstlisting}[mathescape=true,language=C]
-int monitor_p2() {
  if(((encoder.shiftreg >> 1) 
  & 0x1FF) == 1) {
-  check_consequent = 1;
   // call to top level 
   // module of design
   huffman(clk,addr);  
-  if(check_consequent == 1) 
-    assert(decoder.leaf == 1);
+  assert(decoder.leaf == 1);
  }
-}
 \end{lstlisting} \\
 \hline
 \end{tabular}
-\caption{Modeling temporal properties in SVA as monitor in software netlist}
+\caption{Modeling temporal properties in SVA in software netlist}
 \label{figure:prop2}
 \end{figure}
+\end{example}
+
 %
 %-------------------------------------------------------------------------------
 \para{Discussion}

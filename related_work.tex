@@ -1,5 +1,47 @@
 \section{Related Work}~\label{related_work}
 %
+Technology transfer between the hardware and software verification community 
+over the past two decades have been immensely successful and demonstrated significant 
+drive in development of new verification algorithms in both fields. 
+% 
+In 1986, Clarke et al.~\cite{clarke86} proposed model checking for finite state 
+concurrent systems. Later, McMillan et al.~\cite{mcmillan96} introduced symbolic 
+model checking in 1996.  Biere et al.~\cite{tacas99} introduced symbolic model 
+checking without BDDs in 1999.
+%
+Graf et al.~\cite{cav97} proposed a technique based on predicate abstraction.
+Later, Clarke et al.~\cite{cav2000} used Counterexample Guided Abstraction Refinement 
+(CEGAR) in SMV tool for verifying Fujitsu IP core.  
+Kroening et al.~\cite{himanshu} used CEGAR to 
+verify hardware designs written in Verilog RTL.  Subsequently, predicate 
+abstraction is used for verifying device drivers in C program by Ball et al.~\cite{pldi01}.  
+This lead to the SLAM project by Ball et al.~\cite{popl02} in 2002.
+%
+In 2000, St$\mathring{\text{a}}$lmarck et al.~\cite{fmcad2000} introduced a technique 
+to check safety properties using induction and SAT solver.  Subsequently, induction 
+based approaches are used for automatic analysis of scratch-pad memory code for heterogeneous
+multicore processors by Donaldson et al.~\cite{tacas10}, 2010 and for software 
+verification using $k$-induction by Donaldson et al.~\cite{sas2011} in 2011.
+% 
+In 2003, McMillan et al.~\cite{cav03} introduced Interpolation and SAT-based model 
+checking for verifying commercial microprocessor. Subsequently, Interpolation is used 
+for software verification by McMillan et al.~\cite{cav06} in 2006 and by 
+Kroening et al.~\cite{DBLP:conf/cav/KroeningW11}, in 2011.
+%
+In 2007, Bradley et al.~\cite{fmcad07} introduced safety checking by inductive 
+generalizations of the counterexample to induction, a technique is commonly known 
+as IC3. Subsequently, IC3 is used for software model checking by 
+Cimatti et al.~\cite{cav12ic3} in 2012.
+% 
+Thus, techniques like predicate abstraction, 
+IC3/PDR, $k$-induction, and interpolation-based 
+approaches have all made their way from the hardware 
+to the software domain; but the path-wise symbolic execution and abstract 
+interpretation have been primarily used for software verification.
+%
+A survey of bounded and unbounded SAT-based hardware model checking techniques 
+is presented in~\cite{DBLP:conf/charme/AmlaDKKM05}.
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %      Bit-level Verification Literature
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -11,7 +53,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %      Software verification Literature
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\Omit{
 The technology transfer between the hardware and software verification community 
 over the past two decades have demonstrated significant drive in development of 
 new verification algorithms in either field. 
@@ -54,7 +96,7 @@ interpretation have been primarily used for software verification.
 A survey of bounded and unbounded SAT-based hardware model checking techniques 
 is presented in~\cite{DBLP:conf/charme/AmlaDKKM05}.
 %
-
+}
 \Omit{
 A survey of bounded and unbounded SAT-based hardware model checking techniques 
 is presented in~\cite{charme05}.

@@ -1,20 +1,22 @@
-\section{Verilog RTL to C Program}\label{sec:abstraction}
+\section{Verilog RTL to Software netlist}\label{sec:abstraction}
 %
 Formal verification tools~\cite{abc,DBLP:conf/fmcad/BradleyM07,vis} for 
-hardware typically synthesize an input design given in RTL into a netlist  
+hardware RTL designs typically synthesize the input RTL design into the
+\emph{bit-level} or \emph{word-level} netlist.  
 %This section briefly describes various netlist formats 
-at -- \emph{bit-level} or \emph{word-level}. 
+%at -- \emph{bit-level} or \emph{word-level}. 
 %
 %
-More recently, synthesis of RTL to a software program is presented 
-in our previous works~\cite{mkm2015,mtk2016}.  This new flow enables application 
-of classical software verification techniques such as abstract interpretation, path-based 
-symbolic execution and others, which has never been applied to RTL verification.  
-In the subsequent section, we describe the synthesis of software netlist 
-from hardware RTL in details.     
+More recently, synthesis of RTL into the software program is presented 
+in our previous works~\cite{mkm2015,mtk2016}.  This new representation 
+enables application of classical software verification techniques such as 
+abstract interpretation, path-based symbolic execution and others, which 
+have never been applied to RTL verification.  In the subsequent section, 
+we describe the synthesis of software netlist from hardware RTL designs.     
 \Omit{
 \subsection{Bit-level Synthesis}
-Logic synthesis~\cite{ls1,ls2} is an important step in automatic circuit verification.  A network derived from compiling hardware RTL expressed in HDL such 
+Logic synthesis~\cite{ls1,ls2} is an important step in automatic circuit 
+verification.  A network derived from compiling hardware RTL expressed in HDL such 
 as Veriog or VHDL is synthesized into a netlist represented in 
 And-Inverter Graph \emph{(AIG)}, before performing technology mapping.   
 The syntheis of RTL into bit-level netlist represented as AIG can be 

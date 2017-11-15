@@ -1,4 +1,4 @@
-\subsection{Synthesizing software netlist from RTL}\label{sec:v2c}
+%\subsection{Synthesizing software netlist from RTL}\label{sec:v2c}
 %
 \begin{figure*}[t]
 \scriptsize  
@@ -63,14 +63,17 @@ void top(_Bool clk, unsigned a) {
 %===============================================================================
 \subsection{Software Netlist}
 %===============================================================================
-A hardware circuits in Verilog RTL is automatically synthesized 
-into a word level C program, called a \textit{software 
-netlist}~\cite{mtk2016,mskm2016} using the tool {\em v2c}~\cite{mtk2016}. 
-{\em v2c} follows synthesis semantics and not simulation semantics.  The 
-generated code is cycle-accurate as well as bit-precise. {\em v2c} 
+The hardware circuit in Verilog RTL is automatically translated 
+into the software program, called \textit{software netlist}~\cite{mtk2016,mskm2016} 
+using the tool {\em v2c}~\cite{mtk2016}. The software netlist is expressed 
+in C language. 
+\Omit{
+%{\em v2c} follows synthesis semantics and not simulation semantics.  
+The generated code is cycle-accurate as well as bit-precise. {\em v2c} 
 automatically translates concurrent statements in Verilog such as 
 procedural blocks and continuous assignments to a semantically 
 equivalent C program. 
+}
 %
 \begin{definition} 
 A \textit{software netlist} $\mathcal{SN}$ is defined as follows:
@@ -103,10 +106,10 @@ A state transition in HW can be described by a set of register updates,
 defined by the next-state function, and assignment of non-deterministic 
 values to external inputs. The state transition in the software netlist 
 corresponds to updates to the variables in $Seq$ and explicit assignment 
-of non-deterministic values to the input variables, $In$.
+of non-deterministic values to the input variables $In$.
 
 \subsection{Structure of Software netlist:} The pseudo-code of the software 
-netlist model generated using \emph{v2c} is shown in figure~\ref{figure:structure}.
+netlist design is shown in figure~\ref{figure:structure}.
 %
 \begin{figure}[t]
 \captionsetup{justification=justified}
@@ -179,7 +182,7 @@ int main() {
 \end{figure}
 %
 %%===============================================================================\
-\para{Procedural Assignments:}
+\para{Procedural Assignments}
 %%===============================================================================\
 %
 Procedural assignments are used within Verilog always and initial blocks and
@@ -278,18 +281,18 @@ c = sm.b; d = c;
 \end{figure*}
 
 %%===============================================================================\
-\para{Bit-precise code generation:}
+\para{Bit-precise code generation}
 %%===============================================================================\
-\emph{v2c} generates a bit-precise software netlist model in~C.  The tool
-automatically handles complex bit-level operators in Verilog like
+\emph{v2c} generates a bit-precise software netlist in~C.  The tool
+automatically handles complex bit-level operators in Verilog such as 
 bit-select or part-select operators from a vector, concatenation operators,
-reduction OR and other operators.  \emph{v2c} retains the word-level structure 
-of the Verilog RTL and generates vectored expressions. 
-Figure~\ref{figure:bit} shows Verilog code (at the top) and the generated C
-expressions (at the bottom), which are combinations of bit-wise and
-arithmetic operators like bit-wise OR, AND, multiplication, subtraction,
-shifts and other C operators.
-
+reduction OR and other operators.  
+%\emph{v2c} retains the word-level structure of the Verilog RTL. 
+Figure~\ref{figure:bit} gives the code snippet of Verilog RTL design 
+(at the top) and the generated C expressions (at the bottom), which are 
+represented using a combination of bit-wise and arithmetic operators 
+like bit-wise OR, AND, multiplication, subtraction, shifts and other C operators.
+%
 \begin{figure*}[htbp]
 \scriptsize
 \center
@@ -363,17 +366,23 @@ A hardware circuit specified in Verilog RTL may have two types of dependencies -
 %
 The intra-modular dependencies may occur due to the communication between
 combinational blocks (continuous assignments) and sequential or clocked 
-procedural blocks.  The following three cases summarizes the various sources of 
-intra-modular dependencies in Verilog and provides the equivalent translation 
-to a software netlist model.  Other forms of intra-modular dependencies are 
-simply variants of these and can be handled appropriately.
-Figure~\ref{dp1}, figure~\ref{dp2} and figure~\ref{dp3} graphically 
-illustrate the intra-modular dependencies
-where box denote the input, a bold circle denote a wire and a normal circle
-denote a latch, bold edges denote the dependencies between two wires or a latch 
+procedural blocks.  We illustrate three different scenarios that summarize 
+the various sources of intra-modular dependencies in Verilog and show 
+how these dependencies are handled in a software netlist.  Other forms of 
+intra-modular dependencies are simply variants of these three cases 
+and can be handled appropriately.
+%
+Figure~\ref{dp1}--~\ref{dp3} graphically illustrate the intra-modular dependencies.  
+%
+Here, box denote an input, a bold circle denote a wire and a normal circle
+denote a latch.  The bold edges denote the dependencies between two wires or a latch 
 and a wire with the arrow pointing towards the wire and normal edges denote the 
 dependencies between two latches or a wire and a latch with the arrow pointing
-towards the latch. The dotted arrows denote the dependencies with an input.
+towards the latch. The dotted arrows denote the dependencies with an input. 
+%
+We describe the various scenarios and the corresponding translations below. 
+Note that the code-snippets in Figure~\ref{dp1}--~\ref{dp3} are partial 
+and are only used for illustrating the handling of intra-modular dependencies.
 \\
 %
 \noindent \textbf{Scenario A}  A wire, say $x$,  assigned in a continuous assignment 
@@ -396,7 +405,6 @@ another procedural block. This is illustrated in Figure~\ref{dp3}.\\
 
 \noindent \textbf{Translation C} The assignment to $x$ is placed before the second 
 procedural block that reads $x$.\\
-
 %
 %\textbf{Dependencies among combinational assignments}
 \begin{figure}
@@ -425,7 +433,6 @@ int main() {
  unsigned char y;
  x=1;
  y=(x+1)&0x3;
- assert(y==2);
 }
 \end{lstlisting}
 \\

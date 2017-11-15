@@ -83,7 +83,7 @@ verification tools are available here.~\footnote{\scriptsize{https://github.com/
 \para{Benchmarks}
 %===============================================================================
 %
-We verified a total of 35 circuits given in Verilog RTL.  Out of 35, 27 
+We verified a total of~34 circuits given in Verilog RTL.  Out of 34, 26 
 are \emph{safe} benchmarks and 8 are \emph{unsafe}.  The benchmarks in 
 our paper are derived from real world hardware benchmark suites, including 
 VIS Verilog models, the Texas-97 Benchmark suite, and opencores.org. We synthesize 
@@ -195,7 +195,7 @@ approximate analysis without using SAT/SMT solvers (in section~\ref{abstraction}
 Figures~\ref{fig:kind}--\ref{fig:hybrid} report the comparison of various unbounded 
 verification techniques employed by verification tools at bit-level, word-level, 
 and software-level.  The plots in these figures reports the runtimes of~12 
-representative circuits which are most difficult to solve out of a total 35 
+representative circuits which are most difficult to solve out of a total~34 
 circuits.  Note that \ABC does not implement word-level verification flow, 
 so we perform word-level verification using our in-house tool \ebmc.
 Figures~\ref{fig:kind}--\ref{fig:hybrid} reports the best runtimes 
@@ -465,7 +465,7 @@ analyzers since it performs better than the other verification engines
 and is superior than \ebmc on our benchmarks. The tools can be distinguished 
 by the shape as well as by colour. 
 %
-We verified a total of 35 circuits given in Verilog RTL. 
+We verified a total of~34 circuits given in Verilog RTL. 
 The tools \textsc{UltimateAutomizer} and Astr{\'e}e are fed with the 
 software netlist designs generated from the RTL whereas the input to 
 \ABC is the AIGER representation of the RTL. 
@@ -478,14 +478,20 @@ were restricted to 32\,GB RAM per benchmark.
 
 
 
-\ABC proved a total of 31 benchmarks and timed out for 4 benchmarks. 
+\ABC proved a total of~30 benchmarks and timed out for 4 benchmarks. 
 %The results in Figure~\ref{fig:runtimes} are obtained using ABC PDR engine. 
 The runtimes of Astr{\'e}e are very close to \ABC for most benchmarks. 
-An important highlight of this comparison is that the abstract interpretation 
-using Astr{\'e}e was faster than \ABC in 3 unsafe cases (benchmark number 10, 14 and 16 
-in Figure~\ref{fig:runtimes}).  
+%An important highlight of this comparison is that 
+The abstract interpretation using Astr{\'e}e was faster than \ABC for~8 
+benchmarks (23\% cases).
 %
-However, Astr{\'e}e reported a total of 7 false alarm out of 35 benchmarks,  
+Among these~8 benchmarks, Astr{\'e}e reported bugs faster than \ABC for~3 
+unsafe benchmarks. For the remaining~5 benchmarks, \ABC timed out in 4 cases 
+whereas Astr{\'e}e proved all~5 benchmarks faster than \ABC (see the extremen 
+right side of Figure~\ref{fig:runtimes}).  
+%(benchmark number 10, 14 and 16 in Figure~\ref{fig:runtimes}).  
+%
+However, Astr{\'e}e reported a total of~7 false alarm out of~34 benchmarks,  
 which are shown by the blue triangles corresponding to the timeout axis in 
 Figure~\ref{fig:runtimes}.  
 %
@@ -494,13 +500,16 @@ We investigate the reason for the false alarm in Astr{\'e}e and observe
 that the bit manipulating nature of the software netlist prevents Astr{\'e}e from 
 inferring the necessary invariants since these invariants are not expressible by the 
 underlying abstract domains.  Whereas, \textsc{UltimateAutomizer} timed out in~14 
-out of 35 benchmarks. For safe benchmarks that are hard to prove, \textsc{UltimateAutomizer} 
+out of 34 benchmarks. For safe benchmarks that are hard to prove, \textsc{UltimateAutomizer} 
 was able to infer the necessary invariants required to prove the property within 
-the time limit, which are shown by square boxes between benchmark number 20 to 35. 
+the time limit. 
+%which are shown by square boxes between benchmark number 20 to 35. 
 %while Astr{\'e}e was too imprecise to prove the property for these benchmarks. 
 Whereas, Astr{\'e}e performed better than \textsc{UltimateAutomizer} for all 
 unsafe benchmarks.  Astr{\'e}e reported bugs in all 8 unsafe benchmarks within 
-the time limit.  We now discuss various ways to improve the precision in Astr{\'e}e.
+the time limit.  We now discuss various ways to improve the precision in
+Astr{\'e}e some of which are used for precise verification of the software
+netlist designs. 
 
 %\para{Abstract Interpretation of RTL}
 %

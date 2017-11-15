@@ -408,33 +408,6 @@ Comparison of hybrid techniques
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Analysis Using Abstraction based tools}~\label{abstraction}
 %
-Figure~\ref{fig:runtimes} gives the runtime comparsion between ABC, UltimateAutomizer 
-and Astr{\'e}e.  Both UltimateAutomizer and Astr{\'e}e operate on an overapproximate 
-abstraction of the concrete program.  
-
-
-\ABC proved a total of 31 benchmarks and timed out for 4 benchmarks. 
-The results in figure~\ref{fig:runtimes} are obtained using ABC PDR engine. 
-The runtimes of Astr{\'e}e are very close to ABC for most benchmarks. Astr{\'e}e 
-was faster than \ABC in 3 cases.  However, Astr{\'e}e reported a total of 
-7 false alarm out of 35 benchmarks, marked as timeout in blue traiangles 
-in figure~\ref{fig:runtimes}.  
-We investigate the reason for the false alarm and observe 
-that the bit manipulating nature of these programs prevent Astr{\'e}e from 
-inferring the necessary invariants required to prove the property using the 
-existing set of abstract domains.  Whereas, UltimateAutomizer timed out in~14 
-out of 30 benchmarks. For safe benchmarks that are hard to proof, UltimateAutomizer 
-was able to infer the necessary invariants required to prove the property within 
-feasible time, as shown by square boxes between benchmark number 25 to 35, while 
-Astr{\'e}e was too imprecise to prove the property for these benchmarks. Astr{\'e}e 
-performed better than UltimateAutomizer for the unsafe benchmarks.  Astr{\'e}e 
-reported bugs in all 8 unsafe benchmarks within the time limit. 
-
-
-We now discuss the analysis using these abstraction based tools.
-
-\para{Abstract Interpretation of RTL}
-%
 One of the benefits of the proposed tool flow in this paper is that the 
 synthesis of RTL to software netlist enables the application of techniques 
 such as abstract interpretation. Abstract Interpretation~\cite{Cousot92,CC79} 
@@ -473,6 +446,52 @@ in case there are no states satisfying the assertion at all, hence, the
 instructions following the assertion are never executed.
 
 
+Figure~\ref{fig:runtimes} gives the runtime comparison between 
+\ABC, \textsc{UltimateAutomizer} and Astr{\'e}e.  We choose 
+the \ABC PDR engine for comparison with abstraction-based software 
+analyzers since it performs better than the other verification engines 
+and is superior than \ebmc on our benchmarks. The tools can be distinguished 
+by the shape as well as by colour. 
+%
+We verified a total of 35 circuits given in Verilog RTL. 
+The tools \textsc{UltimateAutomizer} and Astr{\'e}e are fed with the 
+software netlist designs generated from the RTL whereas the input to 
+\ABC is the AIGER representation of the RTL. 
+% 
+Both \textsc{UltimateAutomizer} and Astr{\'e}e operate 
+on an overapproximate abstraction of the concrete program.  
+The timeout was set to~200 seconds and memory resources 
+were restricted to 32\,GB RAM per benchmark. 
+%\todo{reason}
+
+
+
+\ABC proved a total of 31 benchmarks and timed out for 4 benchmarks. 
+%The results in Figure~\ref{fig:runtimes} are obtained using ABC PDR engine. 
+The runtimes of Astr{\'e}e are very close to \ABC for most benchmarks. 
+An important highlight of this comparison is that the abstract interpretation 
+using Astr{\'e}e was faster than \ABC in 3 unsafe cases (benchmark number 10, 14 and 16 
+in Figure~\ref{fig:runtimes}).  
+%
+However, Astr{\'e}e reported a total of 7 false alarm out of 35 benchmarks,  
+which are shown by the blue triangles corresponding to the timeout axis in 
+Figure~\ref{fig:runtimes}.  
+%
+
+We investigate the reason for the false alarm in Astr{\'e}e and observe 
+that the bit manipulating nature of the software netlist prevents Astr{\'e}e from 
+inferring the necessary invariants since these invariants are not expressible by the 
+underlying abstract domains.  Whereas, \textsc{UltimateAutomizer} timed out in~14 
+out of 35 benchmarks. For safe benchmarks that are hard to prove, \textsc{UltimateAutomizer} 
+was able to infer the necessary invariants required to prove the property within 
+the time limit, which are shown by square boxes between benchmark number 20 to 35. 
+%while Astr{\'e}e was too imprecise to prove the property for these benchmarks. 
+Whereas, Astr{\'e}e performed better than \textsc{UltimateAutomizer} for all 
+unsafe benchmarks.  Astr{\'e}e reported bugs in all 8 unsafe benchmarks within 
+the time limit.  We now discuss various ways to improve the precision in Astr{\'e}e.
+
+%\para{Abstract Interpretation of RTL}
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\para{Effect of Trace partitioning for Precise analysis in Astr{\'e}e}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -485,11 +504,9 @@ widening are a major cause of precision loss.  Astr{\'e}e partially 
 alleviates the problem through BDD-based domains and 
 trace-partitioning~\cite{DBLP:journals/toplas/RivalM07}
 (providing a level of path-sensitivity). 
-To prevent scalability 
- issues, 
- these costly techniques are enabled locally, 
- through automatic heuristics 
-or user guidance.  That is, a partitioning initiated inside a function will be merged over before  
+To prevent scalability issues, these costly techniques are enabled locally, 
+through automatic heuristics or user guidance.  That is, a partitioning 
+initiated inside a function will be merged over before  
 returning from the function, so, it's function-local. Sometimes, a  
 longer partitioning is useful, but it is not generated by the  
 heuristics (although it can be generated by hand).  While standard 
@@ -586,48 +603,69 @@ enough.
 
 \subsection{Summary of the results} 
 %
-We summarize the results obtained from the precise and abstraction based 
-software verification tools for verifying software netlist models synthesized
-from a RTL circuit.  
+We summarize the results obtained from the precise and abstraction-based 
+software analyzers for verifying the software netlist designs.
+
+
+%%%%%%%%%% CAV Reviews %%%%%%%%%%%%%%
+A fundamental difference betwen the hardware and software designs is that 
+hardware designs tend to use bit-slices to model various functionality 
+including power, performance logic.  The software netlist models the 
+bit-level hardware logic using combinations of bit-wise operations, 
+such as shift, bitwise-AND, bit-masking etc.  
+%
+This often makes the software netlist designs hard to analyze 
+%operators which make it harder for word-level tools to reason about these designs, 
+as looking at shift and AND operators, in general, would be difficult 
+to reverse them to their original bit-slice intention.
+%
+A common solution is to partition the original word to adapt to the user 
+defined bit-slices.  However, this approach would not be feasible since 
+the software netlist design is modeled in the C language, which support word-level 
+variables of fixed width (e.g. 32 bits or 64 bits). So this is inherently 
+a problem that is not addressed by software analyzers.
 
 \para{Analysis using Precise SAT/SMT based Software Tools}
 %
 Though the invariant inference techniques employed by precise software 
-analyzers such as \emph{CPAChecker} and \emph{2LS} have never
-been optimized for hardware analysis, but the results in this paper
+analyzers such as \textsc{CPAChecker} and \textsc{2LS} have never
+been optimized for hardware analysis, the results in this chapter 
 show that these tools are within one order of magnitude compared to
-hardware model checkers for detecting bugs or proving safety for some
-of the software netlist models.  However, running precise SAT/SMT 
-based sotware verification tools on software netlists exhibits many 
+bit-level hardware model checkers for detecting bugs as well as 
+proving safety of some of the software netlist designs.  However, 
+running SAT/SMT based software analyzers on the software netlist 
+designs exhibits many 
 %tool bugs (marked as ``wrong'' in Figure).
 %We investigated the reason for large number of 
 timeouts, wrong results and errors.  We observed that software netlists 
 heavily use bit-level operations and thus bit-precise reasoning ability 
-is necessary for the underlying verification engine. However, bit-level operations 
-are less prevalent in conventional software and hence less tested in software 
-analysis tools.  \rmcmt{We reported the tool bugs to the authors of these tools.} 
+is necessary to precisely reason about these designs.  But, bit-level 
+operations are less prevalent in conventional software and hence less 
+tested in software analysis tools.  We reported the tool bugs to the 
+authors of these tools.
 
 
 \para{Analysis using Abstraction based Software Tools}
 %
-The abstraction based tools such as Ultimate Automizer and Astr{\'e}e 
-performed better than the precise SAT/SMT based tools on the software 
-netlist models.  Though Astr{\'e}e require manual intervention 
-to select the right set of partitions of program traces in order to do 
-precise analysis, the verification runtimes are comparable to \ABC for 
-most of the benchmarks.  However, Astr{\'e}e often use numerical 
-abstractions, which are likely to lose important bit-precise information.  
+The abstraction-based software analyzers such as Ultimate Automizer and Astr{\'e}e 
+performed better than the SAT/SMT-based software analysis tools.  Though 
+Astr{\'e}e require manual intervention to select the right set of partitions 
+of program traces in order to do precise analysis, the verification runtimes 
+of Astr{\'e}e are comparable to \ABC for most of the benchmarks.  However, 
+Astr{\'e}e often uses numerical abstractions, which are likely to lose 
+important bit-precise information.  
+%
 As a consequence, many inductive invariants required by the bit-manipulating 
-benchmarks cannot be represented, and so not inferred, using current abstractions 
+benchmarks cannot be represented, and so not inferred, using current abstractions 
 in Astr{\'e}e.  An abstract domain for this purpose must keep 
 precise relations between the bits of an integer (possibly some 
-form of BDD on the bits of the variable).  Astr{\'e}e has already been 
-refined for avionics and space software by adding few domain-specific 
-abstract domains which were very effective in removing some classes of 
+form of BDD on the bits of the variable).  Astr{\'e}e has already been 
+refined for avionics and space software by adding few domain-specific 
+abstract domains which were very effective in removing some classes of 
 false alarms~\cite{DBLP:journals/ftpl/BertraneCCFMMR15}.  We thus believe 
 that there is scope here for new abstract domains targeting hardware 
-designs while still remaining within the scope of traditional abstract 
-interpreter. 
+designs while still remaining within the scope of the traditional abstract 
+interpretation. 
 %
 %that implement abstract interpretation using
 %abstract domains developed specifically for this task, e.g.~by

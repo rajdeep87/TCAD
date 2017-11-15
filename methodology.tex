@@ -1,26 +1,45 @@
-%===============================================================================
-\section{Verification Techniques}~\label{methodology}
-%===============================================================================
+\section{Formal Verification of Software Netlist}\label{sec:abstraction}
+%
+%we describe the verification of the software netlist design 
+%generated from the hardware RTL using various software analyzers.  
 
-Given a transition system~$T$ and a property~$P$, we formally desribe 
-various post-condition computation techniques employed by
-model checkers based on SAT or BDDs.  The goal of post-condition computation
-is to derive the reachable sets of states, which is the strongest possible
-strengthening of $P$.  Traditional model checkers explicitly compute the
-post-conditions or pre-conditions to compute the reachable sets of states or
+In this section, we briefly describe various precise verification algorithms 
+based on SAT/SMT-based decision procedures as well as approximate techniques 
+that operates over relational and non-relational abstract domains. In this
+paper, we use these techniques for property verification of RTL circuits 
+as well as software netlist designs. 
+%
+%===============================================================================
+\para{Verification Techniques}~\label{methodology}
+%===============================================================================
+Traditional model checkers explicitly compute the
+postconditions or preconditions to compute the reachable sets of states or
 the set of states that never lead to the violation of $P$ respectively. 
-Here, we describe various algorithms for computing the reachable state space
-of $T$ such that every reachable state satisfies the state property $P$. We 
-broadly classify these techniques into two separate classes based on their 
-usage in either hardware or software domain -- \emph{netlist verification} and 
-\emph{software verification}, respectively. 
-
-\subsection{Netlist Verification}
+%
+Given a transition system~$T$ and a property~$P$, we formally describe 
+various well-known algorithms for computing the reachable 
+state space of $T$ such that every reachable state satisfies the property $P$. 
+%
+We broadly classify these techniques into two separate classes based on whether 
+they use decision procedures or abstract domains -- \emph{SAT/SMT-based
+Verification}, and \emph{Abstraction-based Verification}. 
+%
+For the purpose of illustration, we give bit-level descriptions of all 
+the verification techniques.
+%, though software verification algorithms work on program traces. 
+The materials in Section~\ref{netlist-verif} and Section~\ref{software-verif} 
+are not new and already exist in the literature.
+%
+\subsection{SAT/SMT-based Verification}~\label{netlist-verif}
+%
+We describe few well-known SAT/SMT-based verification techniques which are 
+used for property verification of the hardware RTL circuits as well as the 
+software netlist designs. 
 %
 %-------------------------------------------------------------------------------
 \para{Bounded Model Checking} 
 %
-The idea of BMC is as follows. 
+The idea of BMC~\cite{biere} is as follows. 
 Given a depth~$k$ and a set of error states~$B$, BMC operates
 by unwinding the transition relation~$T$ up to depth~$k$ starting from
 initial state $x_0$, represented by an initial state predicate~$I$.
@@ -36,54 +55,80 @@ $T$ for each unrolling.
 %-------------------------------------------------------------------------------
 \para{BMC with K-induction} 
 %
-In practice, BMC technique is incomplete. $k$-induction 
-strengthens the induction by assuming that $P$ holds 
-over $k-1$ time steps to increase the likelihood that $P$
-holds in $k$-th time step. The base case of the $k$-induction is the
-simple BMC problem shown before. If the base case is unsatisfiable,
-then the induction step is checked which is shown below.
+In practice, BMC technique is incomplete. 
+The $k$-induction~\cite{fmcad2000} technique 
+is explained as follows. 
+%
+The base case of the $k$-induction is the
+simple BMC problem shown before. If the 
+base case is unsatisfiable, then the 
+induction step is checked using the formula 
+shown below.  
 %
 \[ P(x_0) \wedge_{i=0}^{k-1} (\delta_i \wedge P_i) \implies P_k \]
+%
+Thus, $k$-induction assumes that $P$ holds 
+over $k-1$ time steps to increase the 
+likelihood that $P$ holds in $k$-th time step.
 %
 %-------------------------------------------------------------------------------
 \para{Interpolation-based Model Checking} 
 %
-The interpolation-based model checking technique
-computes a step-wise over-approximation of the reachable state-space,
+Interpolation-based model checking~\cite{cav03} 
+computes a step-wise overapproximation of the reachable state-space,
 $Q$, for a fixed unrolling $k$ of $T$, which is shown as
 follows.
 %
 \[ Q \wedge_{i=0}^{k-1} (\delta_i \wedge P_i) \implies P_k \]
 %
 The value of $k$ is increased when the implication fails. This
-progressively yields better over-approximations $Q_i$ thereby
-generating an interpolant between the $i$-th over-approximation and
-$k$-step unrolling which may be sufficient to prove the property
-$P$. Thus, interpolation is a complete method for reachability
-analysis of finite-state systems. In summary, the interpolation
-technique computes an abstraction of the post-condition with respect
-to the property $P$, by deriving interpolants from the failure of the
-BMC problems.
+progressively yields better overapproximation by 
+generating an interpolant between the $i$-th 
+overapproximation and $k$-step unrolling.
+%which may be sufficient to prove the property $P$. 
+Thus, the interpolation technique computes an abstraction 
+of the postcondition with respect to the property $P$, 
+by deriving interpolants from the failure of the
+BMC problem.
+%
+Interpolation-based model checking is a complete method 
+for reachability analysis of finite-state systems. 
+%
 
 %-------------------------------------------------------------------------------
 \para{Predicate Abstraction with CEGAR}
 %
-The technique computes abstract models $\hat{T}$ from the concrete model
-$T$ using existential abstraction. Given a concrete state $x$ which is the 
-valuation of all registers and a set of predicates, $B=\{\pi_{i} \ldots \pi_{k}\}$, 
-an abstract state $b$ is a vector of Boolean values which is obtained by applying 
-all the predicates to the concrete state, denoted $b=\alpha(x)$, where $\alpha$
-is an abstraction function. We define the abstract machine and property verification
-in predicate abstraction as follows:
+This technique computes an abstract model $\hat{T}$ from the concrete model
+$T$ using existential abstraction~\cite{cav97,cav2000}. 
+%
+Given a concrete state $x$ which is the 
+valuation of all registers and a set of 
+predicates, $Pred=\{\pi_{i} \ldots \pi_{k}\}$, 
+an abstract state $b$ is obtained by applying 
+an abstraction function $\alpha$, such that $b=\alpha(x)$.  
+%
+The abstract state $b$ is given by a vector 
+of Boolean values of the predicates in $Pred$. 
+%which is obtained by applying all the predicates 
+%to the concrete state, 
+%
+Let $S$ be the set of concrete states in $T$. 
+%
+We define the abstract model given by, 
+$\hat{T} = \langle \hat{I}, \pi, \hat{\delta} \rangle$.  
+We define the components of $\hat{T}$ and property 
+verification using predicate abstraction below. 
+%
 \begin{enumerate}
-\item Transition Relation: $ \hat{\delta} := \{(b,b') | \exists x,x' \in S: \delta(x,x') 
+\item Transition Relation: $\hat{\delta} \mathrel{\hat{=}} \{(b,b') \mid \exists x,x' \in S: \delta(x,x') 
 \wedge \alpha(x) = b \wedge \alpha(x') = b' \} $, $x=\{x_1 \ldots x_n\}, 
-b=\{b_1 \ldots b_n\}, b_i=\pi_{i}(x) $, $\pi_i$ is the predicate on concrete 
-variable $x_i$
+b=\{b_1 \ldots b_n\}, b_i=\pi_{i}(x) $, $\pi_i$ is the predicate on concrete variable $x_i$.
 
-\item Initial State: $\hat{I}(b) := \exists x \in S: (\alpha(x) = b) \wedge I(x)$
+\item Initial State: $\hat{I}(b) \mathrel{\hat{=}} 
+\exists x \in S: (\alpha(x) = b) \wedge I(x)$
 
-\item Safety Property: $\hat{P}(b) := \forall x \in S: (\alpha(x) = b) \implies P(x)$ 
+\item Safety Property: $\hat{P}(b) \mathrel{\hat{=}} 
+\forall x \in S: ((\alpha(x) = b) \implies P(x))$.  
 Thus, if property $\hat{P}$ holds on all reachable states of the abstract model $\hat{T}$,
 then $P$ also holds on all reachable state of concrete model $T$.
 \end{enumerate}
@@ -91,56 +136,77 @@ then $P$ also holds on all reachable state of concrete model $T$.
 %-------------------------------------------------------------------------------
 \para{Property Directed Reachability} 
 %
-Let $\alpha_1(x), \alpha_2(x),...,\alpha_n(x)$ be a sequence of 
-inductive assertions generated by the algorithm such that if the 
-following holds,
+The property directed reachability~\cite{fmcad07} technique is briefly 
+described as follows. 
+%
+Let $\alpha_1(x), \alpha_2(x),\ldots,\alpha_n(x)$ be a sequence of 
+inductive assertions generated by the PDR algorithm such that 
+$P$ is an invariant of $T$ if the following conditions hold.
 \begin{enumerate}
  \item $I(x) \implies P$
  \item $\forall i, I(x) \implies \alpha_i(x)$
- \item $\forall i, \wedge_{i=1}^{k} \alpha_i(x) \wedge P(x) \wedge \delta(x,x') \implies \alpha_k(x')$,
- $\alpha_k$ is inductive relative to $\alpha_1, \alpha_2, ...,\alpha_{k-1}$.
- \item $\forall i, \wedge_{i=1}^{n} \alpha_i(x) \wedge P(x) \wedge \delta(x,x') \implies P(x')$, \\
- $P$ is inductive related to the inductive invariants $\alpha_1, \alpha_2, ...,\alpha_n$.
+ \item $\forall i, {\overset{k}{\underset{i=1}{\wedge}}} 
+	 (\alpha_i(x) \wedge P(x) \wedge \delta(x,x') \implies \alpha_k(x'))$,
+ $\alpha_k$ is inductive relative to $\alpha_1, \alpha_2,\ldots,\alpha_{k-1}$,
+ \item $\forall i, {\overset{n}{\underset{i=1}{\wedge}}} 
+	(\alpha_i(x) \wedge P(x) \wedge \delta(x,x') \implies P(x'))$, 
+ $P$ is inductive relative to the inductive invariants $\alpha_1,\alpha_2,\ldots,\alpha_n$, 
 \end{enumerate}
-then $P$ is an invariant of $T$. The algorithm computes successive intermediate 
+%
+The algorithm computes successive intermediate 
 inductive assertions by removing the counterexamples-to-induction states in 
-property-directed fashion.  Thus the technique computes an over-approximation 
+property-directed fashion.  Thus, the technique computes an overapproximation 
 of the set of reachable states in successive steps until it finds an 
 inductive strengthening assertion sufficient to prove the property. 
-
-
-\subsection{Software Verification}
 %
-We now describe some well known software verification techniques that are 
-used in this paper in addition to the techniques described above, for 
-verification of software netlist models.  We refer software 
-netlist as a program in the following description. 
-  
+\subsection{Abstraction-based Verification}~\label{software-verif}
+%
+We now describe few well-known abstraction-based verification 
+techniques that analyzes the transition system by computing an 
+abstract pre-condition or abstract post-condition over a given 
+abstract domain. Until now, the techniques described below 
+are purely used in the context of software programs. In this paper, 
+we employ these techniques for verifying the software netlist designs 
+generated from the RTL. 
 %-------------------------------------------------------------------------------
 \para{Abstract Interpretation} 
 %
-In abstract interpretation~\cite{DBLP:journals/corr/abs-cs-0701193,DBLP:conf/emsoft/Cousot07},
-a given program is analyzed with respect to a given \emph{abstract domain}.  
-The technique computes an abstraction of the post-condition to derive an 
-inductive invariant $AInv$ that includes the start state and thus are 
-over-approximations of the set of reachable states. Elements of an abstract 
-domain can be sets or conjuncts of formulae~\cite{vmcai-2013}. So abstract 
-interpretation can be viewed as:
+Abstract Interpretation~\cite{Cousot92,CC79,DBLP:conf/emsoft/Cousot07},
+is a theory of sound approximation of program semantics based on lattice 
+structures. Static analysis using abstract interpretation is widely used 
+to verify properties of safety-critical systems. 
+%
+In abstract interpretation, a given program is analyzed 
+with respect to a given \emph{abstract domain} $\domain$.  
+The technique computes an abstraction of the postcondition to derive an 
+inductive invariant $AInv$.
+%which includes the start state and is an 
+%overapproximation of the set of reachable states.  
+Elements of an abstract domain can be sets or conjuncts 
+of formulae~\cite{DBLP:conf/vmcai/BrainDHGK13}.  
+Given a transition system $T$, a set of formulas $A$ each of which is an 
+element of $\domain$, and property $P$ as above, $AInv$ is computed as follows. 
+%abstract interpretation can be described as follows. 
+%
 \begin{enumerate}
 \item  $\exists AInv \in A. \forall x_0, x_1. (I(x_0) \implies AInv(x_0)) 
 \wedge (AInv(x_0) \wedge \delta(x_0, x_1) \implies AInv(x_1))$, 
-\item $\forall x. AInv(x) \implies \neg{P(x)}$
+\item $\forall x. (AInv(x) \implies \neg{P(x)})$
 \end{enumerate}
-where $A$ is the set of formulae which are the elements of the 
-chosen abstract domain. The system is safe if there is no model. 
-Otherwise, the technique computes either a stronger invariant 
-$AInv$ or choose a more expressive abstract domain to prove safety.
-
+%
+%where $A$ is the set of formulae each of which is the element of the 
+%chosen abstract domain. The system is safe if there is no model. 
+\Omit{
+If an $AInv$ cannot the above conditions does not hold, the technique computes 
+either a stronger invariant $AInv$ or choose a more expressive 
+abstract domain to prove safety.
+}
+\Omit{
 %-------------------------------------------------------------------------------
 \para{Path-based symbolic execution}
 %-------------------------------------------------------------------------------
 %
-Path-based symbolic execution is an well known technique in program verification 
+Path-based symbolic execution is an well-known technique in program verification 
 that is used for automatic test case generation~\cite{DBLP:conf/osdi/CadarDE08}.
 Techniques based on precise forward symbolic 
 execution~\cite{DBLP:conf/osdi/CadarDE08, King:1976:SEP:360248.360252}
@@ -152,11 +218,12 @@ of the guards and assignments along that path.  This approach generates many
 SAT/SMT queries and may suffer from path explosion problem.
 
 A similar technique is proposed for RTL in~\cite{star}. 
-For sequential circuits, symbolic expressions contains path variables which 
+For sequential circuits, symbolic expressions contain path variables which 
 are annotated by the time cycle to which it belongs. The 
-work of~\cite{DBLP:journals/todaes/LiuV14} analyzes 
+work of~\cite{DBLP:journals/todaes/LiuV14} analyzes the 
 feasibility of every path in the RTL program using a hybrid 
 of concrete and symbolic execution and property based pruning.
+}
 %
 %-------------------------------------------------------------------------------
 \para{Automata based Trace Abstraction with Interpolants}
@@ -164,17 +231,17 @@ of concrete and symbolic execution and property based pruning.
 %
 Automata-theoretic approaches to program verification~\cite{DBLP:conf/cav/KupfermanV00,
 DBLP:books/sp/cstoday95/Vardi95,DBLP:conf/cav/HeizmannHP13} construct 
-an automaton that represent a program together with its specification.
+an automaton that represents a program together with its specification.
 The negation of the specification is encoded via error locations in the automaton, 
 that is, the error location is an accepting state.  The program satisfies the 
 specification iff each trace accepted by the automaton is infeasible.
 %
-One of the automata-theoretic approach for program verification 
+One of the automata-theoretic approaches for program verification 
 is implemented in a tool called 
 \emph{UltimateAutomizer}~\cite{DBLP:conf/tacas/HeizmannDGLMSP16}. 
 The technique in~\cite{DBLP:conf/tacas/HeizmannDGLMSP16} decompose a 
-program into sets of traces and the decomposition is guided by proofs that 
-is obtained for single traces. For correct programs, every non-empty set 
+program into sets of traces, and the decomposition is guided by proofs that 
+are obtained for single traces. For correct programs, every non-empty set 
 of error traces is an abstraction of the feasible error traces.  
 %It obtains a proof for a single trace and trace abstraction generalizes 
 %these proofs and combines them.  
@@ -182,7 +249,7 @@ Each iteration of the algorithm tries to obtain loop invariants for the path pro
 induced by the current counterexample.  This may be done through different techniques 
 which can be applied iteratively. Each technique provides a set of Hoare triples that constitutes a proof of
 safety for the current counterexample.
-As soon as a technique yields loop invariants, the algorithm uses these loop
+As soon as a technique yields loop invariants, the algorithm use these loop
 invariants during the refinement and generalization step of trace abstraction.  If all the 
 techniques have been exhausted and a loop invariant has not been obtained yet, the algorithm
 use some or all (depending on the strategy) of the obtained hoare triples and 

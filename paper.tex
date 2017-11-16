@@ -137,89 +137,33 @@
 % \IEEEpeerreviewmaketitle
 
 \begin{abstract}
-\Omit{
-Folk wisdom in formal hardware verification community is to synthesize a 
-hardware design into bit-level netlist.  This technique uses propositional satisfiability 
-solvers (SAT) to reason about the correctness of bit-blasted verification 
-conditions generated from the netlist representation using a bounded or unbounded 
-verification algorithm.  However, most bit-level verification algorithms heavily 
-relies on the SAT solvers to generate invariants or finding counterexamples. 
-%
-An alternative approach is to synthesize a design into word-level netlist which 
-is then solved using a Satisfiability Modulo Theory (SMT) solver.  However, 
-word-level verification flow has not seen much adoption in commercial EDA tools 
-due to the performance bottleneck of word-level SMT solvers.  The tight coupling 
-between the verification algorithm and SAT/SMT solvers often limits the scalability 
-of these tools.   
-%
-
-
-In this paper, we present a novel formal verification flow that synthesize a 
-Register Transfer Level (RTL) design into a software like representation and 
-expressed in ANSI-C. We call this \emph{software netlist}. 
-The software netlist representation allows us to leverage various software verification 
-technologies inlcuding abstract interpretation techniques which was never applied to 
-RTL verification.  
-%
-}
-	
 This paper experimentally evaluates formal verification of hardware design at 
-Register Transfer Level (RTL) description 
-by synthesizing the RTL design into two different netlist representations -- 
-\emph{bit-level netlist} and \emph{software netlist}.  The bit-level 
-netlist is expressed in AIGER format, whereas the software netlist 
-is expressed in C language. 
-%and is an \emph{exact} representation of the RTL design. 
-%
-Conventional tools for RTL verification typically reason over 
-the bit-level netlist by translating them into CNF formula following 
-Tseitin transformation.  
-%   
-On the other hand, the software netlist representation allows us 
-to leverage various software verification technologies 
-inlcuding abstract interpretation and automata-theoretic 
-trace abstraction techniques which was never applied to RTL verification. 
+Register Transfer Level (RTL) description by synthesizing the RTL design into 
+two different netlist representations -- \emph{bit-level netlist} and 
+\emph{software netlist}.  The bit-level netlist is expressed in AIGER format, 
+whereas the software netlist is expressed in C language. 
 % 
+The type of netlist representation determines the applicability of 
+the underlying decision procedures for verification task.
+%
 To this end, we classify verification technologies on the bit-level netlist 
 and software netlist into two categories based on the underlying decision 
 procedures used -- {\em precise} and {\em abstraction}.  Precise tools employ 
 propositional SAT/SMT solvers which are used by techniques such as Bounded Model 
-Checking (BMC), 
-$k$-induction, Interpolation, IC3/PDR and others.  By contrast, abstraction-based tools 
-use various convex and non-convex abstract domains which are used by techniques such as 
-predicate abstraction and abstract interpretation. 
+Checking (BMC), $k$-induction, Interpolation and IC3/PDR.  By contrast, 
+abstraction-based tools use various convex and non-convex abstract domains
+employed by techniques such as Counterexample-guided Abstraction Refinement
+(CEGAR) and classical abstract interpretation. 
 %
-%present an emperical evaluation of various unbounded formal 
-%verification algorithms such as Predicate Abstraction, $k$-induction, Interpolation, IC3/PDR 
-%and Abstract Interpretation; 
-This paper present the comparison of precise and abstraction-based verification tools 
-from the Software Verification Competition (SV-COMP'16) and Hardware Model Checking Competition 
-(HWMCC'16) for the purposes of RTL verification.  Experimental evaluation on a range of RTL 
-benchmarks suggest that a commercial abstract interpretation tool Astr{\'e}e performs best among 
-all software analyzers for verification of software netlist generated from the RTL.  On the other hand, 
-the PDR engine of the well-known bit-level hardware model checking tool \textsc{ABC} performs best 
-among the hardware tools. Furthermore, the performance of Astr{\'e}e is comparable to \textsc{ABC} 
-for most of our benchmarks.
-    
-%Our benchmarks are drawn from real world hardware benchmark suite, such as 
-%VIS verilog models, the Texas-97 Benchmark suite, Hardware Model Checking 
-%Competition 2015, and opencores.org.  
-	
-\Omit{
-Though software verifiers are never optimized for RTL verification, 
-experimental evaluation on a range of benchmarks suggests that the 
-software verification techniques can be successfully used for bounded 
-and unbounded RTL verification. The runtimes of SAT/SMT-based software 
-verification tools are within one order of magnitude compared to the 
-bit-level hardware model checkers.  However, the runtimes of 
-abstraction-based techniques, such as abstract interpretation and 
-automata-theoretic verification, though operate on an overapproximate 
-representation and hence less precise, are comparable to bit-level 
-harware tools.  To the best of our knowledge, this is the first 
-exhaustive analysis of the state-of-the-art verification techniques 
-employed by verification tools from hardware and software domains 
-(HWMCC'16 and SV-COMP'16) for the purposes of RTL verification. 
-}
+This paper present the comparison of various precise and abstraction-based verification tools 
+from the Software Verification Competition (SV-COMP'16), Hardware Model Checking Competition 
+(HWMCC'16) and a commercial abstract interpretation tool Astr{\'e}e for the purposes of RTL 
+verification.  Experimental evaluation on a total of~34 RTL benchmarks suggest that
+Astr{\'e}e with manual guidance is effective for finding complex bugs as well as proving 
+unbounded safety of the software netlist designs generated from RTL.  Astr{\'e}e is faster 
+than a bit-level hardware model checking tool \textsc{ABC} 
+for~23\% (8 out of 34) of our benchmarks.  However, the PDR engine in \ABC performs 
+better than Astr{\'e}e for the remaining 26 benchmarks and timeout for 4 benchmarks. 
 \end{abstract}
 
 \begin{IEEEkeywords}

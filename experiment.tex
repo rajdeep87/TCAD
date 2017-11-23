@@ -477,29 +477,26 @@ were restricted to 32\,GB RAM per benchmark.
 %\todo{reason}
 
 
-
-\ABC proved a total of~30 benchmarks and timed out for 4 benchmarks. 
-%The results in Figure~\ref{fig:runtimes} are obtained using ABC PDR engine. 
-The runtimes of Astr{\'e}e are very close to \ABC for most benchmarks. 
-%An important highlight of this comparison is that 
-The abstract interpretation using Astr{\'e}e was faster than \ABC for~8 
-benchmarks (23\% cases).
 %
-Among these~8 benchmarks, Astr{\'e}e reported bugs faster than \ABC for~3 
-unsafe benchmarks. For the remaining~5 benchmarks, \ABC timed out in 4 cases 
-whereas Astr{\'e}e proved all~5 benchmarks faster than \ABC (see the extremen 
-right side of Figure~\ref{fig:runtimes}).  
-%(benchmark number 10, 14 and 16 in Figure~\ref{fig:runtimes}).  
+\ABC proved a total of~30 benchmarks and timed out for 4 benchmarks.  
+On the other hand, Astr{\'e}e reported a total of~7 false alarm out of~34 
+benchmarks (shown by the blue triangles corresponding to the timeout axis in 
+Figure~\ref{fig:runtimes}). However, Astr{\'e}e was faster than \ABC on~8 benchmarks (23\% cases).
 %
-However, Astr{\'e}e reported a total of~7 false alarm out of~34 benchmarks,  
-which are shown by the blue triangles corresponding to the timeout axis in 
-Figure~\ref{fig:runtimes}.  
+Among these~8 benchmarks,~3 are unsafe for which Astr{\'e}e reported bugs
+earlier than \ABC. For the remaining~5 benchmarks, \ABC timed out in 4 cases, 
+whereas Astr{\'e}e proved all~5 benchmarks within the time limit (see the plots 
+on the extreme right side of Figure~\ref{fig:runtimes}).  
+%
+Overall, the runtimes of Astr{\'e}e are very close to \ABC for most benchmarks. 
 %
 
-We investigate the reason for the false alarm in Astr{\'e}e and observe 
-that the bit manipulating nature of the software netlist prevents Astr{\'e}e from 
-inferring the necessary invariants since these invariants are not expressible by the 
-underlying abstract domains.  Whereas, \textsc{UltimateAutomizer} timed out in~14 
+We investigate the reason for the false alarms in Astr{\'e}e and observe that 
+the bit-manipulating nature of the software netlist prevents Astr{\'e}e from 
+inferring the necessary invariants that are required to prove the property 
+because these invariants are not expressible by the underlying abstract domains. 
+
+Whereas, \textsc{UltimateAutomizer} timed out in~14 
 out of 34 benchmarks. For safe benchmarks that are hard to prove, \textsc{UltimateAutomizer} 
 was able to infer the necessary invariants required to prove the property within 
 the time limit. 

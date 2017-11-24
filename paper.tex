@@ -146,28 +146,24 @@ whereas the software netlist is expressed in C language.
 The type of netlist representation determines the applicability of 
 the underlying decision procedures for verification task.
 %
-To this end, we classify verification technologies on the bit-level netlist 
+To this end, we classify verification techniques for the bit-level netlist 
 and software netlist into two categories based on the underlying decision 
 procedures used -- {\em precise} and {\em abstraction}.  Precise tools employ 
-propositional SAT/SMT solvers which are used by techniques such as Bounded Model 
-Checking (BMC), $k$-induction, Interpolation and IC3/PDR.  By contrast, 
-abstraction-based tools use various convex and non-convex abstract domains
-employed by techniques such as Counterexample-guided Abstraction Refinement
-(CEGAR) and classical abstract interpretation. 
+propositional SAT/SMT solvers for detecting counterexamples or generating
+invariants. By contrast, abstraction-based tools use various convex and 
+non-convex abstract domains employed by techniques such as Counterexample-guided 
+Abstraction Refinement (CEGAR) and classical abstract interpretation. 
 %
-This paper present the comparison of various precise and abstraction-based verification tools 
-from the Software Verification Competition (SV-COMP'16), Hardware Model Checking Competition 
-(HWMCC'16) and a commercial abstract interpretation tool Astr{\'e}e for the purposes of RTL 
-verification.  Experimental evaluation on a total of~34 RTL benchmarks suggest that
-Astr{\'e}e with manual guidance is effective for finding complex bugs as well as proving 
-unbounded safety of the software netlist designs generated from RTL.  Astr{\'e}e is faster 
-than a bit-level hardware model checking tool \textsc{ABC} 
-for~23\% (8 out of 34) of our benchmarks.  However, the PDR engine in \ABC performs 
-better than Astr{\'e}e for the remaining 26 benchmarks and timeout for 4 benchmarks. 
+We present the application of various precise and abstraction-based verification 
+tools for property verification of RTL circuits.  Experimental evaluation on a 
+range of~34 RTL benchmarks suggest that the SAT-based bit-level hardware model
+checker outperforms bit-level software analyzers. However, abstract interpretation 
+with manual guidance is effective for finding complex bugs as well as proving 
+unbounded safety of the software netlist designs generated from RTL circuits.  
 \end{abstract}
 
 \begin{IEEEkeywords}
-Formal verification, Verilog RTL, ANSI-C, SAT, SMT, Abstract Interpretation, 
+Formal verification, Verilog RTL, ANSI-C, SAT, Abstract Interpretation, 
 Symbolic Execution.
 \end{IEEEkeywords}
 

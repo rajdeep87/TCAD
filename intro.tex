@@ -6,21 +6,13 @@ assertion-based verification~\cite{Foster:2009:AAB}, is by now well supported by
 The industrial success of formal hardware verification has been advanced by decades of research into specialised data structures and algorithms~\cite{vis}, tools~\cite{Seger:2005:IEE,abc}, and methodology~\cite{MCMILLAN2000279,Aagaard:2000:MLH}. The most-used technology relies on back-end analysis by propositional satisfiability (SAT) solvers~\cite{Biere1999} or by modern solvers for satisfiability modulo theories (SMT)~\cite{decision_procedures, DBLP:conf/lpar/AndrausLS08,soc-keating,
 DBLP:conf/mtv/SunkariCVM07,DBLP:conf/cav/Bjesse08}. Scientifically inspired and practically fruitful research into hardware verification continues today, with scalability an ever-present challenge---along with many others. 
 
-But the past two decades have also seen an explosion in research into formal software verfication~\cite{dkw2008}, with progress vivdly witnessed by the yearly `SV-COMP' competition~\cite{Beyer2017}.  Verification of industrial-scale software is now an established possibility, and commerial offerings are starting to appear. Some techniques used in software verification, such as interpolation~\cite{}, have analogues in hardware verification. Others, such as abstract interpretation~\cite{}, have been largely confined to the software domain.  
+But the past two decades have also seen an explosion in research into automated formal verfication of software~\cite{dkw2008}, with progress vivdly witnessed by the yearly `SV-COMP' competition~\cite{Beyer2017}.  Verification of industrial-scale software is now an established possibility, and commerial offerings are starting to appear. Some techniques used in software verification, such as interpolation~\cite{}, have analogues in hardware verification. Others, such as abstract interpretation~\cite{}, have been largely confined to the software domain.  
 
-In this paper, we explore the potential for hardware verification to leverage and exploit past and future progress in software verification. We translate hardware models, articulated in Verilog at register transfer level, into 
-a \emph{software netlist}---an ANSI-C program that faithfully reproduces the hardware in software. This opens the door to the exploring the application of software verification technologies, arising from contemporary program analysis research, to formal verification of hardware RTL designs. Our aim is to establish some baseline experimental data for verification of hardware by translation into software, and also to evaluate the effectiveness of some current software verification methods---notably abstract interpretation---which have not yet been well investigated for hardware.
+In this paper, we explore the potential for hardware verification to leverage past and future progress in software verification. We translate a hardware model, articulated in Verilog at register transfer level, into 
+a \emph{software netlist}---an ANSI-C program that faithfully reproduces the hardware in software. This opens the door to experiments with using software verification technologies, arising from contemporary program analysis research, to formal verification of hardware RTL designs. Our aim is to establish baseline experimental data for verification of hardware by translation into software, and also to evaluate the effectiveness of some current software verification methods---notably abstract interpretation---which have not yet been well investigated for hardware.
 
-Of course, the idea of expressing RTL designs in software has been 
-advocated in the past, primarily to enable faster simulation; we 
-mention only~\cite{soc-keating}, which highlights property 
-verification-related benefits in the context of SoC design.  
-But we emphasize that the software models of hardware used 
-in~\cite{soc-keating} are abstractions of hardware which are 
-usually written manually---and often disconnected from a `golden' RTL design model from which the chip 
-is ultimately realized.  By contrast, our software netlist representation 
-is not an abstract simulation model but an exact representation 
-of the RTL. 
+Of course, the idea of expressing RTL designs in software has been  advocated in the past, primarily to enable faster simulation. We mention only~\cite{soc-keating}, which highlights property 
+verification-related benefits in the context of SoC design.  But we emphasize that the software models in~\cite{soc-keating} are abstractions of hardware that are usually written manually---and often disconnected from a `golden' RTL design model from which the chip is ultimately realized.  By contrast, our software netlist representation is not an abstract simulation model but an exact translation of the RTL. 
 
 In particular, we present a novel property verification framework 
 for hardware RTL designs in software language using native 

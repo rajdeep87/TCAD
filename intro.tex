@@ -1,69 +1,27 @@
 \section{Introduction}\label{sec:intro}
 %
-Formal property verification of hardware designs given in Verilog or VHDL
-at the RTL description is concerned with checking the logic functionality, 
-the power and security features of RTL against a formal specification. The 
-specification captures the design intent and is expressed in a Property 
-Specification Language (PSL), such as SystemVerilog Assertions (SVA). The 
-problem above is known as \emph{Assertion Based Verification}.
+Formal verification of hardware is, today, a well-established design technology~\cite{Seligman:2015:FV}. From its modest beginnings in the 1980s, extensive corporate and academic research into hardware verification has gone hand-in-hand with gradual but sustained industrial take-up. Two landmark achievements, by teams at Intel Corporation, were the full correctness verification of the entire execution clusters of the Intel Core 2 Duo~\cite{Core2} and Core i7 processors~\cite{i7}. The more widely-adopted methodology,
+assertion-based verification~\cite{Foster:2009:AAB}, is by now well supported by mature software tools from the EDA companies.
 
+The industrial success of formal hardware verification has been advanced by decades of research into specialised data structures and algorithms~\cite{vis}, tools~\cite{Seger:2005:IEE,abc}, and methodology~\cite{MCMILLAN2000279,Aagaard:2000:MLH}. The most-used technology relies on back-end analysis by propositional satisfiability (SAT) solvers~\cite{Biere1999} or by modern solvers for satisfiability modulo theories (SMT)~\cite{decision_procedures, DBLP:conf/lpar/AndrausLS08,soc-keating,
+DBLP:conf/mtv/SunkariCVM07,DBLP:conf/cav/Bjesse08}. Scientifically inspired and practically fruitful research into hardware verification continues today, with scalability an ever-present challenge---along with many others. 
 
-Folk wisdom in the formal hardware verification community is to synthesize the 
-RTL design into a bit-level netlist.  This technique uses propositional 
-satisfiability solvers (SAT) to reason about the correctness of bit-blasted 
-verification conditions generated from the netlist representation using a 
-bounded or unbounded verification algorithm~\cite{abc,vis,andreas}.  
-Most bit-level verification algorithms heavily rely on the SAT solvers 
-to generate invariants or find counterexamples. 
-%
-This approach misses the opportunity to exploit the word-level structure of 
-the RTL designs.  Formal hardware verification tools have therefore developed 
-an alternative word-level flow that synthesizes the RTL design into a word-level 
-netlist.  This change in the representation has enabled the use of modern solvers 
-for Satisfiability Modulo Theories (SMT)~\cite{decision_procedures} in the
-back-end of the tools~\cite{DBLP:conf/lpar/AndrausLS08,soc-keating,
-DBLP:conf/mtv/SunkariCVM07,DBLP:conf/cav/Bjesse08}.
-%
-However, the performance of word-level symbolic execution engines is 
-determined by the level of abstraction of the symbolic expressions and 
-the power of the rewrite engine used by the SMT solvers. 
-%
+But the past two decades have also seen an explosion in research into formal software verfication~\cite{dkw2008}, with progress vivdly witnessed by the yearly `SV-COMP' competition~\cite{Beyer2017}.  Verification of industrial-scale software is now an established possibility, and commerial offerings are starting to appear. Some techniques used in software verification, such as interpolation~\cite{}, have analogues in hardware verification. Others, such as abstract interpretation~\cite{}, have been largely confined to the software domain.  
 
+In this paper, we explore the potential for hardware verification to leverage and exploit past and future progress in software verification. We translate hardware models, articulated in Verilog at register transfer level, into 
+a \emph{software netlist}---an ANSI-C program that faithfully reproduces the hardware in software. This opens the door to the exploring the application of software verification technologies, arising from contemporary program analysis research, to formal verification of hardware RTL designs. Our aim is to establish some baseline experimental data for verification of hardware by translation into software, and also to evaluate the effectiveness of some current software verification methods---notably abstract interpretation---which have not yet been well investigated for hardware.
 
-Unlike traditional approaches that synthesize the RTL design into a bit-level
-netlist~\cite{abc,fmcad07,vis} or generate an
-abstract model of the design (say C/C++ ISA or micro-architectural
-models derived from RTL~\cite{satrajit}), in this paper we translate 
-hardware models, articulated in Verilog at register transfer level, into 
-a \emph{software netlist}. 
-%
-The generated model is expressed as a software program. 
-% 
-The natural software language for our representation is 
-ANSI-C~\footnote{https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html}.  
-%
 Of course, the idea of expressing RTL designs in software has been 
-advocated in the past, primarily to enable faster simulation; we will 
+advocated in the past, primarily to enable faster simulation; we 
 mention only~\cite{soc-keating}, which highlights property 
 verification-related benefits in the context of SoC design.  
-%
 But we emphasize that the software models of hardware used 
 in~\cite{soc-keating} are abstractions of hardware which are 
-usually written \emph{manually} and are expensive to maintain---and 
-often disconnected from a `golden' RTL design model from which the chip 
+usually written manually---and often disconnected from a `golden' RTL design model from which the chip 
 is ultimately realized.  By contrast, our software netlist representation 
-is \emph{not} an abstract model but an \emph{exact} representation 
-of the RTL.  The techniques proposed in this paper aims at a 
-fully automatic property verification of the hardware RTL design via 
-translation into the software netlist.  
-%
+is not an abstract simulation model but an exact representation 
+of the RTL. 
 
-
-In this paper, we show that the software netlist representation 
-generated from the hardware RTL design allows for the application of 
-verification technologies inspired by program analysis research to 
-formal verification of hardware RTL designs.  
-%
 In particular, we present a novel property verification framework 
 for hardware RTL designs in software language using native 
 software analyzers.  To this end, we explore software verification 
@@ -73,7 +31,6 @@ techniques such as abstract interpretation~\cite{CC79} for formal verification
 of RTL designs.  It is worth emphasizing that some of these techniques 
 have never been applied to hardware verification.  
 %
-
 
 By means of experiment, we show that a commercial abstract interpreter  
 Astr{\'e}e with manual guidance is effective for finding complex bugs 

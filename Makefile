@@ -5,11 +5,11 @@ BIB=biblio.bib
 all: ${TARGET}.pdf
 
 ${TARGET}.dvi: ${TARGET}.tex ${BIB} ${SRC}
-	pdflatex ${TARGET}.tex
-	pdflatex ${TARGET}.tex
+	latex ${TARGET}.tex
+	latex ${TARGET}.tex
 	bibtex ${TARGET}.aux
-	pdflatex ${TARGET}.tex
-	pdflatex ${TARGET}.tex
+	latex ${TARGET}.tex
+	latex ${TARGET}.tex
 
 ${TARGET}.ps: ${TARGET}.dvi 
 	dvips -t a4 -Ppdf -G0 -o ${TARGET}.ps ${TARGET}.dvi 

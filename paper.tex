@@ -60,16 +60,16 @@
 \newcommand{\symex}{\tool{path-symex}}
 \newcommand{\ebmc}{\tool{ebmc}}
 \newcommand{\hector}{\tool{hector}}
-\newcommand{\slec}{\tool{slec}}
+%\newcommand{\slec}{\tool{slec}}
 \newcommand{\symexv}{\tool{path-symex 5.0}}
 \newcommand{\ebmcv}{\tool{ebmc 4.2}}
-\newcommand{\hwcbmcv}{\tool{hw-cbmc 5.0}}
-\newcommand{\verifox}{\tool{verifox 0.5}}
-\newcommand{\acdcl}{\tool{acdcl}}
-\newcommand{\summarizer}{\tool{summarizer 1.0}}
+%\newcommand{\hwcbmcv}{\tool{hw-cbmc 5.0}}
+%\newcommand{\verifox}{\tool{verifox 0.5}}
+%\newcommand{\acdcl}{\tool{acdcl}}
+%\newcommand{\summarizer}{\tool{summarizer 1.0}}
 %\newcommand{\v{2}c}{\tool{v2c 0.4}}
-\newcommand{\ABC}{\tool{ABC}}
-\newcommand{\yosys}{\tool{Yosys 0.5}}
+% \newcommand{\ABC}{\tool{ABC}}
+\newcommand{\yosys}{Yosys 0.5}
 \newcommand{\longversion}[1]{}
 
 % Author comments to each other.
@@ -142,29 +142,10 @@
 % \IEEEpeerreviewmaketitle
 
 \begin{abstract}
-This paper experimentally evaluates formal verification of hardware at the
-Register Transfer Level (RTL) description by synthesizing the RTL design into 
-two different netlist representations -- \emph{bit-level netlist} and 
-\emph{software netlist}.  The bit-level netlist is expressed in AIGER format, 
-whereas the software netlist is expressed in C language. 
-% 
-The type of netlist representation determines the applicability of 
-the underlying decision procedures for verification task.
-%
-To this end, we classify verification techniques for the bit-level netlist 
-and software netlist into two categories based on the underlying decision 
-procedures used -- {\em precise} and {\em abstraction}.  Precise tools employ 
-propositional SAT/SMT solvers for detecting counterexamples or generating
-invariants. By contrast, abstraction-based tools use various convex and 
-non-convex abstract domains employed by techniques such as Counterexample-guided 
-Abstraction Refinement (CEGAR) and classical abstract interpretation. 
-%
-We present the application of various precise and abstraction-based verification 
-tools for property verification of RTL circuits.  Experimental evaluation on a 
-range of~34 RTL benchmarks suggest that the SAT-based bit-level hardware model
-checker outperforms bit-level software analyzers. However, abstract interpretation 
-with manual guidance is effective for finding complex bugs as well as proving 
-unbounded safety of the software netlist designs generated from RTL circuits.  
+This paper reports on an exploration of formal verification of hardware via translation of Verilog RTL into a novel ANSI-C representation called a \textit{software netlist}. Unlike abstract software models of hardware designed for high-performance simulation, software netlists  are cycle-accurate, faithful translations of the RTL. This direct representation enables us to experiment with using software verification technologies from contemporary program analysis research for formal verification of hardware at the RTL level of abstraction.  To establish an experimental
+baseline, we compare the capability and performance of both native RTL and software verification tools
+that use propositional SAT/SMT solvers for bit-level analysis. We also evaluate some contemporary software verification tools that do abstraction, such as counterexample-guided abstraction refinement and classical abstract interpretation. Experiments with a range of~34 RTL benchmarks suggest that SAT-based, bit-level hardware model checkers currently outperform bit-level software analyzers. We also establish that abstract interpretation  with manual guidance is effective for finding complex bugs, as well as proving 
+unbounded safety of software netlist designs generated from RTL circuits.  
 \end{abstract}
 
 \begin{IEEEkeywords}

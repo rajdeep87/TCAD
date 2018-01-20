@@ -38,7 +38,7 @@
 \usepackage{color}
 \usepackage{listings}
 \usepackage{verbatim}
-\usepackage{comment}
+%\usepackage{comment}
 \usepackage{psfrag}
 \usepackage{epsfig}
 \usepackage{wasysym} 
@@ -71,6 +71,9 @@
 \newcommand{\ABC}{\tool{ABC}}
 \newcommand{\yosys}{\tool{Yosys 0.5}}
 \newcommand{\longversion}[1]{}
+
+% Author comments to each other.
+\def\comment#1{{\color{red}#1}}  % display comments/notes.
 
 \newcommand{\Remote}[1]{}
 %\newcommand{\mydef}[1]{\begin{definition}#1\end{definition}}
@@ -139,7 +142,7 @@
 % \IEEEpeerreviewmaketitle
 
 \begin{abstract}
-This paper experimentally evaluates formal verification of hardware design at 
+This paper experimentally evaluates formal verification of hardware at the
 Register Transfer Level (RTL) description by synthesizing the RTL design into 
 two different netlist representations -- \emph{bit-level netlist} and 
 \emph{software netlist}.  The bit-level netlist is expressed in AIGER format, 
@@ -173,7 +176,6 @@ Symbolic Execution.
 % Start of text.
 % ---------------------------------------------------------------------
 \input{intro}    % Motivation, vision, and contributions
-\input{contribution}
 \input{problem_statement}
 \input{abstraction}
 \input{v2c}      % The v2c tool

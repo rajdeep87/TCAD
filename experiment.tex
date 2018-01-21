@@ -14,11 +14,11 @@
 Figure~\ref{fig:toolflow} gives the tool flow for hardware RTL 
 verification using bit-level netlist, word-level netlist and software netlist.  
 The bottom flow of Figure~\ref{fig:toolflow} shows the bit-level 
-verification flow using \ABC.
-\ABC does not support Verilog, so we use an open-source synthesis tool,
+verification flow using ABC.
+ABC does not support Verilog, so we use an open-source synthesis tool,
 \yosys\footnote{http://www.clifford.at/yosys/} to translate Verilog
 RTL to BLIF or AIGER~\footnote{http://fmv.jku.at/aiger/FORMAT-20070427.pdf} 
-which is then passed to \ABC for verification. 
+which is then passed to ABC for verification. 
 %Given a design in Verilog RTL, \yosys bit-blasts it into a bit-level netlist 
 %along with the property and the resultant netlist is expressed in AIG.  
 %The AIG is represented in AIGER format  which is one of the standards 
@@ -74,7 +74,7 @@ verification of hardware RTL.  Our experimental contributions are two folds.
 Our experiments were performed on an Intel Xeon machine running at
 3.07\,GHz.  We restricted the resources to 5 hours and 32\,GB RAM per
 benchmark.  All our benchmarks in Verilog, software netlist in C, 
-scripts for running \yosys, \ABC, \ebmcv, and other software 
+scripts for running \yosys, ABC, \ebmcv, and other software 
 verification tools are available here.~\footnote{\scriptsize{https://github.com/rajdeep87/TCAD-experiments}}
 %to a publicly accessible archive website.
 %\footnote{\scriptsize{http://www.cprover.org/hardware/tcad/}}
@@ -196,7 +196,7 @@ Figures~\ref{fig:kind}--\ref{fig:hybrid} report the comparison of various unboun
 verification techniques employed by verification tools at bit-level, word-level, 
 and software-level.  The plots in these figures reports the runtimes of~12 
 representative circuits which are most difficult to solve out of a total~34 
-circuits.  Note that \ABC does not implement word-level verification flow, 
+circuits.  Note that ABC does not implement word-level verification flow, 
 so we perform word-level verification using our in-house tool \ebmc.
 Figures~\ref{fig:kind}--\ref{fig:hybrid} reports the best runtimes 
 among the bit-level and word-level hardware verification tools.  
@@ -220,7 +220,7 @@ by the size of the circles as well as by colour.
 \para{Analysis using $k$-induction} For safe benchmarks, the results
 for bit-level, word-level verifiers and software verifiers are
 comparable when the properties are 1-inductive or 2-step inductive.
-However, for complex safety properties, \ABC and other abstraction
+However, for complex safety properties, ABC and other abstraction
 based software analyzers either timeout or took a long time to
 terminate.  We investigated the reason for higher verification times
 for some safe benchmarks, such as the FIFO controller, the RCU, and Buffer 
@@ -230,16 +230,16 @@ on $k$-induction either timeout or took long time to
 compute the inductive invariant sufficient to prove the property. For
 the unsafe benchmarks, for example DAIO and the traffic light controller, where
 the bugs are manifested only at 64 and 65 clock cycles respectively,
-the verification times using \ABC and \ebmc's $k$-induction engine 
+the verification times using ABC and \ebmc's $k$-induction engine 
 are comparable to \cbmcv and \textsc{2LS}. Figure~\ref{fig:kind} 
 reports the time taken by the $k$-induction engine in 
-\ABC, \ebmcv, \cbmcv and \textsc{2LS}.  We did not report
+ABC, \ebmcv, \cbmcv and \textsc{2LS}.  We did not report
 the time for \emph{CPAChecker} since the results suggest that 
 its $k$-induction engine is not as mature yet. 
 
 \para{Analysis using Interpolation} Figure~\ref{fig:impact} reports
-the time taken by the interpolation engine in \ABC, \textsc{IMPARA}
-and \emph{CPAChecker}. \ABC is the fastest in 9 out of 12
+the time taken by the interpolation engine in ABC, \textsc{IMPARA}
+and \emph{CPAChecker}. ABC is the fastest in 9 out of 12
 designs. However, it timed out on three complex benchmarks, RCU, FIFO
 and BufAl, whereas the software interpolation tool, \textsc{IMPARA},
 which implements IMPACT algorithm solved three instances out of which
@@ -249,9 +249,9 @@ ran out of memory for the remaining designs.  \emph{CPAChecker} solved
 prove RCU and BufAl.
 
 \para{Analysis using Hybrid techniques} Figure~\ref{fig:hybrid}
-reports the time taken by the IC3/PDR engine in \ABC, \emph{SeaHorn}
+reports the time taken by the IC3/PDR engine in ABC, \emph{SeaHorn}
 and other hybrid techniques as implemented in \emph{CPAChecker} and
-\textsc{2LS}. \ABC~is the clear winner here; it is the only tool that
+\textsc{2LS}. ABC~is the clear winner here; it is the only tool that
 proves the FIFO and BufAl benchmarks safe within the given 5h timeout.
 \emph{SeaHorn}'s PDR engine solves half of the benchmarks, but
 produces false negatives on the other half due to limited support for
@@ -262,7 +262,7 @@ wrong results. Note that none of the tools was able to prove RCU.
 
 The bit-level hardware tools performs better than word-level hardware 
 verification for our benchmarks.  So, we only report the bit-level results 
-obtained using \ABC in Figures~\ref{fig:kind}--\ref{fig:hybrid}.
+obtained using ABC in Figures~\ref{fig:kind}--\ref{fig:hybrid}.
 
 
 %We do not report the results using Astr{\'e}e since it requires manual
@@ -459,8 +459,8 @@ instructions following the assertion are never executed.
 
 
 Figure~\ref{fig:runtimes} gives the runtime comparison between 
-\ABC, \textsc{UltimateAutomizer} and Astr{\'e}e.  We choose 
-the \ABC PDR engine for comparison with abstraction-based software 
+ABC, \textsc{UltimateAutomizer} and Astr{\'e}e.  We choose 
+the ABC PDR engine for comparison with abstraction-based software 
 analyzers since it performs better than the other verification engines 
 and is superior than \ebmc on our benchmarks. The tools can be distinguished 
 by the shape as well as by colour. 
@@ -468,7 +468,7 @@ by the shape as well as by colour.
 We verified a total of~34 circuits given in Verilog RTL. 
 The tools \textsc{UltimateAutomizer} and Astr{\'e}e are fed with the 
 software netlist designs generated from the RTL whereas the input to 
-\ABC is the AIGER representation of the RTL. 
+ABC is the AIGER representation of the RTL. 
 % 
 Both \textsc{UltimateAutomizer} and Astr{\'e}e operate 
 on an overapproximate abstraction of the concrete program.  
@@ -478,17 +478,17 @@ were restricted to 32\,GB RAM per benchmark.
 
 
 %
-\ABC proved a total of~30 benchmarks and timed out for 4 benchmarks.  
+ABC proved a total of~30 benchmarks and timed out for 4 benchmarks.  
 On the other hand, Astr{\'e}e reported a total of~7 false alarm out of~34 
 benchmarks (shown by the blue triangles corresponding to the timeout axis in 
-Figure~\ref{fig:runtimes}). However, Astr{\'e}e was faster than \ABC on~8 benchmarks (23\% cases).
+Figure~\ref{fig:runtimes}). However, Astr{\'e}e was faster than ABC on~8 benchmarks (23\% cases).
 %
 Among these~8 benchmarks,~3 are unsafe for which Astr{\'e}e reported bugs
-earlier than \ABC. For the remaining~5 benchmarks, \ABC timed out in 4 cases, 
+earlier than ABC. For the remaining~5 benchmarks, ABC timed out in 4 cases, 
 whereas Astr{\'e}e proved all~5 benchmarks within the time limit (see the plots 
 on the extreme right side of Figure~\ref{fig:runtimes}).  
 %
-Overall, the runtimes of Astr{\'e}e are very close to \ABC for most benchmarks. 
+Overall, the runtimes of Astr{\'e}e are very close to ABC for most benchmarks. 
 %
 
 We investigate the reason for the false alarms in Astr{\'e}e and observe that 
@@ -673,7 +673,7 @@ The abstraction-based software analyzers such as Ultimate Automizer and Astr{\'e
 performed better than the SAT/SMT-based software analysis tools.  Though 
 Astr{\'e}e require manual intervention to select the right set of partitions 
 of program traces in order to do precise analysis, the verification runtimes 
-of Astr{\'e}e are comparable to \ABC for most of the benchmarks.  However, 
+of Astr{\'e}e are comparable to ABC for most of the benchmarks.  However, 
 Astr{\'e}e often uses numerical abstractions, which are likely to lose 
 important bit-precise information.  
 %
@@ -719,7 +719,7 @@ verification for these 8 benchmarks. The translation of word-level
 netlist to SMT-LIB2 format is not mature yet in \ebmc (we could not 
 translate the remaining 26 benchmarks), so we could not give the 
 word-level verification results in this paper. Furthermore, 
-\ABC does not fully support word-level verification.  
+ABC does not fully support word-level verification.  
 %
 For our benchmarks, abstracting the RTL clock in the software 
 netlist does not have any impact on the verification outcome.   

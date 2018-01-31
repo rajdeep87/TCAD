@@ -143,8 +143,8 @@
 
 \begin{abstract}
 This paper explores formal verification of hardware via translation of Verilog RTL into a novel ANSI-C representation called a \textit{software netlist}. Unlike abstract software models of hardware designed for high-performance simulation, software netlists  are cycle-accurate, faithful translations of the RTL. This direct representation enables novel experiments with using software verification technologies from contemporary program analysis research for formal verification of hardware at the RTL level of abstraction.  To establish an experimental
-baseline, we compare the capability and performance of both native RTL and software verification tools
-that use propositional SAT/SMT solvers for bit-level analysis. We also evaluate some contemporary software verification tools that do abstraction, such as counterexample-guided abstraction refinement and classical abstract interpretation. Experiments with 34 RTL benchmarks confirm that SAT-based, bit-level hardware model checkers currently outperform bit-level software analyzers. We also establish that abstract interpretation  with manual guidance is effective for finding complex bugs, as well as proving 
+baseline, we compare the capability and performance of native RTL and software verification tools
+that use propositional SAT/SMT solvers for bit-level analysis. We also evaluate some contemporary software verification tools that use abstraction, such as counterexample-guided abstraction refinement and classical abstract interpretation. Experiments with 34 RTL benchmarks confirm that SAT-based, bit-level hardware model checkers currently outperform bit-level software analyzers. But we also establish that abstract interpretation  with manual guidance is effective for finding complex bugs, as well as proving 
 unbounded safety of software netlist designs generated from RTL circuits.  
 \end{abstract}
 

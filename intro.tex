@@ -1,6 +1,6 @@
 \section{Introduction}\label{sec:intro}
 %
-Formal hardware verification is now a well-established design technology~\cite{Seligman:2015:FV}. From its modest beginnings in the 1980s, extensive corporate and academic research in hardware verification has gone hand-in-hand with gradual but sustained industrial take-up. Examples of landmark achievements in full correctness analysis include verification of the entire execution cluster of the Core 2 Duo~\cite{Core2}  and Core i7 processors~\cite{i7} and the end-to-end ISA verification of several ARM processors~\cite{ARM}. The most prevalent methodology, assertion-based verification~\cite{Foster:2009:AAB}, is by now well supported by mature software tools from the EDA companies.
+Formal hardware verification is now a well-established design technology~\cite{Seligman:2015:FV}. From its modest beginnings in the 1980s, extensive corporate and academic research in hardware verification has gone hand-in-hand with gradual but sustained industrial take-up. Examples of landmark achievements in full correctness analysis include verification of the entire execution clusters of the Core 2 Duo~\cite{Core2}  and Core i7 processors~\cite{i7} and the end-to-end ISA verification of several ARM processors~\cite{ARM}. The most prevalent methodology, assertion-based verification~\cite{Foster:2009:AAB}, is by now well supported by mature software tools from the EDA companies.
 
 The industrial success of formal hardware verification has been advanced by decades of research into specialised data structures and algorithms~\cite{vis}, tools~\cite{Seger:2005:IEE,abc}, and methodology~\cite{MCMILLAN2000279,Aagaard:2000:MLH}. \comment{$\leftarrow$ Rajdeep to add some refs.} The most-used technology relies on back-end analysis by propositional satisfiability (SAT) solvers~\cite{Biere1999} or by modern solvers for satisfiability modulo theories (SMT)~\cite{decision_procedures, DBLP:conf/lpar/AndrausLS08,soc-keating,
 DBLP:conf/mtv/SunkariCVM07,DBLP:conf/cav/Bjesse08}. Scientifically inspired and practically fruitful research into hardware verification continues today, with scalability an ever-present challenge---along with many others. 
@@ -21,11 +21,7 @@ in some cases Astr{\'e}e is faster for finding bugs.  On the other hand,
 Astr{\'e}e shows a high degree of imprecision on our benchmarks. We handle this 
 manually, by guiding the analysis using various trace 
 partitioning directives~\cite{DBLP:journals/toplas/RivalM07}.  
-%
 
-\comment{Not sure we want to include the below!}
-
-\section{Contribution}~\label{contribution}
 We make the following technical contributions in this paper.
 %
 \begin{enumerate}

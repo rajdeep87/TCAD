@@ -260,9 +260,11 @@ out on four benchmarks.  \emph{CPAChecker}'s predicate abstraction reliably
 solves 7 benchmarks, but timed out on two benchmarks and reports three
 wrong results. Note that none of the tools was able to prove RCU.
 
+\Omit{
 The bit-level hardware tools performs better than word-level hardware 
 verification for our benchmarks.  So, we only report the bit-level results 
 obtained using ABC in Figures~\ref{fig:kind}--\ref{fig:hybrid}.
+}
 
 
 %We do not report the results using Astr{\'e}e since it requires manual
@@ -415,9 +417,43 @@ Vending	0.02	1.28	3.77	0.34
 Comparison of hybrid techniques
 }
 \end{figure}
+%
 %%%%%%%%%%%%%%%%%%% Plot runtimes %%%%%%%%%%%%%%%%%%%%%%%
 \input{plot-runtimes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\para{Bit-level versus Word-level Analysis}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+Figure~\ref{fig:solverruntimes} gives the runtime comparison between bit-level 
+model checking using SAT solvers and word-level model checking using SMT solvers.  
+% 
+The SAT (in DIMACS format) and SMT (in SMT-LIB2 format) benchmarks are obtained 
+automatically using CBMC from the software netlist design. 
+%  
+For bit-level results, we report the best runtimes among MiniSAT~\cite{minisat} 
+and Lingeling~\cite{lingeling} solvers.  The word-level results are obtained 
+using Boolector~\cite{boolector} SMT solver which solved more instances 
+than Z3~\cite{z32008} SMT solver. 
+%  
+The timeout was set to~200 seconds per benchmark.  
+%
+The runtimes in Figure~\ref{fig:solverruntimes} are obtained for 
+a pre-determined unwind bound of~70.  The bit-level engine in CBMC 
+wins consistently over the word-level engine, except for the 5~cases 
+where Boolector was faster than the bit-level solvers.   
+% 
+We investigate the reason for the higher runtimes of the 
+word-level engine. We observe that the RTL designs used 
+for our experiment contains 
+too many bit-slices, which is also exhibited by the software netlist 
+designs due to the bit-precise translation. Hence, pure word-level 
+reasoning performs poorly compared to the bit-level analysis since 
+word-level tools also use bit blasting for solving such designs. 
+%
+%
 \subsection{Analysis Using Abstraction based tools}~\label{abstraction}
 %
 One of the benefits of the proposed tool flow in this paper is that the 

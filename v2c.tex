@@ -80,33 +80,37 @@ A \textit{software netlist} $\mathcal{SN}$ is defined as follows:
 %
 \[ 
 \begin{array}[t]{@{}lll}
-\mathcal{SN} & {:}{:}{=} & \mathit{Modules} \\
-\mathit{Modules} & {:}{:}{=} & \epsilon \mid \mathit{moduleName(Var_1,\dots,Var_n)} \{ Asgn \} \;\; Modules \\
-\mathit{Asgn} &  {:}{:}{=} & \mathit{CAsgn} \mid \mathit{SAsgn} | moduleName(Var_1,\dots,Var_n)\\
-\mathit{CAsgn} & {:}{:}{=} & (V_c := Bv) \mid (V_c := \mathit{Bool}), \quad V_c \in \mathit{Comb} \uplus \mathit{Out} \\
-\mathit{SAsgn} & {:}{:}{=} & (V_s := Bv) \mid (V_s := \mathit{Bool}), \quad V_s \in \mathit{Seq} \\
+\mathcal{SN} & {:}{:}{=} & \mathit{Mods} \\
+\mathit{Mods} & {:}{:}{=} & \epsilon \mid \mathit{modName(V_1,\dots,V_n)} \{ Asgn \} \mathit{Mods} \\
+\mathit{Asgn} &  {:}{:}{=} & \mathit{CAsgn} \mid \mathit{SAsgn} \mid \mathit{modName(V_1,\dots,V_n)}\\
+\mathit{CAsgn} & {:}{:}{=} & (V_c := \mathit{Bv}) \mid (V_c := \mathit{Bool}) \\
+\mathit{SAsgn} & {:}{:}{=} & (V_s := \mathit{Bv}) \mid (V_s := \mathit{Bool}) \\
 \mathit{Bv} &  {:}{:}{=} & bv_{const} \mid bv_{var} \mid
-	\mathit{ITE}(Bool, Bv, Bv) \mid \\
+	\mathit{ITE}(\mathit{Bool}, \mathit{Bv}, \mathit{Bv}) \mid \\
 	& & bv_{op}(bv_1, \ldots, bv_n), bv_i \in Bv, \\ 
-& & bv_{op} \in \{n-\text{ary operators over bitvectors} \} \\
-\mathit{Bool} & {:}{:}{=} & \mathit{true} \mid \mathit{false} \mid \neg{Bool} \mid Bool \land Bool \mid 
-Bool \lor Bool \mid \\ 
-& & Bv\; relop\; Bv, relop \in \{<,\leq,=,>,\geq\} \\
+& & bv_{op} \in \{n\text{-ary operators over bitvectors} \} \\
+  \mathit{Bool} & {:}{:}{=} & \mathit{true} \mid \mathit{false} \mid \neg{Bool} \mid \\
+  && \mathit{Bool} \land \mathit{Bool} \mid \mathit{Bool} \lor \mathit{Bool} \mid \\
+& & \mathit{Bv}\; \mathit{relop}\; \mathit{Bv}, \mathit{relop} \in \{<,\leq,=,>,\geq\} \\
 \end{array}
 \]
 %
-Here, $\mathit{In}$, $\mathit{Out}$, $\mathit{Seq}$, $\mathit{Comb}$
-are programs variables that model \emph{input}, \emph{output}, 
-\emph{sequential/state-holding} and \emph{combinational/stateless} 
-signals in the circuit.  $Asgn$ is a finite set of assignments 
-to $Out$, $Seq$ and $Comb$. 
+Here, $\mathit{Mods}$ are modules with names $\mathit{modName}$ and
+input variables $V_1,\ldots,V_n \in \mathit{In}$. $\mathit{Asgn}$ is a
+finite set of assignments partitioned into assignments
+$\mathit{CAsgn}$, which define combinatorial variables $V_c$
+(\emph{combinational/stateless} signals $\mathit{Comb}$ in the circuit
+or ouput signals $\mathit{Out}$); and assignments $\mathit{SAsgn}$,
+which assign \emph{sequential/state-holding} signals $V_s \in
+\mathit{Seq}$ (registers).
 \end{definition} 
 %
-A state transition in HW can be described by a set of register updates,
-defined by the next-state function, and assignment of non-deterministic 
-values to external inputs. The state transition in the software netlist 
-corresponds to updates to the variables in $Seq$ and explicit assignment 
-of non-deterministic values to the input variables $In$.
+A state transition in HW can be described by a set of register
+updates, defined by the next-state function, and assignment of
+non-deterministic values to external inputs. The state transition in
+the software netlist corresponds to updates to the variables in
+$\mathit{Seq}$ and explicit assignment of non-deterministic values to
+the input variables $\mathit{In}$.
 
 \subsection{Structure of Software netlist:} The pseudo-code of the software 
 netlist design is shown in figure~\ref{figure:structure}.

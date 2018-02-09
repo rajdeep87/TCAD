@@ -1,6 +1,6 @@
 SHELL=bash
 
-SRC=intro.tex v2c.tex bmc.tex paths.tex ubmc.tex concl.tex methodology.tex related_work.tex equivalence.tex problem_statement.tex
+SRC=intro.tex notation.tex v2c.tex bmc.tex paths.tex ubmc.tex concl.tex methodology.tex related_work.tex equivalence.tex 
 TARGET=paper
 BIB=biblio.bib
 

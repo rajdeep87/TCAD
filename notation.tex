@@ -1,24 +1,28 @@
-\section{Definition and Problem Statement}~\label{problem}
-%
-We formally define the safety verification of a transition system~$T$,
-commonly known as \emph{hardware model checking problem}.  We define a
-Boolean \textit{transition system}, appropriate for bit-level hardware
-modeling, as $T = \langle I,x,\delta \rangle$, where $x = x_1,x_2,...,x_n$
-is the set of program variables, which range over $\mathbb{B} =
-\{\mathit{true}, \mathit{false}\}$.  A \emph{state} $s$ of $T$ is an
-assignment of values to variables $x$, the predicate $I(x)$ is a formula over
-the variables $x$ specifying the \emph{initial state} and $\delta(x,x')$
-represents the transition relation as a Boolean formula over variables $x$ and
-$x'$, where the primed variables $x'$ represent the next-state value of the
-variable $x$.  A~\emph{trace} $\gamma: s_0,s_1,...$ is an infinite sequence
-of states such that $s_0 \models I$, and for each $i \geq 0$, $(s_i,s_{i+1})
-\models \delta$.  A state $s$ is reachable in $T$ if $\exists \gamma.\, s
-\in \gamma$.  A safety property $P$ of $T$ is a boolean formula over the
-variables $x$ of $T$, which asserts that certain states $s$ of $T$ cannot be
-reached during the execution of $T$, often known as \emph{bad states}, given
-as boolean formula $B(x)$.
+\section{Notation and Problem Statement}~\label{sec:notation}
+
+A Boolean \textit{transition system}, appropriate for bit-level hardware
+modelling, is a 3-tuple $T = \langle I,X,\delta \rangle$, where $X = \{x_1,x_2,\dots ,x_n\}$
+is a finite set of variables, each of which ranges over $\mathbb{B} =
+\{\mathit{true}, \mathit{false}\}$.  
+A \emph{state} $s$ of $T$ is an assignment of a Boolean value to each of the variables in $X$.  
+The predicate $I(X)$ is a formula over
+the variables in $X$ specifying the \emph{initial states} of the system.
+The formula $\delta(X,X')$
+represents the transition relation of the system over the variables in $X$ and
+in $X' = \{x_1', x_2', \dots, x_n'\}$, where a primed variable $x'\in X'$ represent the next-state value of the corresponding variable $x\in X$.  
+
+
+A~\emph{trace} $\gamma: s_0,s_1,\dots$ is an infinite sequence
+of states such that \tmcmt{$s_0 \models I$, and for each $i \geq 0$, $(s_i,s_{i+1})
+\models \delta$ TFM - This notation is not properly defined!}.  A state $s$ is reachable in $T$ if there exists a trace $\gamma$ in which $s$ occurs.  A safety property $P$ of $T$ is a boolean formula over the
+variables $X$ of $T$. Such a property is interpreted  to asserts that certain states $s$ of $T$,
+often known as \emph{bad states}, cannot be reached during the execution of $T$, given
+as boolean formula $B(x)$. \tmcmt{I don't understand! What is B exactly?}
+
 
 \para{Problem Statement}
+We formally define the safety verification of a transition system~$T$,
+commonly known as \emph{hardware model checking problem}.  
 Given a state-space over $n$ Boolean variables, the problem is to
 decide whether $T \models P$, that is, starting from initial state
 $I(x)$, whether a state in $B(x)$ can be reached following only

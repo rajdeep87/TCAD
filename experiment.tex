@@ -746,13 +746,15 @@ $x \mapsto \#\#[1:3] y$, where an event $y$ is asserted between 1st and
 3rd timeframe after the event $x$ has happened.  We did not verify 
 properties with \emph{eventual} or \emph{release} operators. 
 %  
-Thirdly, the proposed approach is only suitable for verification of 
-single-clock designs since abstracting the RTL clock in the software 
-netlist does not have any impact on the verification outcome.  
-However, designs that exhibit \emph{clock-gating} or 
-\emph{power-gating} techniques~\cite{lowpower} 
-or designs that contain multiple clocks may be non-trivial to translate 
-and may require modeling the behavior of clock explicitly in the software netlist. 
+Thirdly, the proposed approach is only used for the verification of the 
+single-clock RTL designs that does not employ clock-gating or power-gating 
+techniques~\cite{lowpower}.  
+Hence, abstracting the RTL clock in the software netlist does not have any 
+impact on the verification outcome in our experiments.  
+%  
+However, designs that exhibit clock-gating or power-gating techniques or 
+designs that contain multiple clocks may be non-trivial to translate and 
+may require modeling the behavior of clock explicitly in the software netlist. 
 %
 \Omit{
 Thirdly, our experiments compare formal verification of RTL designs by 

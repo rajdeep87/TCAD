@@ -100,3 +100,27 @@ that cannot precisely represent disjunctions.  Astr{\'e}e shows a high
 degree of imprecision on our benchmarks.  We mitigate the imprecision by
 manual trace partitioning, as explained in Section~\ref{abstraction}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     New Contributions 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Our previous works~\cite{mkm2015,mskm2016} present preliminary results 
+for bounded and unbounded safety verification of RTL designs using 
+software analyzers.  The results presented in our previous contributions 
+were restricted to a smaller set of benchmarks and fewer application of 
+verification tools.  
+%  
+The work presented in this paper makes significant technical contributions 
+over our previous contributions in~\cite{mkm2015,mskm2016}, for formal 
+verification of hardware RTL designs using state-of-the-art software analyzers 
+based on SAT/SMT solvers as well as abstraction based techniques. 
+%
+In particular, this paper presents a formal description of the unbounded 
+verification algorithms with a special emphasis on the application of the 
+classical abstract interpretation for precise safety verification.  In addition, 
+this paper also present a more detailed analysis of a range of precise SAT/SMT-based 
+and abstraction-based software verification tools for verifying a diverse set of 34 RTL 
+circuits drawn from various sources.  This paper also present a notion of 
+equivalence between a RTL and software netlist design for the purposes of RTL 
+verification.  Moreover, this paper present an experimental comparison between 
+the bit-level and word-level verification using SAT and SMT solvers respectively. 
+%

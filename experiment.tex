@@ -54,8 +54,8 @@ In this section, we report experimental results for \emph{unbounded} safety
 verification of hardware RTL.  Our experimental contributions are two folds.
 %
 \begin{enumerate}
-  \item Compare off-the-shelf formal verification tools for RTL verification
-    using \emph{bit-level netlist}, and \emph{software netlist}.  
+  \item Compare off-the-shelf formal verification tools for RTL designs by translating  
+     them to \emph{bit-level netlist} and \emph{software netlist}.  
     To this end, we compare state-of-the-art hardware model checking tools, such as 
     \emph{ABC 1.01} (winner of HWMCC'15) and 
     \ebmcv~\footnote{\scriptsize{www.cprover.org/hardware/ebmc}}, 
@@ -66,9 +66,9 @@ verification of hardware RTL.  Our experimental contributions are two folds.
     and a commercial abstract 
     interpretation based tool, \emph{Astr{\'e}e}.  
   
- \item  Compare various unbounded verification engines such as $k$-induction, 
-    Interpolation, IC3/PDR and Abstraction Interpretation that are employed by 
-    verification tools from hardware and software domains.
+ \item  Compare the performance of unbounded verification algorithms such as $k$-induction, 
+    Interpolation, IC3/PDR and Abstraction Interpretation for generating proofs as well as 
+    finding complex bugs. 
 \end{enumerate}
 %
 Our experiments were performed on an Intel Xeon machine running at
@@ -447,12 +447,12 @@ where Boolector was faster than the bit-level solvers.
 % 
 We investigate the reason for the higher runtimes of the 
 word-level engine. We observe that the RTL designs used 
-for our experiment contains 
-too many bit-slices, which is also exhibited by the software netlist 
-designs due to the bit-precise translation. Hence, pure word-level 
-reasoning performs poorly compared to the bit-level analysis since 
-word-level tools also use bit blasting for solving such designs. 
-%
+for our experiment contains too many bit-slices. 
+%, which is also exhibited by the software netlist 
+%designs due to the bit-precise translation. 
+Hence, pure word-level reasoning performs poorly compared 
+to the bit-level analysis since word-level tools also use 
+bit blasting for solving such designs. 
 %
 \subsection{Analysis Using Abstraction based tools}~\label{abstraction}
 %
@@ -731,21 +731,32 @@ interpretation.
 %-------------------------------------------------------------------------------
 \para{Limitations of the Result}
 %-------------------------------------------------------------------------------
-%
-The publicly available Verilog RTL designs often lack requirement 
-specifications.  Hence, it is difficult to write meaningful 
-properties for verifying these designs.  The benchmarks used 
-in this paper are limited to block-level designs. 
-%
-Most of the properties that we verified are either global properties 
+% 
+We discuss some of the limitations of the results presented in this paper.  
+%Firstly, the publicly available Verilog RTL designs often lack requirement 
+%specifications.  Hence, it is difficult to write meaningful 
+%properties for verifying these designs.  
+Firstly, the benchmarks used in this paper are limited to block-level 
+designs which are obtained from publicly available repository. 
+% 
+Secondly, most of the properties that we verified are either global properties 
 or temporal bounded properties, that is, they are either of the form 
 $G(x)$, where $x$ must be \emph{true} globally or is of the form 
 $x \mapsto \#\#[1:3] y$, where an event $y$ is asserted between 1st and 
 3rd timeframe after the event $x$ has happened.  We did not verify 
 properties with \emph{eventual} or \emph{release} operators. 
+%  
+Thirdly, the proposed approach is only suitable for verification of 
+single-clock designs since abstracting the RTL clock in the software 
+netlist does not have any impact on the verification outcome.  
+However, designs that exhibit \emph{clock-gating} or 
+\emph{power-gating} techniques~\cite{lowpower} 
+or designs that contain multiple clocks may be non-trivial to translate 
+and may require modeling the behavior of clock explicitly in the software netlist. 
 %
-Our experiments compare formal verification of RTL designs using 
-bit-level netlist and software netlist.  
+\Omit{
+Thirdly, our experiments compare formal verification of RTL designs by 
+translating them to bit-level netlist and software netlist.  
 %
 For some of the designs (8 out of 34), we used the word-level synthesis 
 flow in \ebmc.  
@@ -756,13 +767,4 @@ netlist to SMT-LIB2 format is not mature yet in \ebmc (we could not
 translate the remaining 26 benchmarks), so we could not give the 
 word-level verification results in this paper. Furthermore, 
 ABC does not fully support word-level verification.  
-%
-For our benchmarks, abstracting the RTL clock in the software 
-netlist does not have any impact on the verification outcome.   
-However, designs that exhibit 
-%the translation of Verilog RTL to C is relatively simple in the 
-\emph{clock-gating} or \emph{power-gating} techniques~\cite{lowpower} 
-or designs that contain multiple clocks may be non-trivial to translate 
-into the software netlist and may require modeling the behavior of clock 
-explicitly.  
-%
+}

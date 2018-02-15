@@ -2,29 +2,34 @@
 
 A Boolean \textit{transition system}, appropriate for bit-level hardware
 modelling, is a 3-tuple $T = \langle I,X,\delta \rangle$, where $X = \{x_1,x_2,\dots ,x_n\}$
-is a finite set of variables, each of which ranges over $\mathbb{B} =
+is a finite set of variables, each of which ranges over $\mathbb{B} = 
 \{\mathit{true}, \mathit{false}\}$.  
-A \emph{state} $s$ of $T$ is an assignment of a Boolean value to each of the variables in $X$.  
+%
+Let $X$ and $X'$ are sets of present and next state variables respectively.  
+% 
+A \emph{state} $s$ of $T$ is an assignment of a Boolean value to variables $X$.  
 The predicate $I(X)$ is a formula over
 the variables in $X$ specifying the \emph{initial states} of the system.
-The formula $\delta(X,X')$
-represents the transition relation of the system over the variables in $X$ and
-in $X' = \{x_1', x_2', \dots, x_n'\}$, where a primed variable $x'\in X'$ represent the next-state value of the corresponding variable $x\in X$.  
-
-
-A~\emph{trace} $\gamma: s_0,s_1,\dots$ is an infinite sequence
-of states such that \tmcmt{$s_0 \models I$, and for each $i \geq 0$, $(s_i,s_{i+1})
-\models \delta$ TFM - This notation is not properly defined!}.  A state $s$ is reachable in $T$ if there exists a trace $\gamma$ in which $s$ occurs.  A safety property $P$ of $T$ is a boolean formula over the
-variables $X$ of $T$. Such a property is interpreted  to asserts that certain states $s$ of $T$,
-often known as \emph{bad states}, cannot be reached during the execution of $T$, given
-as boolean formula $B(x)$. \tmcmt{I don't understand! What is B exactly?}
-
+The formula $\delta(X,X')$ represents the transition relation of the system 
+over the variables in $X$ and $X'$. 
+% 
+We call a sequence of states $(s_j,\dots,s_k)$ a~\emph{trace} 
+if $T(s_i,s_{i+1})$ is true for $i=j,\dots,k-1$.  A trace is 
+initialized if the state $s_j$ satisfies the predicate $I(X)$.  
+%  
+A safety property $P(X)$ of $T$ is a predicate over the
+variables $X$ of $T$.  We will say a state is \emph{good}, 
+denoted by $G(X)$ (respectively \emph{bad}, $B(X)$) if it 
+satisfies (respectively does not satisfy) $P(X)$.  A property 
+$P$ is \emph{inductive} with respect to $T$ if 
+$P(X) \wedge T \rightarrow P(X')$.    
+%
 
 \para{Problem Statement}
 We formally define the safety verification of a transition system~$T$,
 commonly known as \emph{hardware model checking problem}.  
 Given a state-space over $n$ Boolean variables, the problem is to
 decide whether $T \models P$, that is, starting from initial state
-$I(x)$, whether a state in $B(x)$ can be reached following only
-transitions in $\delta(x,x')$.
+$I(X)$, whether a bad state can be reached following only transitions 
+in $\delta(X,X')$.
 %

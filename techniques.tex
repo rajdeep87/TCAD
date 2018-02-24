@@ -36,12 +36,10 @@ If found satisfiable, a bad state---a potential design bug---has been idenified.
 %-------------------------------------------------------------------------------
 \para{BMC with K-induction} 
 %
-In practice, BMC technique is incomplete. 
-The $k$-induction~\cite{fmcad2000} technique 
-is explained as follows. 
+BMC technique is incomplete, since it searches only a finite trace of the system. 
+The method of $k$-induction~\cite{fmcad2000} addresses this as follows.
 %
-The base case of the $k$-induction is the
-simple BMC problem shown before. If the 
+The base case of the $k$-induction is the simple BMC problem shown before. If the 
 base case is unsatisfiable, then the 
 induction step is checked using the formula 
 shown below.  

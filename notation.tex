@@ -18,9 +18,8 @@ We call a sequence of states $(s_j,\dots,s_k)$ a~\textit{trace}
 if $\delta(s_i,s'_{i{+}1})$ for $i=j,\dots,k-1$.  Such a trace is 
 \textit{initialized} if its first state, $s_j$, satisfies $I[X]$.  
   
-A \textit{safety property} $P[X]$ of $T$ is a predicate over the
-variables $X$ of $T$.  We will say a state $s$ is \textit{good} with respect to this safety property if 
-$P(s)$; otherwise it is \textit{bad}. A property $P$ is \textit{inductive} with respect to the transition system $T$ if $P[X] \wedge \delta[X,X'] \rightarrow P[X']$.    
+A \textit{safety property} $P[X]$ is a predicate over the variables $X$ of $T$.  We will say a state $s$ is \textit{good} with respect to this safety property if 
+$P(s)$; otherwise it is \textit{bad}. A property $P$ is \textit{inductive} $T$ if $P[X] \wedge \delta[X,X'] \rightarrow P[X']$.    
 %
 
 \para{Problem Statement}

@@ -9,32 +9,29 @@ the verification techniques, but many of them have analogues working at
 word-level.
 
 We group techniques into two classes, based on whether 
-they use bit-level decision procedures or employ abstract domains. We call these \textit{SAT/SMT-based
-Verification} and \textit{Abstraction-based Verification}, respectively.
-
-
+they use bit-level decision procedures or employ abstract domains. We call these 
+\textit{SAT/SMT-based Verification} and \textit{Abstraction-based Verification}, 
+respectively.
 
 \subsection{SAT/SMT-based Verification}~\label{netlist-verif}
-%
-We describe few well-known SAT/SMT-based verification techniques which are 
-used for property verification of the hardware RTL circuits as well as the 
-software netlist designs. 
-%
-%-------------------------------------------------------------------------------
+
+The techniques in this class are all used for experiments with both conventional verification tools,
+operating on RTL designs, and verification of  our software netlist representation using software analysis tools.
+
 \para{Bounded Model Checking} 
 %
-The idea of BMC~\cite{biere} is as follows. 
-Given a depth~$k$ and a set of bad states~$B$, BMC operates
-by unwinding the transition relation~$T$ up to depth~$k$ starting from
-initial state $x_0$, represented by an initial state predicate~$I$.
-This results in the following formula which is then checked for
-satisfiability using an efficient SAT or SMT procedure.
+BMC~\cite{biere} is a bug-finding method that searches for bad states along a finite trace of 
+the transition system. Given a `depth' $k$ and a set of bad states characterised by a predicate
+$B$, BMC forms the logical characterization of a $k$-length chain of transitions along the 
+transition relation $T$,  starting from any initial state satisfying $I(X_0)$. 
+Conjoined to this is a predicate saying that one or more of the states encountered 
+is bad:
 %
-\[ I(x_0) \wedge \delta(x_0, x_1) \wedge \ldots 
-   \wedge \delta(x_{k-1}, x_k) \wedge (B(x_0) \vee \ldots \vee B(x_k)) \]
-%
-Thus, BMC exploits the finiteness of $T$ and creates k copies of the
-$T$ for each unrolling.
+\[ I(X_0) \wedge \delta(X_0, X_1) \wedge \dots 
+   \wedge \delta(X_{k{-}1}, X_k) \wedge (B(X_0) \vee \dots \vee B(X_k)) \]
+
+\noindent This formula which is then checked for satisfiability using an efficient SAT procedure.
+If found satisfiable, a bad state---a potential design bug---has been idenified.
 
 %-------------------------------------------------------------------------------
 \para{BMC with K-induction} 

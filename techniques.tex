@@ -1,20 +1,19 @@
-\section{Property Checking Methods Investigated}\label{sec:techniques}
+\section{The Property Checking Methods Investigated}\label{sec:techniques}
 
 In this section, we briefly sketch the verification methods for property checking that
-we explore in our experiments with conventional RTL verification tools and
+we explore in our experiments with RTL verification tools and/or
 native software analysis tools. These are all well-established techniques, 
-documented in the literature---to which we refer the reader for in-depth explanation.
-We broadly classify techniques into two classes, based on whether 
-they use bit- or work-level decision procedures or employ abstract domains. We call these
-\textit{SAT/SMT-based
-Verification}, and \textit{Abstraction-based Verification}. 
-%
-For the purpose of illustration, we give bit-level descriptions of all 
-the verification techniques.
-%, though software verification algorithms work on program traces. 
-The materials in Section~\ref{netlist-verif} and Section~\ref{software-verif} 
-are not new and already exist in the literature.
-%
+and we refer the reader to the literature for in-depth explanation.
+For clarity, we give bit-level descriptions of all 
+the verification techniques, but many of them have analogues working at
+word-level.
+
+We group techniques into two classes, based on whether 
+they use bit-level decision procedures or employ abstract domains. We call these \textit{SAT/SMT-based
+Verification} and \textit{Abstraction-based Verification}, respectively.
+
+
+
 \subsection{SAT/SMT-based Verification}~\label{netlist-verif}
 %
 We describe few well-known SAT/SMT-based verification techniques which are 

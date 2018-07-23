@@ -19,12 +19,12 @@ if $\delta(s_i,s'_{i{+}1})$ for $i=j,\dots,k-1$.  Such a trace is
 \textit{initialized} if its first state, $s_j$, satisfies $I[X]$.  
   
 A \textit{safety property} $P[X]$ is a predicate over the variables $X$ of $T$.  We will say a state $s$ is \textit{good} with respect to this safety property if 
-$P(s)$; otherwise it is \textit{bad}. A property $P$ is \textit{inductive} $T$ if $P[X] \wedge \delta[X,X'] \rightarrow P[X']$.    
+$P(s)$; otherwise it is \textit{bad}. A property $P$ is \textit{inductive} if $P[X] \wedge \delta[X,X']$ implies $P[X']$.    
 %
 
 \para{Problem Statement}
-We formally define the safety verification of a transition system~$T = \langle I,X,\delta\rangle$.
+We define the safety verification of a transition system~$T = \langle I,X,\delta\rangle$.
 This is commonly known as the \textit{hardware model checking problem}.  
-Given a safety propety $P[X]$, the problem is to decide whether, starting from any initial state, can a bad state---a state that does not satisfy $P$---be reached following any sequence of transitions allowed by $\delta[X,X']$. In other words, is there an initialized trace of the system whose
+Given a safety propety $P[X]$, the problem is to decide whether, starting from any initial state, a bad state can be reached following any sequence of transitions allowed by $\delta[X,X']$. In other words, is there an initialized trace of the system whose
 final state is bad?
 %

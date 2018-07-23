@@ -1,7 +1,7 @@
 \section{Introduction}\label{sec:intro}
 
-Formal verification is now well-established in the hardware design
-cycle~\cite{Seligman:2015:FV}.  From modest beginnings in the 1980s,
+Formal verification is now well-established in hardware design~\cite{Seligman:2015:FV}.  
+From modest beginnings in the 1980s,
 extensive corporate and academic research in hardware verification has gone
 hand-in-hand with gradual but sustained industrial take-up.  Landmark
 achievements in full correctness of commercial designs include the
@@ -9,7 +9,7 @@ verification of the entire execution clusters of the Intel Core 2
 Duo~\cite{Core2} and Core i7 processors~\cite{i7} and the end-to-end ISA
 verification of several ARM processors~\cite{ARM}.  The most prevalent
 methodology, assertion-based verification~\cite{Foster:2009:AAB}, is now
-well supported by mature tools supplied by EDA companies.
+well supported by mature tools supplied by electronics design automation (EDA) companies.
 
 The industrial success of formal hardware verification has been enabled by
 decades of research into specialised data structures and
@@ -56,7 +56,7 @@ in~\cite{soc-keating} are abstractions of hardware that are usually written
 manually and disconnected from the `golden' RTL design from which the chip
 is ultimately realized.
 
-By contrast, our software netlist representation is an \emph{exact}
+By contrast, our software netlist representation is an exact
 translation of the RTL design, not an abstract simulation model.  This is a
 deliberate design choice, aiming to produce a faithful and transparent
 software model that leaves maximum flexibility for software verification
@@ -66,27 +66,27 @@ Section~\ref{sec:abstraction}.
 
 Using our translation, we have experimentally investigated formal
 verification of hardware using a range of native software analyzers.  For
-baseline comparison with RTL verification, we experiment with software
+baseline comparison with RTL verification tools, we experiment with software
 verification technologies that employ SAT/SMT decision
 procedures~\cite{DBLP:conf/cav/BeyerK11, 2ls, cbmc.tacas:2004,
 DBLP:conf/tacas/HeizmannDGLMSP16}.  To probe the frontiers, we evaluate the
 use of abstraction-based software verification techniques---most notably
 abstract interpretation.  To ensure our results are openly accessible and
 can be independently validated, our experiments compare the performance of
-verification tools drawn from the Hardware Model Checking Competition
+tools drawn from the Hardware Model Checking Competition
 (HWMCC) against software verifiers from the Software Verification
 Competition (SV-COMP).
 
 Extensive experiments with 34 RTL benchmarks confirm that SAT-based,
 bit-level hardware model checkers currently outperform bit-level software
 analyzers.  But our experiments also show that a commercial abstract
-interpreter, Astr{\'e}e, with manual guidance is particularly effective for
+interpreter, Astr{\'e}e, is---with manual guidance---particularly effective for
 finding complex bugs as well as proving unbounded safety of software netlist
 designs.  Unlike conventional SAT/SMT-based hardware verification, which
 bit-blasts the design into propositional logic, abstract interpretation
 analyzes the design over a given abstract domain by computing a least fixed
-point of the set of equations derived from the design.  The abstract
-interpretation approach leverages the expressivity of the underlying
+point of the set of equations derived from the design.  Abstract
+interpretation leverages the expressiveness of the underlying
 numerical abstract domains for representing the relational and
 non-relational invariants required for unbounded proofs or finding bugs.
 

@@ -81,10 +81,10 @@ Extensive experiments with 34 RTL benchmarks confirm that SAT-based,
 bit-level hardware model checkers currently outperform bit-level software
 analyzers.  But our experiments also show that a commercial abstract
 interpreter, Astr{\'e}e, is---with manual guidance---particularly effective for
-finding complex bugs as well as proving unbounded safety of software netlist
-designs.  Unlike conventional SAT/SMT-based hardware verification, which
+finding complex bugs, as well as for proving unbounded safety of software netlists.  
+Unlike conventional SAT/SMT-based hardware verification, which
 bit-blasts the design into propositional logic, abstract interpretation
-analyzes the design over a given abstract domain by computing a least fixed
+analyzes the design over an abstract domain by computing a least fixed
 point of the set of equations derived from the design.  Abstract
 interpretation leverages the expressiveness of the underlying
 numerical abstract domains for representing the relational and

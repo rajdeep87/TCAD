@@ -1,27 +1,18 @@
-\section{Verilog RTL to Software netlist}\label{sec:v2c}
+\section{Translating RTL to Software Netlists}\label{sec:v2c}
 %
-Formal verification tools~\cite{abc,DBLP:conf/fmcad/BradleyM07,vis} for 
-hardware RTL designs typically synthesize the input RTL design into the
-\emph{bit-level} or \emph{word-level} netlist.  
-%This section briefly describes various netlist formats 
-%at -- \emph{bit-level} or \emph{word-level}. 
-%
-%
-More recently, synthesis of RTL into the software program is presented 
-in our previous works~\cite{mkm2015,mtk2016}.  This new representation 
-enables application of classical software verification techniques such as 
-abstract interpretation, path-based symbolic execution and others, which 
-have never been applied to RTL verification.  In the subsequent section, 
-we describe the synthesis of software netlist from hardware RTL designs.     
+Formal verification tools for hardware RTL~\cite{abc,DBLP:conf/fmcad/BradleyM07,vis} typically
+synthesize a design into a bit-level or word-level netlist.  In this section, we
+present a method for synthesis of a Verilog RTL design into an ANSI C program, which we
+call a \textit{software netlist}~\cite{mkm2015,mtk2016}. As will be seen, this new representation 
+enables direct exploitation of software verification methods such as 
+abstract interpretation and path-based symbolic execution.
 
-Verilog and C share many common operators.  However, Verilog support few 
-additional operators like part-select, bit-select from vectors, concatenation
-operators, reduction operators which are not supported in C.  Additionally, Verilog 
-statements like initial block, always block, generate statement, procedural assignment 
-(blocking, non-blocking) and continuous assignment are 
-not supported in C. Further, Verilog support 4-state valued data-types 
-like reg, wire, integer.  All these non-trivial constructs combined with 
-parallelism make Verilog to C translation challenging.
+Verilog and C have many operators in common, but  Verilog also has 
+additional hardware-oriented operators such as part-select, bit-select from vectors, concatenation, and reduction. Additionally, many Verilog statements have no direct analogue in C---examples include
+initial blocks, always blocks, generate statements, procedural assignments
+(blocking, non-blocking) and continuous assignments. Further, Verilog supports 4-valued data types 
+such as reg, wire, and integer.  All these non-trivial constructs, combined with 
+parallelism, make Verilog to C translation challenging.
 
 %\subsection{Synthesizing software netlist from RTL}\label{sec:v2c}
 %
@@ -94,16 +85,6 @@ using the tool {\em v2c}~\cite{mtk2016}. The software netlist is expressed
 in C language.  
 
 
-
-
-A state transition in HW can be described by a set of register
-updates and assignment of non-deterministic values to external 
-inputs. The state transition in the software netlist corresponds 
-to updates to the variables in $\mathit{Seq}$ and explicit 
-assignment of non-deterministic values to the input variables $\mathit{In}$.
-%
-\subsection{Structure of Software netlist:} The pseudo-code of the software 
-netlist design is shown in figure~\ref{figure:structure}.
 %
 \begin{figure}[t]
 \captionsetup{justification=justified}
@@ -175,10 +156,19 @@ int main() {
 \label{figure:structure}
 \end{figure}
 
-dependencies.  The translation phase is followed by the code-generation phase 
-where the intermediate vectored expressions and translated module items 
+Figure~\ref{fig:steps} shows the translation steps of \emph{v2c}.  The
+front-end phase performs Verilog parsing, macro preprocessing and
+type-checking.  The Verilog front-end supports 1364-2005 IEEE Standard for
+Verilog HDL.  The front-end generates a type-annotated
+parse-tree which is passed to the translation phase. During translation phase,
+the tool preserves the synthesis semantics and performs rule-based translation
+following the Verilog module hierarchy. The rule-based translation produce vectored
+assignments by mapping bit-operations to an equivalent shift and mask and
+performs global dependency analysis to determine inter-module and intra-modular
+dependencies.  The translation phase is followed by the code-generation phase
+where the intermediate vectored expressions and translated module items
 are converted to C-type expressions.  Note that we refrain from any optimizations
-or abstractions to obtain a correct and trustworthy output. 
+or abstractions to obtain a correct and trustworthy output.
 
 %
 \begin{figure}[htbp]
@@ -188,6 +178,10 @@ or abstractions to obtain a correct and trustworthy output.
 \caption{Translation stages in \emph{v2c} \label{fig:steps}}
 \end{figure}
 %
+
+The pseudo-code of the software 
+netlist design is shown in figure~\ref{figure:structure}.
+
 
 \subsection{Handling Verilog Module Items}
 \subsubsection{Data Model:} The data model in Verilog is significantly 
@@ -457,28 +451,7 @@ which are immediately triggered when there is any change
 in the right-hand side inputs. The translation of continuous 
 assignments are discussed next. 
 
-\subsection{Dependency Analysis}
-The dependency analysis routine determines all intra-modular dependencies
-between the continuous assignments and always blocks. If a variable, say $x$,
-appearing in continuous assignment is updated directly by the input signal and is 
-read inside an always block, then it is placed before the always block to capture any 
-update over the module input interface triggered from other modules or an 
-external environment. Another possible scenario can be that a variable $x$ which is 
-assigned in a continuous assignment statement appears in the right-hand 
-side of another continuous assignment. In this case, the variable 
-assignment $x$ is placed before the other assignment 
-which reads $x$. An alternative scenario can be 
-that the variable $x$ which appears in the right-hand side of a continuous assignment
-is driven from an always block. This gives an ordering where the continuous 
-assignment is placed after the always block to capture the updated value of $x$.  
-All three cases are demonstrated with an example in Figure~\ref{figure:block}. 
-For design with inter-modular 
-combinatorial path or combinatorial loop, the output may settle after 
-several executions before the next clock cycle. \emph{v2c} detects such 
-combinatorial loop and flags a warning. The correct translation for 
-designs with combinatorial exchanges between modules is to determine 
-the stability condition for the combinatorial signals and 
-execute the combinatorial logic until the stability condition is reached. 
+
 
 \subsection{Bit-precise code generation}
 \emph{v2c} generate bit-precise software-netlist model in C.
@@ -561,180 +534,6 @@ sm.out = (((in2 >> 2)
 \hline
 \end{tabular}
 \caption{Handling Bit-select, part-select from vectors and concatenation}
-\label{figure:bit}
-\end{figure*}
-%
-%%===============================================================================\
-\subsection{Procedural Assignments}
-%%===============================================================================\
-%
-Procedural assignments are used within Verilog always and initial blocks and
-are of two types: \emph{blocking} and \emph{non-blocking}.  Blocking
-assignments are executed in sequential order.  However, the effect of
-blocking assignments is visible immediately, whereas the effect of
-non-blocking assignments is delayed until all events triggered are
-processed.  This form of parallelism in procedural assignments are modeled
-in \emph{v2c} by first storing the value of register variables in auxiliary
-variables in the beginning of the clock cycle.  Each read access to the
-register variables are then replaced by these auxiliary variables.  This
-ensures that an assignment to a register variable do not influence
-subsequent procedural assignments.  Figure~\ref{figure:block} illustrates
-the translation of procedural assignments (given at the top) to the
-equivalent C semantics (given at the bottom).
-%
-\begin{figure*}
-\scriptsize
-\center
-\begin{tabular}{l|l|l}
-\hline
-Non-blocking assignment & Blocking assignment & Continuous assignment \\
-\hline
-\begin{lstlisting}[mathescape=true,language=Verilog]
-reg [7:0] x,y,z;
-wire in = 1'b1;
-always @(posedge clk) begin
- x <= in;
- y <= x;
- z <= y;
-end
-\end{lstlisting}
-&
-\begin{lstlisting}[mathescape=true,language=Verilog]
-reg [7:0] x,y,z;
-wire in = 1'b1;
-always @(posedge clk) begin
- x = in;
- y = x;
- z = y;
-end
-\end{lstlisting}
-&
-\begin{lstlisting}[mathescape=true,language=Verilog]
-wire in;
-reg a,b,t;
-wire a = in;
-wire c = b; wire d = c; 
-always @(posedge clk) begin
- b <= a;
- t <= b;
-end 
-\end{lstlisting}
-\\
-\hline 
-\begin{lstlisting}[mathescape=true,language=C]
-struct smain { 
-unsigned char x,y,z; } sm;
-unsigned char xs,ys,zs;
- _Bool in = 1;
-// save register variables
- xs=sm.x;ys=sm.y;zs=sm.z;
-// update register variables
- sm.x = in;
- sm.y = xs;
- sm.z = ys;
-\end{lstlisting}
-&
-\begin{lstlisting}[mathescape=true,language=C]
-struct smain {
-unsigned char x,y,z;}sm;
- _Bool in = 1;
-// clocked block
- sm.x = in;
- sm.y = sm.x;
- sm.z = sm.y;
-\end{lstlisting}
-&
-\begin{lstlisting}[mathescape=true,language=C]
-struct smain {
-_Bool a,b,t; } sm;
-_Bool in,c,d,as,bs,cs,ds,ts;
-sm.a = in;//continuous assign
-// save register variables
-as=sm.a;bs=sm.b;ts=sm.t;
-// clocked block
-sm.b = as; sm.t = bs;
-// continuous assignment 
-c = sm.b; d = c;
-\end{lstlisting}
-\\
-\hline
-\end{tabular}
-\caption{Tanslation of non-blocking, blocking and continuous assignments}
-\label{figure:block}
-\end{figure*}
-
-%%===============================================================================\
-\subsection{Bit-precise code generation}
-%%===============================================================================\
-\emph{v2c} generates a bit-precise software netlist in~C.  The tool
-automatically handles complex bit-level operators in Verilog such as 
-bit-select or part-select operators from a vector, concatenation operators,
-reduction OR and other operators.  
-%\emph{v2c} retains the word-level structure of the Verilog RTL. 
-Figure~\ref{figure:bit} gives the code snippet of Verilog RTL design 
-(at the top) and the generated C expressions (at the bottom), which are 
-represented using a combination of bit-wise and arithmetic operators 
-like bit-wise OR, AND, multiplication, subtraction, shifts and other C operators.
-%
-\begin{figure*}[htbp]
-\scriptsize
-\center
-\begin{tabular}{l|l|l}
-\hline
-Bit-select & Part-select (SystemVerilog) & Concatenation \\
-\hline
-\begin{lstlisting}[mathescape=true,language=Verilog]
-wire [7:0] in1,in2;
-reg [7:0] out1,out2;
-out1[7:5] = in1[4:2];
-out2[6] = in2[4];
-\end{lstlisting}
-&
-\begin{lstlisting}[mathescape=true,language=Verilog]
-reg [31:0] in, out;
-for(i=0;i<=3;i++) begin
-out[8*i +: 8]=in[8*i +: 8];
-end
-\end{lstlisting}
-&
-\begin{lstlisting}[mathescape=true,language=Verilog]
-wire [7:0] in1, in2;
-reg [9:0] out;
-out = {in2[5:2],in1[6:1]};
-\end{lstlisting}
-\\
-\hline
-\begin{lstlisting}[mathescape=true,language=C]
-unsigned char in1,in2;
-struct smain { 
- unsigned char out1,out2; } sm;
-sm.out1 = sm.out1 & 0x1f | 
-(((in1 & 0x1c)>>2)<<5);
-sm.out2 = (sm.out2 & 0xbf)| 
-(((in2 & 0x10)>>4)<<6); 
-\end{lstlisting}
-&
-\begin{lstlisting}[mathescape=true,language=C]
-struct smain {
- unsigned int in,out; } sm;
-for(i=0;i<=3;i++) {
- x=8*i+(8-1); y=8*i;
- sm.out=(sm.out&!(2^31-2^y))
- |(sm.in&(2^31-2^y)); }
-\end{lstlisting}
-&
-\begin{lstlisting}[mathescape=true,language=C]
-unsigned char in1,in2;
-struct smain { 
- unsigned char out; } sm;
-sm.out = (((in2 >> 2)
- & 0xF) << 6)|
- ((in1 >> 1) & 0x3F);
-\end{lstlisting}
-\\
-\hline
-\end{tabular}
-\caption{Handling Bit-select, part-select from vectors and concatenation operator}
 \label{figure:bit}
 \end{figure*}
 %

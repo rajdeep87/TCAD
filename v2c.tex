@@ -95,56 +95,7 @@ in C language.
 
 
 
-%
-\begin{definition} 
-%
-A \emph{software netlist} $\mathcal{SN}$ is sequential program 
-which is defined by four-tuple $\langle L, A, l_0, l_e \rangle$, 
-where $L$ is the finite set of control locations, $l_0 \in L$ 
-is the initial location, $l_e \in L$ is the error location and 
-$A \subseteq L \times M \times L$ is the control flow automaton.  
-The notion of error location $l_e$ in $\mathcal{SN}$ is relevant 
-for the purposes of property checking.  The edges in $A$ are 
-labelled with a quantifier-free first-order formula $M$ over 
-the variables of $\mathcal{SN}$. 
-%  
-The formula $M$ is defined by five-tuples 
-$\langle In, Out,Seq, Comb, Asgn \rangle$, where $In$, $Out$, 
-$Seq$, $Comb$ are \emph{input}, \emph{output}, \emph{sequential} 
-or \emph{state-holding} and \emph{combinational} or 
-\emph{stateless} variables, respectively.  $Asgn$ is a 
-finite set of assignments to $Out$, $Seq$ and $Comb$ which 
-are defined below.  Here, $bv_{var}$, $bv_{const}$ denotes 
-bit-vector of variable width and constant width, respectively.  
-%
-\[ 
-\begin{array}[t]{@{}lll}
-\mathit{Asgn} & {:}{:}{=} & (V := \mathit{Bv}) \mid (V := \mathit{Bool}), V \in \{Comb, Seq, Out\} \\
-\mathit{Bv} &  {:}{:}{=} & bv_{const} \mid bv_{var} \mid
-	\mathit{ITE}(\mathit{Bool}, \mathit{Bv}, \mathit{Bv}) \mid \\
-	& & bv_{op}(bv_1, \ldots, bv_n), bv_i \in Bv, \\ 
-& & bv_{op} \in \{n\text{-ary operators over bitvectors} \} \\
-  \mathit{Bool} & {:}{:}{=} & \mathit{true} \mid \mathit{false} \mid \neg{Bool} \mid \\
-  && \mathit{Bool} \land \mathit{Bool} \mid \mathit{Bool} \lor \mathit{Bool} \mid \\
-& & \mathit{Bv}\; \mathit{relop}\; \mathit{Bv}, \mathit{relop} \in \{<,\leq,=,>,\geq\} \\
-\end{array}
-\]
-%
-\end{definition} 
-%
-\Omit{
-\mathcal{SN} & {:}{:}{=} & \mathit{Mods} \\
-\mathit{Mods} & {:}{:}{=} & \epsilon \mid \mathit{modName(V_1,\dots,V_n)} \{ Asgn \} \mathit{Mods} \\
-Here, $\mathit{Mods}$ are modules with names $\mathit{modName}$ and
-input variables $V_1,\ldots,V_n \in \mathit{In}$. $\mathit{Asgn}$ is a
-finite set of assignments partitioned into assignments
-$\mathit{CAsgn}$, which define combinatorial variables $V_c$
-(\emph{combinational/stateless} signals $\mathit{Comb}$ in the circuit
-or ouput signals $\mathit{Out}$); and assignments $\mathit{SAsgn}$,
-which assign \emph{sequential/state-holding} signals $V_s \in
-\mathit{Seq}$ (registers).
-}
-%
+
 A state transition in HW can be described by a set of register
 updates and assignment of non-deterministic values to external 
 inputs. The state transition in the software netlist corresponds 

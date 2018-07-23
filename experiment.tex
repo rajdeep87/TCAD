@@ -8,7 +8,7 @@
 \end{figure}
 %
 %===============================================================================
-%\para{Software Verifiers at the heart of Hardware Verification}
+%\subsection{Software Verifiers at the heart of Hardware Verification}
 %===============================================================================
 %
 Figure~\ref{fig:toolflow} gives the tool flow for hardware RTL 
@@ -79,7 +79,7 @@ verification tools are available here.~\footnote{\scriptsize{https://github.com/
 %\footnote{\scriptsize{http://www.cprover.org/hardware/tcad/}}
 %
 %===============================================================================
-\para{Benchmarks}
+\subsection{Benchmarks}
 %===============================================================================
 %
 We verified a total of~34 circuits given in Verilog RTL.  Out of 34, 26 
@@ -95,7 +95,7 @@ mutual exclusion protocol, a FIFO controller, a buffer allocation model,
 and an instruction queue controller.   
 %
 %-------------------------------------------------------------------------------
-\para{Properties}
+\subsection{Properties}
 %-------------------------------------------------------------------------------
 %
 The safety properties are specified as System Verilog Assertions.
@@ -182,7 +182,7 @@ p2: assert property
 
 %
 %-------------------------------------------------------------------------------
-\para{Discussion}
+\subsection{Discussion}
 %-------------------------------------------------------------------------------
 We classify the analysis results into two categories -- 1) \emph{precise} tools 
 that do not use any abstraction and performs precise reasoning using SAT/SMT solvers 
@@ -216,7 +216,7 @@ inconclusive (unknown) results, errors (crashes), and wrong results
 (tool bugs) reported by the tools. The tools can be distinguished 
 by the size of the circles as well as by colour. 
 
-\para{Analysis using $k$-induction} For safe benchmarks, the results
+\subsection{Analysis using $k$-induction} For safe benchmarks, the results
 for bit-level, word-level verifiers and software verifiers are
 comparable when the properties are 1-inductive or 2-step inductive.
 However, for complex safety properties, ABC and other abstraction
@@ -236,7 +236,7 @@ ABC, \ebmcv, \cbmcv and \textsc{2LS}.  We did not report
 the time for \emph{CPAChecker} since the results suggest that 
 its $k$-induction engine is not as mature yet. 
 
-\para{Analysis using Interpolation} Figure~\ref{fig:impact} reports
+\subsection{Analysis using Interpolation} Figure~\ref{fig:impact} reports
 the time taken by the interpolation engine in ABC, \textsc{IMPARA}
 and \emph{CPAChecker}. ABC is the fastest in 9 out of 12
 designs. However, it timed out on three complex benchmarks, RCU, FIFO
@@ -247,7 +247,7 @@ ran out of memory for the remaining designs.  \emph{CPAChecker} solved
 5 out of 12 cases.  None of the interpolation engines was able to
 prove RCU and BufAl.
 
-\para{Analysis using Hybrid techniques} Figure~\ref{fig:hybrid}
+\subsection{Analysis using Hybrid techniques} Figure~\ref{fig:hybrid}
 reports the time taken by the IC3/PDR engine in ABC, \emph{SeaHorn}
 and other hybrid techniques as implemented in \emph{CPAChecker} and
 \textsc{2LS}. ABC~is the clear winner here; it is the only tool that
@@ -423,7 +423,7 @@ Comparison of hybrid techniques
 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\para{Bit-level versus Word-level Analysis}
+\subsection{Bit-level versus Word-level Analysis}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 Figure~\ref{fig:solverruntimes} gives the runtime comparison between bit-level 
@@ -547,13 +547,13 @@ netlist designs.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \input{solver-runtimes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\para{Abstract Interpretation of RTL}
+%\subsection{Abstract Interpretation of RTL}
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\para{Effect of Trace partitioning for Precise analysis in Astr{\'e}e}
+%\subsection{Effect of Trace partitioning for Precise analysis in Astr{\'e}e}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-\para{Handling Imprecision in Astr{\'e}e}
+\subsection{Handling Imprecision in Astr{\'e}e}
 %
 Given that many abstract domains can only represent convex  
 (non-disjunctive) numeric properties, control-flow joins and loop  
@@ -638,7 +638,7 @@ RTL has loops or conditional branches inside a module, a software netlist also p
 similar control structure.   
 }
 
-\para{Soundness of Astr{\'e}e}
+\subsection{Soundness of Astr{\'e}e}
 %
 Astr{\'e}e is sound, that is, it does not miss any genuine error. 
 However, it errs for the safe benchmarks, sometimes too much. Hence, Astr{\'e}e 
@@ -652,8 +652,8 @@ bug-finding.
 \Omit{Standard Static Analysis is Imprecise, but can we do better than bit
 blasting ? 
 
-\para{Idea} Partition the traces so that we can prove correctness for each partition.
-\para{Solution} To be effecient, we want partitions that are just precise
+\subsection{Idea} Partition the traces so that we can prove correctness for each partition.
+\subsection{Solution} To be effecient, we want partitions that are just precise
 enough. 
 }
 \Omit{Best HW runtime versus Best Software runtimes}
@@ -682,7 +682,7 @@ the software netlist design is modeled in the C language, which support word-lev
 variables of fixed width (e.g. 32 bits or 64 bits). So this is inherently 
 a problem that is not addressed by software analyzers.
 
-\para{Analysis using Precise SAT/SMT based Software Analyzers}
+\subsection{Analysis using Precise SAT/SMT based Software Analyzers}
 %
 Though the invariant inference techniques employed by precise software 
 analyzers such as \textsc{CPAChecker} and \textsc{2LS} have never
@@ -702,7 +702,7 @@ tested in software analysis tools.  We reported the tool bugs to the
 authors of these tools.
 
 
-\para{Analysis using Abstraction based Software Analyzers}
+\subsection{Analysis using Abstraction based Software Analyzers}
 %
 The abstraction-based software analyzers such as Ultimate Automizer and Astr{\'e}e 
 performed better than the SAT/SMT-based software analysis tools.  Though 
@@ -728,7 +728,7 @@ interpretation.
 %abstract domains developed specifically for this task, e.g.~by
 %applying abstract conflict driven learning~\cite{dhk2013-popl}.  
 %-------------------------------------------------------------------------------
-\para{Limitations of the Result}
+\subsection{Limitations of the Result}
 %-------------------------------------------------------------------------------
 % 
 We discuss some of the limitations of the results presented in this paper.  

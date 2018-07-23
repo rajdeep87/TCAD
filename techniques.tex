@@ -16,23 +16,27 @@ respectively.
 The techniques in this class are all used for experiments with both conventional verification tools,
 operating on RTL designs, and verification of  our software netlist representation using software analysis tools.
 
-\para{Bounded Model Checking} 
+\subsection{Bounded Model Checking} 
 %
 BMC~\cite{biere} is a bug-finding method that searches for bad states along a finite trace of 
-the transition system. Given a `depth' $k$ and a set of bad states characterised by a predicate
+the transition system. Given a `depth' $k$ and a set of bad states defined by a predicate
 $B$, BMC forms the logical characterization of a $k$-length chain of transitions along the 
-transition relation $T$,  starting from any initial state satisfying $I(X_0)$. 
+transition relation $T$,  starting from any initial state satisfying $I[X_0]$. 
 Conjoined to this is a predicate saying that one or more of the states encountered 
 is bad:
 %
-\[ I(X_0) \wedge \delta(X_0, X_1) \wedge \dots 
-   \wedge \delta(X_{k{-}1}, X_k) \wedge (B(X_0) \vee \dots \vee B(X_k)) \]
+\[ \begin{array}[t]{@{}l}
+   I[X_0] \wedge \delta[X_0, X'_1] \wedge \dots \wedge \delta(X_[k{-}1], X'_k)\\
+   \quad \wedge \\
+   (B[X_0] \vee \dots \vee B[X_k]) 
+   \end{array}
+\]
 
-\noindent This formula which is then checked for satisfiability using an efficient SAT procedure.
+\noindent In BMC, this formula is checked for satisfiability using an efficient SAT procedure.
 If found satisfiable, a bad state---a potential design bug---has been idenified.
 
 %-------------------------------------------------------------------------------
-\para{BMC with K-induction} 
+\subsection{BMC with K-induction} 
 %
 BMC technique is incomplete, since it searches only a finite trace of the system. 
 The method of $k$-induction~\cite{fmcad2000} addresses this as follows.
@@ -49,7 +53,7 @@ over $k-1$ time steps to increase the
 likelihood that $P$ holds in $k$-th time step.
 %
 %-------------------------------------------------------------------------------
-\para{Interpolation-based Model Checking} 
+\subsection{Interpolation-based Model Checking} 
 %
 Interpolation-based model checking~\cite{cav03} 
 computes a step-wise overapproximation of the reachable state-space,
@@ -73,7 +77,7 @@ for reachability analysis of finite-state systems.
 %
 
 %-------------------------------------------------------------------------------
-\para{Predicate Abstraction with CEGAR}
+\subsection{Predicate Abstraction with CEGAR}
 %
 This technique computes an abstract model $\hat{T}$ from the concrete model
 $T$ using existential abstraction~\cite{cav97,cav2000}. 
@@ -111,7 +115,7 @@ then $P$ also holds on all reachable state of concrete model $T$.
 \end{enumerate}
 
 %-------------------------------------------------------------------------------
-\para{Property Directed Reachability} 
+\subsection{Property Directed Reachability} 
 %
 The property directed reachability~\cite{fmcad07} technique is briefly 
 described as follows. 
@@ -146,7 +150,7 @@ are purely used in the context of software programs. In this paper,
 we employ these techniques for verifying the software netlist designs 
 generated from the RTL. 
 %-------------------------------------------------------------------------------
-\para{Abstract Interpretation} 
+\subsection{Abstract Interpretation} 
 %
 Abstract Interpretation~\cite{Cousot92,CC79,DBLP:conf/emsoft/Cousot07},
 is a theory of sound approximation of program semantics based on lattice 
@@ -180,7 +184,7 @@ abstract domain to prove safety.
 }
 \Omit{
 %-------------------------------------------------------------------------------
-\para{Path-based symbolic execution}
+\subsection{Path-based symbolic execution}
 %-------------------------------------------------------------------------------
 %
 Path-based symbolic execution is an well-known technique in program verification 
@@ -203,7 +207,7 @@ of concrete and symbolic execution and property based pruning.
 }
 %
 %-------------------------------------------------------------------------------
-\para{Automata based Trace Abstraction with Interpolants}
+\subsection{Automata based Trace Abstraction with Interpolants}
 %-------------------------------------------------------------------------------
 %
 Automata-theoretic approaches to program verification~\cite{DBLP:conf/cav/KupfermanV00,

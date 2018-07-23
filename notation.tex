@@ -22,9 +22,7 @@ A \textit{safety property} $P[X]$ is a predicate over the variables $X$ of $T$. 
 $P(s)$; otherwise it is \textit{bad}. A property $P$ is \textit{inductive} if $P[X] \wedge \delta[X,X']$ implies $P[X']$.    
 %
 
-\para{Problem Statement}
-We define the safety verification of a transition system~$T = \langle I,X,\delta\rangle$.
+\subsection{Problem Statement} We define the safety verification of a transition system~$T = \langle I,X,\delta\rangle$.
 This is commonly known as the \textit{hardware model checking problem}.  
-Given a safety propety $P[X]$, the problem is to decide whether, starting from any initial state, a bad state can be reached following any sequence of transitions allowed by $\delta[X,X']$. In other words, is there an initialized trace of the system whose
-final state is bad?
+Given a safety propety $P[X]$, the problem is to decide whether, starting from any initial state, a bad state can be reached following any sequence of transitions allowed by $\delta[X,X']$. In other words, is there an initialized trace of the system whose final state is bad?
 %

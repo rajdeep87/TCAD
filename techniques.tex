@@ -1,5 +1,5 @@
 \section{Background on Property Checking Methods}\label{sec:techniques}
-
+%
 In this section, we briefly sketch the verification methods for property checking that
 we explore in our experiments. These are all well-established techniques and we refer 
 the reader to the literature for more in-depth explanation.
@@ -11,12 +11,12 @@ they use bit-level decision procedures or employ abstract domains. We call these
 \textit{SAT/SMT-based Verification} and \textit{Abstraction-based Verification}, 
 respectively.
 
-\subsection{SAT/SMT-based Verification}~\label{netlist-verif}
-
+\subsection{SAT/SMT-based Verification}\label{netlist-verif}
+%
 The techniques in this class are all used for experiments with both conventional verification tools,
 operating on RTL designs, and verification of  our software netlist representation using software analysis tools.
 
-\subsection{Bounded Model Checking} 
+\subsubsection{Bounded Model Checking} 
 %
 BMC~\cite{biere} is a bug-finding method that searches for bad states along a finite trace of 
 the transition system. Given a `depth' $k$ and a set of bad states defined by a predicate
@@ -36,7 +36,7 @@ is bad:
 If found satisfiable, a bad state---a potential design bug---has been idenified.
 
 %-------------------------------------------------------------------------------
-\subsection{BMC with K-induction} 
+\subsubsection{BMC with K-induction} 
 %
 BMC technique is incomplete, since it searches only a finite trace of the system. 
 The method of $k$-induction~\cite{fmcad2000} addresses this as follows.
@@ -53,7 +53,7 @@ over $k-1$ time steps to increase the
 likelihood that $P$ holds in $k$-th time step.
 %
 %-------------------------------------------------------------------------------
-\subsection{Interpolation-based Model Checking} 
+\subsubsection{Interpolation-based Model Checking} 
 %
 Interpolation-based model checking~\cite{cav03} 
 computes a step-wise overapproximation of the reachable state-space,
@@ -77,7 +77,7 @@ for reachability analysis of finite-state systems.
 %
 
 %-------------------------------------------------------------------------------
-\subsection{Predicate Abstraction with CEGAR}
+\subsubsection{Predicate Abstraction with CEGAR}
 %
 This technique computes an abstract model $\hat{T}$ from the concrete model
 $T$ using existential abstraction~\cite{cav97,cav2000}. 
@@ -115,7 +115,7 @@ then $P$ also holds on all reachable state of concrete model $T$.
 \end{enumerate}
 
 %-------------------------------------------------------------------------------
-\subsection{Property Directed Reachability} 
+\subsubsection{Property Directed Reachability} 
 %
 The property directed reachability~\cite{fmcad07} technique is briefly 
 described as follows. 
@@ -150,7 +150,7 @@ are purely used in the context of software programs. In this paper,
 we employ these techniques for verifying the software netlist designs 
 generated from the RTL. 
 %-------------------------------------------------------------------------------
-\subsection{Abstract Interpretation} 
+\subsubsection{Abstract Interpretation} 
 %
 Abstract Interpretation~\cite{Cousot92,CC79,DBLP:conf/emsoft/Cousot07},
 is a theory of sound approximation of program semantics based on lattice 
@@ -184,7 +184,7 @@ abstract domain to prove safety.
 }
 \Omit{
 %-------------------------------------------------------------------------------
-\subsection{Path-based symbolic execution}
+\subsubsection{Path-based symbolic execution}
 %-------------------------------------------------------------------------------
 %
 Path-based symbolic execution is an well-known technique in program verification 
@@ -207,7 +207,7 @@ of concrete and symbolic execution and property based pruning.
 }
 %
 %-------------------------------------------------------------------------------
-\subsection{Automata based Trace Abstraction with Interpolants}
+\subsubsection{Automata based Trace Abstraction with Interpolants}
 %-------------------------------------------------------------------------------
 %
 Automata-theoretic approaches to program verification~\cite{DBLP:conf/cav/KupfermanV00,

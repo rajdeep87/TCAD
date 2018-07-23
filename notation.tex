@@ -1,28 +1,26 @@
 \section{Notation and Problem Statement}~\label{sec:notation}
-
+%
 A Boolean \textit{transition system} for bit-level hardware
 modelling is a 3-tuple $T = \langle I,X,\delta \rangle$, where $X = \{x_1,\dots ,x_n\}$
 is a finite set of \textit{state variables} ranging over the Booleans $\mathbb{B}$. 
-%
 Corresponding to the variables in $X$ is a set of primed \textit{next-state} variables  $X' = \{x_1', \dots, x_n'\}$.
-% 
 A \textit{state} $s$ of $T$ is an assignment of Boolean values to the variables in $X$. Likewise, a \textit{next state} is an assignment of Boolean values to the variables in $X'$.  For any state $s$ that assigns values to the  variables $X$, we write $s'$ to denote the next state that assigns the same values to the corresponding primed variables in $X'$. If $F[X]$ is a formula over the variables $X$, we write $F(s)$ to say that
 the assignment $s$ makes the formula $F[X]$ true. That is, the state $s$ satisfies $F$. Similarly, if $R[X,X']$ is a relation over the variables $X$ and $X'$, we write $R(s_1,s_2)$ to say that the state $s_1$ and the next state $s_2$ jointly satisfy the relation $R$.
 
 In a transition system $T$, the predicate $I[X]$ is a formula over
 the variables in $X$ specifying the \textit{initial states} of the system; these are all the states $s$ for which
-$I(s)$. The formula $\delta[X,X']$ represents the \textit{transition relation} of the system; it stipulates the relationship that the system 
-realizes between current and next states at each discrete step of its operation. 
-% 
-We call a sequence of states $(s_j,\dots,s_k)$ a~\textit{trace} 
-if $\delta(s_i,s'_{i{+}1})$ for $i=j,\dots,k-1$.  Such a trace is 
-\textit{initialized} if its first state, $s_j$, satisfies $I[X]$.  
+$I(s)$. The formula $\delta[X,X']$ represents the \textit{transition relation} of the system; it stipulates the relationship that the system
+realizes between current and next states at each discrete step of its operation.
+We call a sequence of states $(s_j,\dots,s_k)$ a~\textit{trace}
+if $\delta(s_i,s'_{i{+}1})$ for $i=j,\dots,k-1$.  Such a trace is
+\textit{initialized} if its first state, $s_j$, satisfies $I[X]$.
   
 A \textit{safety property} $P[X]$ is a predicate over the variables $X$ of $T$.  We will say a state $s$ is \textit{good} with respect to this safety property if 
 $P(s)$; otherwise it is \textit{bad}. A property $P$ is \textit{inductive} if $P[X] \wedge \delta[X,X']$ implies $P[X']$.    
-%
 
-\subsection{Problem Statement} We define the safety verification of a transition system~$T = \langle I,X,\delta\rangle$.
-This is commonly known as the \textit{hardware model checking problem}.  
-Given a safety propety $P[X]$, the problem is to decide whether, starting from any initial state, a bad state can be reached following any sequence of transitions allowed by $\delta[X,X']$. In other words, is there an initialized trace of the system whose final state is bad?
+\subsection{Problem Statement} 
 %
+We now define the \textit{safety verification} of a transition system~$T = \langle I,X,\delta\rangle$.
+This is commonly known as the \textit{hardware model checking problem}.  
+Given a safety property $P[X]$, the problem is to decide whether, starting from any initial state, a bad state can be reached following any sequence of transitions allowed by $\delta[X,X']$. In other words, is there an initialized trace of the system whose final state is bad?
+

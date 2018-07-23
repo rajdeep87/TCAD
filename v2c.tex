@@ -174,6 +174,395 @@ int main() {
 \caption{Skeleton of the software-netlist model generated using \emph{v2c}}
 \label{figure:structure}
 \end{figure}
+
+dependencies.  The translation phase is followed by the code-generation phase 
+where the intermediate vectored expressions and translated module items 
+are converted to C-type expressions.  Note that we refrain from any optimizations
+or abstractions to obtain a correct and trustworthy output. 
+
+%
+\begin{figure}[htbp]
+\centering
+\vspace*{0.3cm}
+\scalebox{.50}{\import{figures/}{v2c.pspdftex}}
+\caption{Translation stages in \emph{v2c} \label{fig:steps}}
+\end{figure}
+%
+
+\subsection{Handling Verilog Module Items}
+\subsubsection{Data Model:} The data model in Verilog is significantly 
+different from C.  Each bit of a C integer value can have 
+only two states, namely 0 and 1.  The Verilog HDL
+value sets consists of four states, namely 0, 1, $X$ and $Z$.  A value of 0
+represents low voltage and value of 1 represents high voltage.  Further,
+data values $X$ and $Z$ represent an unknown logic state and a 
+high impedance value, respectively.  The simplest synthesis semantics 
+for $X$ is treating it as a don't-care assignment, which allows the 
+synthesis to choose a 0 or 1 to further improve logic minimization.
+\emph{v2c} treat $X$ and $Z$ states to be non-deterministic as there is no
+corresponding C state. 
+
+\subsubsection{Registers, wires, parameters and constants:} Verilog supports structural 
+data types called \emph{nets}, which are \emph{wire}
+and \emph{reg}. The value of wire variables changes 
+continuously as the input value changes.  Whereas, 
+the \emph{reg} types hold their values until another value is 
+assigned to them.  A structure containing all state holding
+elements of a module is declared in C to store the register
+variables. Wires are declared as local variables in C.  
+Verilog Parameters are constants which 
+are typically used to specify the width of variables,
+for eg., \texttt{parameter identifier = constant\_expression;}.
+Parameters are declared as constants in C.  
+Verilog also allows the definition of the global constants 
+using \texttt{`define} construct, for eg., \texttt{`define STATE 2'b00;},
+which is same as the \#define preprocessor directives in C.
+
+\subsubsection{Always and Initial blocks:}
+Always blocks are the concurrent statements which execute when a 
+variable in the sensitivity list changes. The statements enclosed inside the 
+always block within $begin \ldots end$ construct are executed in parallel
+or sequentially depending on whether it is non-blocking or blocking statement 
+respectively.   The behavior of an initial block is same as the always blocks, 
+except that they are executed exactly once, before the execution of any 
+always block. Figure~\ref{figure:always-init} shows the translation of always
+and initial block (shown in top) to C (shown in bottom). All code-snippets are
+partial and complete C code could not be accommodated due to space limit.
+
+\begin{figure*}[htbp]
+\scriptsize
+\begin{tabular}{l|l}
+\hline
+Always and initial block & Multiple always and initial block\\
+\hline
+\begin{lstlisting}[mathescape=true,language=Verilog]
+reg [7:0] x,y,z;
+initial begin  x=0xFF;y=0;z=0; end
+always @(posedge clk) begin
+ y=x; z=y;
+end
+\end{lstlisting}
+& 
+\begin{lstlisting}[mathescape=true,language=Verilog]
+reg [7:0] x,y,z;
+initial begin  x=0xFF;y=0;z=0; end
+always @(y) z=y+1;
+always @(posedge clk) begin
+ y=x;
+end
+\end{lstlisting}
+\\
+\hline 
+\begin{lstlisting}[mathescape=true,language=C]
+struct st {unsigned char x,y,z;} streg;
+void initial() {
+ streg.x=255;streg.y=0;streg.z=0;}
+int clock_block() {
+  streg.y=streg.x; 
+  streg.z=streg.y;}
+int main() {
+ initial();
+ while(1) clock_block();
+}
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+struct st {unsigned char x,y,z;} streg;
+void initial() { 
+ streg.x=255;streg.y=0;streg.z=0;}
+int clock_block() {
+  streg.y = streg.x; 
+  streg.z = streg.y+1;
+}
+int main() {
+ initial();
+ while(1) clock_block();
+} 
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\caption{Handling always and initial blocks}
+\label{figure:always-init}
+\end{figure*}
+
+\subsubsection{Module Hierarchy with Input/Output Port:}
+The communication between modules takes place through 
+ports, which are signals listed in the parameter list at the 
+top of the module. Ports can be of type in, out, and inout. 
+Figure~\ref{figure:module-hierarchy} shows an example of 
+Verilog module hierarchy on the left and the translated 
+code block in C on the right. The output ports are passed 
+as reference to reflect the changes in the parent module.
+The generated C code preserves the module hierarchy of 
+the RTL and produce structurally identical code which 
+often helps in mapping C-RTL operations for easier debugging. 
+
+\begin{figure*}[htbp]
+\scriptsize
+\begin{tabular}{l|l}
+\hline
+Module Hierarchy with Input/Output Ports &  Code block in C \\
+\hline
+\begin{lstlisting}[mathescape=true,language=Verilog]
+module top(in1, in2);
+input [3:0] in1, in2;
+wire [3:0] o1, o2;
+and A1 (in1, in2, o1, o2);
+and A2 (.c(o1),.d(o2),.a(o1),.b(in2));
+endmodule
+// Module Definition              
+module and1(a, b, c, d);
+input [3:0] a, b;
+output [3:0] c, d;
+reg [3:0] c;
+always @(*) begin
+ c = a & b;
+end
+assign d = 1;
+endmodule
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+struct state_elements_and {
+ unsigned char c; };
+struct state_elements_and sand;
+void and(unsigned char a, unsigned char b, 
+unsigned char *c, unsigned char *d) {
+ *d = 1; sand.c = a & b;
+}
+void top(unsigned char in1, unsigned char in2) {
+ unsigned char o1,o2;
+ and(in1, in2, &o1, &o2);
+ and(o1, in2, &o1, &o2);
+}
+void main() {
+ unsigned char in1,in2;
+ top(in1, in2);
+}    
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\caption{Handling Module hierarchy with I/O ports}
+\label{figure:module-hierarchy}
+\end{figure*}
+
+\subsubsection{Procedural Assignments:}
+Procedural assignments are used within Verilog 
+procedures like always and initial blocks and are of 
+two types: \emph{blocking} and \emph{non-blocking}.  
+Blocking statements are executed 
+in sequential order. However, blocking
+assignments which are triggered from the same event execute
+in parallel.  We model the parallelism using an auxiliary variable
+for all the blocking assignments that are sensitive to the same event. 
+On the other hand, the non-blocking statements always 
+execute in parallel for the same clock. To model 
+parallelism for non-blocking statements, we 
+use shadow-variable based update technique. 
+The value of register variables are stored in 
+auxiliary variables in the beginning of the clock cycle.  
+Each read access to the register variables is then replaced 
+by these auxiliary variables. This ensures that 
+an assignment to the register variable do not influence the 
+subsequent assignments. Figure~\ref{figure:block} shows 
+the translation of procedural assignments (shown in top) to 
+the equivalent C semantics (shown in bottom).     
+
+\begin{figure*}[htbp]
+\scriptsize
+\begin{tabular}{l|l|l}
+\hline
+Non-blocking assignment & Blocking assignment & Continuous assignment \\
+\hline
+\begin{lstlisting}[mathescape=true,language=Verilog]
+reg [7:0] x,y,z;
+wire in = 1'b1;
+always @(posedge clk) begin
+ x <= in;
+ y <= x;
+ z <= y;
+end
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=Verilog]
+reg [7:0] x,y,z;
+wire in = 1'b1;
+always @(posedge clk) begin
+ x = in;
+ y = x;
+ z = y;
+end
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=Verilog]
+wire in;
+reg a,b,t;
+wire a = in;
+wire c = b; wire d = c; 
+always @(posedge clk) begin
+ b <= a;
+ t <= b;
+end 
+\end{lstlisting}
+\\
+\hline 
+\begin{lstlisting}[mathescape=true,language=C]
+struct smain { 
+unsigned char x,y,z; } sm;
+unsigned char xs,ys,zs;
+ _Bool in = 1;
+// save register variables
+ xs=sm.x;ys=sm.y;zs=sm.z;
+// update register variables
+ sm.x = in;
+ sm.y = xs;
+ sm.z = ys;
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+struct smain {
+unsigned char x,y,z;}sm;
+ _Bool in = 1;
+// clocked block
+ sm.x = in;
+ sm.y = sm.x;
+ sm.z = sm.y;
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+struct smain {
+_Bool a,b,t; } sm;
+_Bool in,c,d,as,bs,cs,ds,ts;
+sm.a = in;//continuous assign
+// save register variables
+as=sm.a;bs=sm.b;ts=sm.t;
+// clocked block
+sm.b = as; sm.t = bs;
+// continuous assignment 
+c = sm.b; d = c;
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\caption{Handling non-blocking, blocking and continuous assignments}
+\label{figure:block}
+\end{figure*}
+
+\subsubsection{Continuous Assignment:}
+The continuous assignment is used to assign a value onto a 
+wire in a module. Continuous assignments are concurrent statements 
+which are immediately triggered when there is any change 
+in the right-hand side inputs. The translation of continuous 
+assignments are discussed next. 
+
+\subsection{Dependency Analysis}
+The dependency analysis routine determines all intra-modular dependencies
+between the continuous assignments and always blocks. If a variable, say $x$,
+appearing in continuous assignment is updated directly by the input signal and is 
+read inside an always block, then it is placed before the always block to capture any 
+update over the module input interface triggered from other modules or an 
+external environment. Another possible scenario can be that a variable $x$ which is 
+assigned in a continuous assignment statement appears in the right-hand 
+side of another continuous assignment. In this case, the variable 
+assignment $x$ is placed before the other assignment 
+which reads $x$. An alternative scenario can be 
+that the variable $x$ which appears in the right-hand side of a continuous assignment
+is driven from an always block. This gives an ordering where the continuous 
+assignment is placed after the always block to capture the updated value of $x$.  
+All three cases are demonstrated with an example in Figure~\ref{figure:block}. 
+For design with inter-modular 
+combinatorial path or combinatorial loop, the output may settle after 
+several executions before the next clock cycle. \emph{v2c} detects such 
+combinatorial loop and flags a warning. The correct translation for 
+designs with combinatorial exchanges between modules is to determine 
+the stability condition for the combinatorial signals and 
+execute the combinatorial logic until the stability condition is reached. 
+
+\subsection{Bit-precise code generation}
+\emph{v2c} generate bit-precise software-netlist model in C.
+The tool automatically handles complex bit-level operators in Verilog, 
+like bit-select or part-select operators from a vector,
+concatenation operators, reduction OR and other operators. \emph{v2c} retains 
+the word-level structure of the Verilog RTL and generate 
+vectored expressions. Figure~\ref{figure:bit} shows 
+Verilog code (at the top) and the generated C expressions 
+(at the bottom) which are combinations of bitwise and 
+arithmetic operators like bitwise OR, AND, multiplication, 
+subtraction, shifts and other C operators.     
+
+\subsubsection{Variable declaration:} Variables of specific 
+bit-width (register, wire) in Verilog is translated 
+to the next largest native data-types in C such as 
+char, short int, long, long long etc. The default 
+variable declaration in C is \texttt{unsigned} except for 
+the integer declaration in Verilog which is signed.
+
+\begin{figure*}[htbp]
+\scriptsize
+\begin{tabular}{l|l|l}
+\hline
+Bit-select & Part-select (System Verilog) & Concatenation \\
+\hline
+\begin{lstlisting}[mathescape=true,language=Verilog]
+wire [7:0] in1,in2;
+reg [7:0] out1,out2;
+out1[7:5] = in1[4:2];
+out2[6] = in2[4];
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=Verilog]
+reg [31:0] in, out;
+for(i=0;i<=3;i++) begin
+out[8*i +: 8]=in[8*i +: 8];
+end
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=Verilog]
+wire [7:0] in1, in2;
+reg [9:0] out;
+out = {in2[5:2],in1[6:1]};
+\end{lstlisting}
+\\
+\hline
+\begin{lstlisting}[mathescape=true,language=C]
+unsigned char in1,in2;
+struct smain { 
+ unsigned char out1,out2;
+} sm;
+sm.out1 = sm.out1 & 0x1f | 
+(((in1 & 0x1c)>>2)<<5);
+sm.out2 = (sm.out2 & 0xbf)| 
+(((in2 & 0x10)>>4)<<6); 
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+struct smain {
+ unsigned int in,out;
+} sm;
+for(i=0;i<=3;i++) {
+ x=8*i+(8-1); y=8*i;
+ sm.out=(sm.out&!(2^31-2^y))
+ |(sm.in&(2^31-2^y)); 
+}
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+unsigned char in1,in2;
+struct smain { 
+ unsigned char out; 
+} sm;
+sm.out = (((in2 >> 2)
+ & 0xF) << 6)|
+ ((in1 >> 1) & 0x3F);
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\caption{Handling Bit-select, part-select from vectors and concatenation}
+\label{figure:bit}
+\end{figure*}
 %
 %%===============================================================================\
 \subsection{Procedural Assignments}

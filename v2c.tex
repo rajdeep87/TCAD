@@ -1,3 +1,28 @@
+\section{Verilog RTL to Software netlist}\label{sec:v2c}
+%
+Formal verification tools~\cite{abc,DBLP:conf/fmcad/BradleyM07,vis} for 
+hardware RTL designs typically synthesize the input RTL design into the
+\emph{bit-level} or \emph{word-level} netlist.  
+%This section briefly describes various netlist formats 
+%at -- \emph{bit-level} or \emph{word-level}. 
+%
+%
+More recently, synthesis of RTL into the software program is presented 
+in our previous works~\cite{mkm2015,mtk2016}.  This new representation 
+enables application of classical software verification techniques such as 
+abstract interpretation, path-based symbolic execution and others, which 
+have never been applied to RTL verification.  In the subsequent section, 
+we describe the synthesis of software netlist from hardware RTL designs.     
+
+Verilog and C share many common operators.  However, Verilog support few 
+additional operators like part-select, bit-select from vectors, concatenation
+operators, reduction operators which are not supported in C.  Additionally, Verilog 
+statements like initial block, always block, generate statement, procedural assignment 
+(blocking, non-blocking) and continuous assignment are 
+not supported in C. Further, Verilog support 4-state valued data-types 
+like reg, wire, integer.  All these non-trivial constructs combined with 
+parallelism make Verilog to C translation challenging.
+
 %\subsection{Synthesizing software netlist from RTL}\label{sec:v2c}
 %
 \begin{figure*}[t]
@@ -67,6 +92,8 @@ The hardware circuit in Verilog RTL is automatically translated
 into the software program, called \textit{software netlist}~\cite{mtk2016,mskm2016} 
 using the tool {\em v2c}~\cite{mtk2016}. The software netlist is expressed 
 in C language.  
+
+
 
 %
 \begin{definition} 

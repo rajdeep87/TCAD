@@ -13,65 +13,13 @@ enables application of classical software verification techniques such as
 abstract interpretation, path-based symbolic execution and others, which 
 have never been applied to RTL verification.  In the subsequent section, 
 we describe the synthesis of software netlist from hardware RTL designs.     
-\Omit{
-\subsection{Bit-level Synthesis}
-Logic synthesis~\cite{ls1,ls2} is an important step in automatic circuit 
-verification.  A network derived from compiling hardware RTL expressed in HDL such 
-as Veriog or VHDL is synthesized into a netlist represented in 
-And-Inverter Graph \emph{(AIG)}, before performing technology mapping.   
-The syntheis of RTL into bit-level netlist represented as AIG can be 
-stored in formats such as 
-\emph{AIGER}, \emph{BLIF}, \emph{EDIF}, \emph{PLA} or \emph{BAF}.  
-The netlist captures the effect of one clock period on the 
-state-holding elements.  The netlist consists of a network of 
-and-gates, inverters, and memory elements referred to as registers.  
-This approach misses the opportunity to exploit the word-level 
-structure of the input RTL design.  
 
-%\subsection{Word-level Synthesis}
-Word-level reasoning engines have motivated the use of word-level
-representations for the transition
-relation~\cite{DBLP:conf/mtv/SunkariCVM07,soc-keating}. The use of the term
-``word'' refers to a \textit{bit-vector} encoding of the registers and 
-wires, rather than representing them as individual bits. That is, the data-path 
-elements and data packets are treated as words, as opposed to a group of 
-bit-level signals.  
-\Omit{
-Consider the Verilog example in the left-hand column of
-Figure~\ref{figure:word}.  The circuit has two state-holding registers, each
-of four bits.  Thus, two next-state functions are generated, denoted by $x'$
-and $y'$.  The branching in the input Verilog program yields expressions
-with the $ite$ operator.  
-}
-As in the case of the netlist-based transition relation, the word-level 
-transition relation encodes the effect of one clock period on the 
-state-holding elements. A word-level netlist can be represented 
-in \emph{BTOR} format or some word-level format that resembles SMT-LIB 
-language~\footnote{http://smtlib.cs.uiowa.edu/}.  
-This enables the use of word-level decision procedures, such as 
-Satisfiability Modulo Theory (SMT) solvers, in the back-end of these tools.  
-The work of~\cite{DBLP:conf/cav/Bjesse08} 
-present a word-level model checking framework that uses 
-\emph{transformation-based} approach~\cite{DBLP:conf/fmcad/GloklerBSSHRMR06}, 
-where a word-level netlist is abstracted to an equivalent but smaller than a gate-level 
-netlist.  This is done by rewritting the word-level netlist into a 
-design where the datapath is completely separated from boolean control 
-logic. The word-level registers and input signals are decomposed into a 
-smaller blocks such that the control and data do not overlap. The technique 
-generates a smaller netlist that can be analyzed using standard gate-level 
-reductions and bit-level model checking algorithms. 
+Verilog and C share many common operators.  However, Verilog support few 
+additional operators like part-select, bit-select from vectors, concatenation
+operators, reduction operators which are not supported in C.  Additionally, Verilog 
+statements like initial block, always block, generate statement, procedural assignment 
+(blocking, non-blocking) and continuous assignment are 
+not supported in C. Further, Verilog support 4-state valued data-types 
+like reg, wire, integer.  All these non-trivial constructs combined with 
+parallelism make Verilog to C translation challenging.
 
-
-\subsection{Term-level Synthesis}
-A term-level synthesis generates a term-level model represented 
-in its custom language called counter arithmetic with lambda 
-expressions and uninterpreted functions (CLU)~\cite{uclid}.  Tools 
-like UCLID~\cite{uclid} uses term-level models, which are obtained 
-from the word-level RTL description by data-path abstraction and 
-abstracting functional blocks by uninterpreted functions.  The 
-generated partially interpreted term-level abstract model is then 
-solved using SMT solvers.  
-}
-
-%\subsection{Software-level Synthesis}
-%

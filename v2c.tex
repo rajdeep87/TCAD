@@ -8,20 +8,22 @@ enables direct exploitation of software verification methods such as
 abstract interpretation and path-based symbolic execution.
 
 Verilog and C have many operators in common, but  Verilog also has 
-additional hardware-oriented operators such as part-select, bit-select from vectors, concatenation, and reduction. Additionally, many Verilog statements have no direct analogue in C---examples include
+additional hardware-oriented operators such as part-select, bit-select from vectors, concatenation, and reduction. Additionally, many Verilog statements have no direct analogue in C. Examples include
 initial blocks, always blocks, generate statements, procedural assignments
-(blocking, non-blocking) and continuous assignments. Further, Verilog supports 4-valued data types 
-such as reg, wire, and integer.  All these non-trivial constructs, combined with 
-parallelism, make Verilog to C translation challenging.
+(blocking, non-blocking) and continuous assignments. Further, Verilog supports the 4-valued data types 
+reg, wire, and integer.  All these constructs, combined with 
+parallelism, make the translation challenging.
 
-%\subsection{Synthesizing software netlist from RTL}\label{sec:v2c}
-%
-\begin{figure*}[t]
+In view of these complexities, our translation is deliberately direct and transparent: we try to preserve the structure of the code, and refrain from optimizations or abstractions. Fidelity of the translated code to the semantics of the original Verilog is prioritised and we rely on the software analysis tools for efficiency. Fig.~\ref{ex1} shows an illustrative example.
+
+\begin{figure*}[bt]
 \scriptsize  
 \centering
-\begin{tabular}{|l|l|l|l|}
+%\begin{tabular}{|l|l|l|l|}
+\begin{tabular}{|l|l|l|}
 \hline
-  Verilog & Formal Semantics & Synthesized Hardware & Software netlist \\
+%  Verilog & Formal Semantics & Synthesized Hardware & Software netlist \\
+%  Verilog & Synthesized Hardware & Software netlist \\
 \hline
 \begin{lstlisting}[mathescape=true,language=Verilog]
 module top(clk, a);
@@ -42,11 +44,11 @@ always @(posedge clk)
 endmodule
 \end{lstlisting}
 &
-\begin{minipage}{4.2cm}
+% \begin{minipage}{4.2cm}
 %\centering
-\scalebox{.5}{\import{figures/}{semantics.pspdftex}}
-\end{minipage}
-&
+% \scalebox{.5}{\import{figures/}{semantics.pspdftex}}
+% \end{minipage}
+% &
 \begin{minipage}{4.0cm}
 \centering
 \scalebox{.5}{\import{figures/}{ckt.pspdftex}}

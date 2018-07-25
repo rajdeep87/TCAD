@@ -41,13 +41,10 @@
 \usepackage[algo2e,linesnumbered,ruled,lined]{algorithm2e}
 \usepackage{hyperref}
 
-\makeatother
 \newcommand{\tool}[1]{\textsc{#1}\xspace}
 \newcommand{\cbmcv}{\tool{cbmc 5.0}}
 \newcommand{\symex}{\tool{path-symex}}
 \newcommand{\ebmc}{\tool{ebmc}}
-\newcommand{\hector}{\tool{hector}}
-%\newcommand{\slec}{\tool{slec}}
 \newcommand{\symexv}{\tool{path-symex 5.0}}
 \newcommand{\ebmcv}{\tool{ebmc 4.2}}
 \newcommand{\yosys}{Yosys 0.5}
@@ -89,9 +86,6 @@
 % ---------------------------------------------------------------------
 \begin{document}
 
-% ---------------------------------------------------------------------
-% Title, authors, abstract, keywords
-% ---------------------------------------------------------------------
 \title{Exploring Formal Verification of Hardware Properties using Software Analysis Tools}
 
 \author{Rajdeep Mukherjee, 
@@ -118,7 +112,6 @@
 % \IEEEpeerreviewmaketitle
 
 \begin{abstract}
-%
 This paper explores formal verification of hardware via translation of
 Verilog RTL into a novel ANSI-C representation called a \emph{software
 netlist}.  Unlike abstract software models of hardware designed for
@@ -136,7 +129,6 @@ hardware model checkers currently outperform bit-level software analyzers.
 However, we also establish that abstract interpretation with manual guidance
 is effective for finding complex bugs, as well as for proving unbounded safety
 of software netlist designs generated from RTL circuits.
-%
 \end{abstract}
 
 \begin{IEEEkeywords} % Supposed to be in alphabetical order.
@@ -157,19 +149,17 @@ Verilog RTL.
 \input{v2c}                     % The v2c tool
 \input{equivalence}             % Equivalence of Hardware and Software
 \input{experiment}              % Experiments.
-\input{related_work}
-\input{concl}    % Conclusions
+\input{related_work}            % Related work
+\input{concl}                   % Conclusions
 
 % ---------------------------------------------------------------------
 % Un-numbered section of acknowledgments
 % ---------------------------------------------------------------------
-
 \section*{Acknowledgments}
 
 % ---------------------------------------------------------------------
 % Bibliography
 % ---------------------------------------------------------------------
-
 \bibliographystyle{IEEEtran}
 \bibliography{biblio}
 
@@ -183,13 +173,16 @@ Verilog RTL.
 % \begin{IEEEbiography}{Peter Schrammel}
 % \end{IEEEbiography}
 
-% \begin{IEEEbiography}{Tom Melham}
-% \end{IEEEbiography}
-
 % \begin{IEEEbiography}{Daniel Kroening}
 % \end{IEEEbiography}
 
-% \begin{IEEEbiography}{Michael Tautschnig}
+% \begin{IEEEbiography}{Tom Melham}
+% \end{IEEEbiography}
+
+% \begin{IEEEbiography}{Antoine Min{\'e}}
+% \end{IEEEbiography}
+
+% \begin{IEEEbiography}{Eugene Goldberg}
 % \end{IEEEbiography}
 
 \end{document}

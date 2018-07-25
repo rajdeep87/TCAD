@@ -2,21 +2,23 @@
 %
 Formal verification tools for hardware RTL~\cite{abc,DBLP:conf/fmcad/BradleyM07,vis} typically
 synthesize a design into a bit-level or word-level netlist.  In this section, we
-present a method for synthesis of a Verilog RTL design into an ANSI C program, which we
+present a method for synthesis of a Verilog RTL design into an ANSI C program instead, which we
 call a \textit{software netlist}~\cite{mkm2015,mtk2016}. As will be seen, this new representation 
-enables direct exploitation of software verification methods such as 
+enables direct exploitation of software verification methods, such as 
 abstract interpretation and path-based symbolic execution.
 
 Verilog and C have many operators in common, but  Verilog also has 
 additional hardware-oriented operators such as part-select, bit-select from vectors, concatenation, and reduction. Additionally, many Verilog statements have no direct analogue in C. Examples include
 initial blocks, always blocks, generate statements, procedural assignments
-(blocking, non-blocking) and continuous assignments. Further, Verilog supports the 4-valued data types 
+(blocking, non-blocking) and continuous assignments. Verilog also supports the 4-valued data types 
 reg, wire, and integer.  All these constructs, combined with 
-parallelism, make the translation challenging.
+parallelism, make translation challenging.
 
-In view of these complexities, our translation is deliberately direct and transparent: we try to preserve the structure of the code, and refrain from optimizations or abstractions. Fidelity of the translated code to the semantics of the original Verilog is prioritised and we rely on the software analysis tools for efficiency. Fig.~\ref{ex1} shows an illustrative example.
+In view of these complexities, our translation is deliberately direct and transparent: we try to preserve the structure of the RTL and refrain from optimizations or abstractions. Fidelity of the resulting C code to the semantics of the original Verilog is prioritised---meaning that we rely on the downstream software analysis tools for efficiency, rather than obscure our translation with optimisations. 
 
-\begin{figure*}[bt]
+Fig.~\ref{ex1} shows an illustrative example. \tmcmt{Rajdeep, please provide a couple of sentences of commentary to explain the example. Also, is this example going to be confusing because the `always' semantics is not translated?}
+
+\begin{figure*}[t]
 \scriptsize  
 \centering
 %\begin{tabular}{|l|l|l|l|}
@@ -74,7 +76,7 @@ void top(_Bool clk, unsigned a) {
 \\
 \hline
 \end{tabular}
-\caption{Circuit to Software}
+\caption{Example of Verilog Translated into C}
 \label{ex1}
 \end{figure*}
 %

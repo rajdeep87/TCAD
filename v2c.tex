@@ -25,7 +25,7 @@ Fig.~\ref{ex1} shows an illustrative example. \tmcmt{Rajdeep, please provide a c
 \begin{tabular}{|l|l|l|}
 \hline
 %  Verilog & Formal Semantics & Synthesized Hardware & Software netlist \\
-Verilog & Synthesized Hardware & Software Netlist \\
+\textbf{Verilog} & \textbf{Synthesized Hardware} & \textbf{Software Netlist} \\
 \hline
 \begin{lstlisting}[mathescape=true,language=Verilog]
 module top(clk, a);
@@ -46,11 +46,6 @@ always @(posedge clk)
 endmodule
 \end{lstlisting}
 &
-% \begin{minipage}{4.2cm}
-%\centering
-% \scalebox{.5}{\import{figures/}{semantics.pspdftex}}
-% \end{minipage}
-% &
 \begin{minipage}{4.0cm}
 \centering
 \scalebox{.5}{\import{figures/}{ckt.pspdftex}}
@@ -72,31 +67,34 @@ void top(_Bool clk, unsigned a) {
     u1.e = 0;
   u1.d = c;  
 }
-\end{lstlisting}
-\\
+\end{lstlisting}\\
 \hline
 \end{tabular}
 \caption{Example of Verilog Translated into C}
 \label{ex1}
 \end{figure*}
-%
-%===============================================================================
-\subsection{Software Netlist}
-%===============================================================================
-The hardware circuit in Verilog RTL is automatically translated 
-into the software program, called \textit{software netlist}~\cite{mtk2016,mskm2016} 
-using the tool {\em v2c}~\cite{mtk2016}. The software netlist is expressed 
-in C language.  
 
+\subsection{Translation Flow and Software Netlists}
+
+Our translation is implemented in a tool called V2C~\cite{mtk2016} that supports the
+1364-2005 IEEE Standard\cite{Verilog}. \tmcmt{This is a superseded standard. Does that matter?}
+The front-end performs Verilog parsing, macro preprocessing, and
+type-checking. The result is a type-annotated parse-tree, which is passed to the main translation phase. 
+This performs rule-based translation following the Verilog module hierarchy, 
+according to synthesis semantics. Rule-based translation produces vectored
+assignments by mapping bit-operations to equivalent shift-and-mask operations in C, and
+performs a global analysis to determine inter-module and intra-modular
+dependencies.  The translation phase is followed by code-generation, 
+where the intermediate vectored expressions and translated module items
+are converted to code in ANSI-C. 
+
+A skeleton of the resulting software netlist is shown in Fig.~\ref{figure:structure}. \tmcmt{Rajdeep: please provide a very brief commentary on the skeleton. We need to look at the typesetting of this figure.}
 
 %
 \begin{figure}[t]
 \captionsetup{justification=justified}
 \scriptsize
 \begin{tabular}{l}
-\hline
- Pseudo-code for software-netlist model \\
-\hline
 \begin{lstlisting}[mathescape=true,language=C]
 // parameter definition
 // macro definition
@@ -115,8 +113,8 @@ int design (data_type input, data_type *output) {
   the register elements  
   
   // continuous assignments
-  Place all continuous statements which 
-  are only dependant on input
+  Place all continuous statements that
+  are dependant on only inputs
  
   // always block 
   Place the always block respecting
@@ -154,38 +152,10 @@ int main() {
 } //end main 
 \end{lstlisting}
 \\
-\hline
 \end{tabular}
-\caption{Skeleton of the software-netlist model generated using \emph{v2c}}
+\caption{Skeleton of a software-netlist model}
 \label{figure:structure}
 \end{figure}
-
-Figure~\ref{fig:steps} shows the translation steps of \emph{v2c}.  The
-front-end phase performs Verilog parsing, macro preprocessing and
-type-checking.  The Verilog front-end supports 1364-2005 IEEE Standard for
-Verilog HDL.  The front-end generates a type-annotated
-parse-tree which is passed to the translation phase. During translation phase,
-the tool preserves the synthesis semantics and performs rule-based translation
-following the Verilog module hierarchy. The rule-based translation produce vectored
-assignments by mapping bit-operations to an equivalent shift and mask and
-performs global dependency analysis to determine inter-module and intra-modular
-dependencies.  The translation phase is followed by the code-generation phase
-where the intermediate vectored expressions and translated module items
-are converted to C-type expressions.  Note that we refrain from any optimizations
-or abstractions to obtain a correct and trustworthy output.
-
-%
-\begin{figure}[htbp]
-\centering
-\vspace*{0.3cm}
-\scalebox{.50}{\import{figures/}{v2c.pspdftex}}
-\caption{Translation stages in \emph{v2c} \label{fig:steps}}
-\end{figure}
-%
-
-The pseudo-code of the software 
-netlist design is shown in figure~\ref{figure:structure}.
-
 
 \subsection{Handling Verilog Module Items}
 \subsubsection{Data Model:} The data model in Verilog is significantly 
@@ -197,7 +167,7 @@ data values $X$ and $Z$ represent an unknown logic state and a
 high impedance value, respectively.  The simplest synthesis semantics 
 for $X$ is treating it as a don't-care assignment, which allows the 
 synthesis to choose a 0 or 1 to further improve logic minimization.
-\emph{v2c} treat $X$ and $Z$ states to be non-deterministic as there is no
+V2C treat $X$ and $Z$ states to be non-deterministic as there is no
 corresponding C state. 
 
 \subsubsection{Registers, wires, parameters and constants:} Verilog supports structural 
@@ -458,10 +428,10 @@ assignments are discussed next.
 
 
 \subsection{Bit-precise code generation}
-\emph{v2c} generate bit-precise software-netlist model in C.
+V2C generate bit-precise software-netlist model in C.
 The tool automatically handles complex bit-level operators in Verilog, 
 like bit-select or part-select operators from a vector,
-concatenation operators, reduction OR and other operators. \emph{v2c} retains 
+concatenation operators, reduction OR and other operators. V2C retains 
 the word-level structure of the Verilog RTL and generate 
 vectored expressions. Figure~\ref{figure:bit} shows 
 Verilog code (at the top) and the generated C expressions 

@@ -1,10 +1,10 @@
-% ---------------------------------------------------------------------
+% =====================================================================
 % Journal article on the hardware property checking via software netlists.
 %
 %   - 14 pages maximum, including everything
 %   - TCAD requires 30% new content.
 %   - page charges apply
-% ---------------------------------------------------------------------
+% =====================================================================
 
 % For final copy to IEEE
 \documentclass[journal]{IEEEtran}
@@ -13,11 +13,10 @@
 %\documentclass[journal,draftclsnofoot,onecolumn]{IEEEtran}
 
 % ---------------------------------------------------------------------
-% External packages - keep these minimal!
+% External packages - Please keep these minimal
 % ---------------------------------------------------------------------
 \usepackage{listings}
 \usepackage{import}
-
 \usepackage{graphicx}
 \usepackage{times}
 \usepackage{array}
@@ -40,22 +39,10 @@
 \usepackage{paralist}
 \usepackage[algo2e,linesnumbered,ruled,lined]{algorithm2e}
 \usepackage{hyperref}
-\usepackage{dcolumn}
-\newcolumntype{Y}{D..{5.2}}
-\newcolumntype{R}{D..{2.2}}
-\newcolumntype{"}{@{\hskip\tabcolsep\vrule width 1pt\hskip\tabcolsep}}
+% \newcolumntype{Y}{D..{5.2}}
+% \newcolumntype{R}{D..{2.2}}
+% \newcolumntype{"}{@{\hskip\tabcolsep\vrule width 1pt\hskip\tabcolsep}}
 \makeatother
-
-%\usepackage{mathptm}
-%\usepackage{microtype}
-%\usepackage{inconsolata}
-%\usepackage[subnum]{cases}
-%\usepackage{colortbl}
-%\usepackage{booktabs}
-%\usepackage{verbatim}
-%\usepackage{comment}
-%\usepackage{psfrag}
-%\usepackage{subfigure}
 
 \newcommand{\tool}[1]{\textsc{#1}\xspace}
 \newcommand{\cbmcv}{\tool{cbmc 5.0}}
@@ -166,9 +153,13 @@ of software netlist designs generated from RTL circuits.
 %
 \end{abstract}
 
-\begin{IEEEkeywords}
-Formal verification, Verilog RTL, ANSI-C, SAT, Abstract Interpretation, 
-Symbolic Execution.
+\begin{IEEEkeywords} % Supposed to be in alphabetical order.
+Abstract Interpretation, 
+ANSI-C, 
+Formal Verification, 
+SAT, 
+Symbolic Execution,
+Verilog RTL. 
 \end{IEEEkeywords}
 
 % ---------------------------------------------------------------------

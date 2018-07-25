@@ -15,35 +15,33 @@
 % ---------------------------------------------------------------------
 % External packages - Please keep these minimal
 % ---------------------------------------------------------------------
-\usepackage{listings}
-\usepackage{import}
-\usepackage{graphicx}
-\usepackage{times}
-\usepackage{array}
-\usepackage{graphicx,wrapfig}
-\usepackage{cite}
-\usepackage{tikz}
-\usepackage{amsthm}
-\usepackage{caption}
-\usepackage{multirow}
-\usetikzlibrary{plotmarks}
-\usepackage{pgfplotstable}
-\usepackage{pgfplots}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amsmath}
-\usepackage{stmaryrd}
+\usepackage{amsthm}
+\usepackage{times}
+
+\usepackage{listings}
+\usepackage{import}
+\usepackage{array}
+
+\usepackage{graphicx}
+\usepackage{graphicx,wrapfig}
+\usepackage{tikz}
+\usetikzlibrary{plotmarks}
+\usepackage{pgfplotstable}
+\usepackage{pgfplots}
+
+\usepackage{cite}
+\usepackage{caption}
+\usepackage{multirow}
 \usepackage{color}
 \usepackage{epsfig}
-\usepackage{wasysym} 
 \usepackage{paralist}
 \usepackage[algo2e,linesnumbered,ruled,lined]{algorithm2e}
 \usepackage{hyperref}
-% \newcolumntype{Y}{D..{5.2}}
-% \newcolumntype{R}{D..{2.2}}
-% \newcolumntype{"}{@{\hskip\tabcolsep\vrule width 1pt\hskip\tabcolsep}}
-\makeatother
 
+\makeatother
 \newcommand{\tool}[1]{\textsc{#1}\xspace}
 \newcommand{\cbmcv}{\tool{cbmc 5.0}}
 \newcommand{\symex}{\tool{path-symex}}
@@ -52,27 +50,16 @@
 %\newcommand{\slec}{\tool{slec}}
 \newcommand{\symexv}{\tool{path-symex 5.0}}
 \newcommand{\ebmcv}{\tool{ebmc 4.2}}
-%\newcommand{\hwcbmcv}{\tool{hw-cbmc 5.0}}
-%\newcommand{\verifox}{\tool{verifox 0.5}}
-%\newcommand{\acdcl}{\tool{acdcl}}
-%\newcommand{\summarizer}{\tool{summarizer 1.0}}
-%\newcommand{\v{2}c}{\tool{v2c 0.4}}
-% \newcommand{\ABC}{\tool{ABC}}
 \newcommand{\yosys}{Yosys 0.5}
-\newcommand{\longversion}[1]{}
 
 % Author comments to each other.
 \def\comment#1{{\color{red}#1}}  % display comments/notes.
+\newcommand{\rmcmt}[1]{{\color{magenta}{#1}}}%#1
+\newcommand{\tmcmt}[1]{{\color{red}{#1}}}%#1
 
-\newcommand{\Remote}[1]{}
-%\newcommand{\mydef}[1]{\begin{definition}#1\end{definition}}
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
 \newtheorem{example}{Example}
-%\newtheorem{example}{Example}[section]
- 
-\newcommand{\rmcmt}[1]{{\color{magenta}{#1}}}%#1
-\newcommand{\tmcmt}[1]{{\color{red}{#1}}}%#1
 
 \lstdefinestyle{base}{
   language=C,
@@ -93,8 +80,7 @@
 \setlength{\unitlength}{1mm}
 
 % ---------------------------------------------------------------------
-% Any macros we define will ultimately go here. Only absolutely 
-% essential macros to be used!
+% Any textual macros we define go here
 % ---------------------------------------------------------------------
 \input{symbols}
 

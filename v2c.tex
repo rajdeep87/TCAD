@@ -199,19 +199,20 @@ The generated C code preserves the module hierarchy of
 the RTL and produce structurally identical code which 
 often helps in mapping C-RTL operations for easier debugging. 
 
-\begin{figure*}[htbp]
+\begin{figure}[htbp]
 \scriptsize
 \centering
 \begin{tabular}{l|l}
 \hline
-Module Hierarchy with Input/Output Ports &  Code block in C \\
+Module Hierarchy &  Code block in C \\
 \hline
 \begin{lstlisting}[mathescape=true,language=Verilog]
 module top(in1, in2);
 input [3:0] in1, in2;
 wire [3:0] o1, o2;
 and A1 (in1, in2, o1, o2);
-and A2 (.c(o1),.d(o2),.a(o1),.b(in2));
+and A2 (.c(o1),.d(o2),
+        .a(o1),.b(in2));
 endmodule
 // Module Definition              
 module and1(a, b, c, d);
@@ -227,13 +228,14 @@ endmodule
 &
 \begin{lstlisting}[mathescape=true,language=C]
 struct state_elements_and {
- unsigned char c; };
-struct state_elements_and sand;
-void and(unsigned char a, unsigned char b, 
-unsigned char *c, unsigned char *d) {
+ unsigned char c; } sand;
+void and(unsigned char a, 
+unsigned char b, unsigned 
+char *c, unsigned char *d) {
  *d = 1; sand.c = a & b;
 }
-void top(unsigned char in1, unsigned char in2) {
+void top(unsigned char in1, 
+        unsigned char in2) {
  unsigned char o1,o2;
  and(in1, in2, &o1, &o2);
  and(o1, in2, &o1, &o2);
@@ -248,7 +250,7 @@ void main() {
 \end{tabular}
 \caption{Handling Module hierarchy with I/O ports}
 \label{figure:module-hierarchy}
-\end{figure*}
+\end{figure}
 
 \subsubsection{Procedural Assignments}
 %
@@ -386,6 +388,7 @@ the integer declaration in Verilog which is signed.
 %
 \begin{figure*}[htbp]
 \scriptsize
+\centering
 \begin{tabular}{l|l|l}
 \hline
 Bit-select & Part-select (System Verilog) & Concatenation \\

@@ -1,12 +1,5 @@
 \section{Translating RTL to Software Netlists}\label{sec:v2c}
 %
-Formal verification tools for hardware RTL~\cite{abc,DBLP:conf/fmcad/BradleyM07,vis} typically
-synthesize a design into a bit-level or word-level netlist.  In this section, we
-present a method for synthesis of a Verilog RTL design into an ANSI C program instead, which we
-call a \textit{software netlist}~\cite{mkm2015,mtk2016}. As will be seen, this new representation 
-enables direct exploitation of software verification methods, such as 
-abstract interpretation and path-based symbolic execution.
-
 Verilog and C have many operators in common, but  Verilog also has 
 additional hardware-oriented operators such as part-select, bit-select from vectors, concatenation, and reduction. Additionally, many Verilog statements have no direct analogue in C. Examples include
 initial blocks, always blocks, generate statements, procedural assignments
@@ -15,9 +8,8 @@ reg, wire, and integer.  All these constructs, combined with
 parallelism, make translation challenging.
 
 In view of these complexities, our translation is deliberately direct and transparent: we try to preserve the structure of the RTL and refrain from optimizations or abstractions. Fidelity of the resulting C code to the semantics of the original Verilog is prioritised---meaning that we rely on the downstream software analysis tools for efficiency, rather than obscure our translation with optimisations. 
-
-Fig.~\ref{ex1} shows an illustrative example. \tmcmt{Rajdeep, please provide a couple of sentences of commentary to explain the example. Also, is this example going to be confusing because the `always' semantics is not translated?}
-
+%
+\Omit{
 \begin{figure*}[t]
 \scriptsize  
 \centering
@@ -73,11 +65,11 @@ void top(_Bool clk, unsigned a) {
 \caption{Example of Verilog Translated into C}
 \label{ex1}
 \end{figure*}
-
+}
+%
 \subsection{Translation Flow and Software Netlists}
 
-Our translation is implemented in a tool called V2C~\cite{mtk2016} that supports the
-1364-2005 IEEE Standard\cite{Verilog}. \tmcmt{This is a superseded standard. Does that matter?}
+Our translation is implemented in a tool called V2C~\cite{mtk2016}.  
 The front-end performs Verilog parsing, macro preprocessing, and
 type-checking. The result is a type-annotated parse-tree, which is passed to the main translation phase. 
 This performs rule-based translation following the Verilog module hierarchy, 
@@ -88,77 +80,10 @@ dependencies.  The translation phase is followed by code-generation,
 where the intermediate vectored expressions and translated module items
 are converted to code in ANSI-C. 
 
-A skeleton of the resulting software netlist is shown in Fig.~\ref{figure:structure}. \tmcmt{Rajdeep: please provide a very brief commentary on the skeleton. We need to look at the typesetting of this figure.}
-
 %
-\begin{figure}[t]
-\captionsetup{justification=justified}
-\scriptsize
-\begin{tabular}{l}
-\begin{lstlisting}[mathescape=true,language=C]
-// parameter definition
-// macro definition
-struct state_elements_design
-  // declare all state-holding elements
-  // of the current module 
-};
-struct state_elements_design sdesign;
-int initial_block() { //initialization of nets }
-// Input are passed by value and output by reference
-int design (data_type input, data_type *output) {
-
-  // shadow variable declaration
-  declare shadow variables for 
-  non-blocking assignments to 
-  the register elements  
-  
-  // continuous assignments
-  Place all continuous statements that
-  are dependant on only inputs
- 
-  // always block 
-  Place the always block respecting
-  intra-modular dependencies
-  // procedural statements are bit-precise
-
-  // continuous assignments
-  Place all continuous statements which 
-  are updated by signals that are 
-  driven from the always block
-
-  // Module instantiations 
-  Place all module instances 
-  with proper mapping of 
-  input and output ports
-
-} // end of design module
-
-int main() {
-  // local varaibles 
-  declare all local variables 
-  which are passed to the design 
-  initial_block(); // call to initial block
-  // check if the design is sequential.
-  // if so, then put a  while(1) wrapper
-  while(1) {
-   // nondeterministic assignments
-   nondeterministically assign inputs values  
-   // call the design
-   design(input, &output);
-  }
- 
-  // Assertions 
-  Place the C assertions here 
-} //end main 
-\end{lstlisting}
-\\
-\end{tabular}
-\caption{Skeleton of a software-netlist model}
-\label{figure:structure}
-\end{figure}
-
 \subsection{Handling Verilog Module Items}
-\subsubsection{Data Model:} The data model in Verilog is significantly 
+%
+\subsubsection{Data Model} The data model in Verilog is significantly 
 different from C.  Each bit of a C integer value can have 
 only two states, namely 0 and 1.  The Verilog HDL
 value sets consists of four states, namely 0, 1, $X$ and $Z$.  A value of 0
@@ -170,7 +95,7 @@ synthesis to choose a 0 or 1 to further improve logic minimization.
 V2C treat $X$ and $Z$ states to be non-deterministic as there is no
 corresponding C state. 
 
-\subsubsection{Registers, wires, parameters and constants:} Verilog supports structural 
+\subsubsection{Registers, wires, parameters and constants} Verilog supports structural 
 data types called \emph{nets}, which are \emph{wire}
 and \emph{reg}. The value of wire variables changes 
 continuously as the input value changes.  Whereas, 
@@ -186,7 +111,7 @@ Verilog also allows the definition of the global constants
 using \texttt{`define} construct, for eg., \texttt{`define STATE 2'b00;},
 which is same as the \#define preprocessor directives in C.
 
-\subsubsection{Always and Initial blocks:}
+\subsubsection{Always and Initial blocks}
 Always blocks are the concurrent statements which execute when a 
 variable in the sensitivity list changes. The statements enclosed inside the 
 always block within $begin \ldots end$ construct are executed in parallel
@@ -196,9 +121,10 @@ except that they are executed exactly once, before the execution of any
 always block. Figure~\ref{figure:always-init} shows the translation of always
 and initial block (shown in top) to C (shown in bottom). All code-snippets are
 partial and complete C code could not be accommodated due to space limit.
-
+%
 \begin{figure*}[htbp]
 \scriptsize
+\centering
 \begin{tabular}{l|l}
 \hline
 Always and initial block & Multiple always and initial block\\
@@ -254,7 +180,7 @@ int main() {
 \label{figure:always-init}
 \end{figure*}
 
-\subsubsection{Module Hierarchy with Input/Output Port:}
+\subsubsection{Module Hierarchy with Input/Output Port}
 The communication between modules takes place through 
 ports, which are signals listed in the parameter list at the 
 top of the module. Ports can be of type in, out, and inout. 
@@ -268,6 +194,7 @@ often helps in mapping C-RTL operations for easier debugging.
 
 \begin{figure*}[htbp]
 \scriptsize
+\centering
 \begin{tabular}{l|l}
 \hline
 Module Hierarchy with Input/Output Ports &  Code block in C \\
@@ -316,12 +243,12 @@ void main() {
 \label{figure:module-hierarchy}
 \end{figure*}
 
-\subsubsection{Procedural Assignments:}
+\subsubsection{Procedural Assignments}
+%
 Procedural assignments are used within Verilog 
 procedures like always and initial blocks and are of 
 two types: \emph{blocking} and \emph{non-blocking}.  
-Blocking statements are executed 
-in sequential order. However, blocking
+Blocking statements are executed in sequential order. However, blocking
 assignments which are triggered from the same event execute
 in parallel.  We model the parallelism using an auxiliary variable
 for all the blocking assignments that are sensitive to the same event. 
@@ -340,6 +267,7 @@ the equivalent C semantics (shown in bottom).
 
 \begin{figure*}[htbp]
 \scriptsize
+\centering
 \begin{tabular}{l|l|l}
 \hline
 Non-blocking assignment & Blocking assignment & Continuous assignment \\
@@ -417,8 +345,9 @@ c = sm.b; d = c;
 \caption{Handling non-blocking, blocking and continuous assignments}
 \label{figure:block}
 \end{figure*}
-
-\subsubsection{Continuous Assignment:}
+%
+\subsubsection{Continuous Assignment}
+%
 The continuous assignment is used to assign a value onto a 
 wire in a module. Continuous assignments are concurrent statements 
 which are immediately triggered when there is any change 
@@ -438,14 +367,16 @@ Verilog code (at the top) and the generated C expressions
 (at the bottom) which are combinations of bitwise and 
 arithmetic operators like bitwise OR, AND, multiplication, 
 subtraction, shifts and other C operators.     
-
-\subsubsection{Variable declaration:} Variables of specific 
+%
+\Omit{
+\subsubsection{Variable declaration} Variables of specific 
 bit-width (register, wire) in Verilog is translated 
 to the next largest native data-types in C such as 
 char, short int, long, long long etc. The default 
 variable declaration in C is \texttt{unsigned} except for 
 the integer declaration in Verilog which is signed.
-
+}
+%
 \begin{figure*}[htbp]
 \scriptsize
 \begin{tabular}{l|l|l}

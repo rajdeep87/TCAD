@@ -52,8 +52,9 @@ concrete counterexample of some length $t \leq k$.
 \subsubsection{BMC with K-induction} 
 %
 BMC technique is incomplete, since it searches for a finite trace of the system 
-within the given unwind limit.  Hence, BMC can fail to find counterexamples that 
-requires larger than $k$ unwindings of the transition system.  The method of 
+within the given unwind bound, which gives an underapproximation of the set of 
+reachable states.  Hence, BMC can fail to find counterexamples that requires 
+larger than $k$ unwindings of the transition system.  The method of 
 $k$-induction~\cite{fmcad2000} addresses this problem.
 %  
 The base case of the $k$-induction is the simple BMC problem which shows that 

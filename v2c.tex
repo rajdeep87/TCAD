@@ -122,35 +122,40 @@ always block. Figure~\ref{figure:always-init} shows the translation of always
 and initial block (shown in top) to C (shown in bottom). All code-snippets are
 partial and complete C code could not be accommodated due to space limit.
 %
-\begin{figure*}[htbp]
+\begin{figure}[htbp]
 \scriptsize
-\centering
 \begin{tabular}{l|l}
 \hline
 Always and initial block & Multiple always and initial block\\
 \hline
 \begin{lstlisting}[mathescape=true,language=Verilog]
 reg [7:0] x,y,z;
-initial begin  x=0xFF;y=0;z=0; end
-always @(posedge clk) begin
- y=x; z=y;
+initial begin  
+  x=0xFF;y=0;z=0; 
+end
+always @(posedge clk) 
+ begin y=x; z=y;
 end
 \end{lstlisting}
 & 
 \begin{lstlisting}[mathescape=true,language=Verilog]
 reg [7:0] x,y,z;
-initial begin  x=0xFF;y=0;z=0; end
-always @(y) z=y+1;
-always @(posedge clk) begin
- y=x;
+initial begin  
+ x=0xFF;y=0;z=0; 
 end
+always @(y) z=y+1;
+always @(posedge clk) 
+ begin y=x; end
 \end{lstlisting}
 \\
 \hline 
 \begin{lstlisting}[mathescape=true,language=C]
-struct st {unsigned char x,y,z;} streg;
+struct st {
+ unsigned char x,y,z;} 
+streg;
 void initial() {
- streg.x=255;streg.y=0;streg.z=0;}
+ streg.x=255;streg.y=0;
+ streg.z=0;}
 int clock_block() {
   streg.y=streg.x; 
   streg.z=streg.y;}
@@ -161,13 +166,15 @@ int main() {
 \end{lstlisting}
 &
 \begin{lstlisting}[mathescape=true,language=C]
-struct st {unsigned char x,y,z;} streg;
+struct st {
+ unsigned char x,y,z;} 
+streg;
 void initial() { 
- streg.x=255;streg.y=0;streg.z=0;}
+ streg.x=255;streg.y=0;
+ streg.z=0;}
 int clock_block() {
   streg.y = streg.x; 
-  streg.z = streg.y+1;
-}
+  streg.z = streg.y+1;}
 int main() {
  initial();
  while(1) clock_block();
@@ -178,7 +185,7 @@ int main() {
 \end{tabular}
 \caption{Handling always and initial blocks}
 \label{figure:always-init}
-\end{figure*}
+\end{figure}
 
 \subsubsection{Module Hierarchy with Input/Output Port}
 The communication between modules takes place through 

@@ -1,0 +1,27 @@
+\begin{picture}(0,0)%
+\includegraphics{semantics_pspdftex}%
+\end{picture}%
+\setlength{\unitlength}{4144sp}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+\begin{picture}(1983,1914)(1426,-4729)
+\put(1441,-3976){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\forall t,\; b(t+1)=a(t)$}%
+}}}}
+\put(1441,-3211){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\forall t,\; c(t)= if\; e(t)\; then\; 0\; else\; d(t)$}%
+}}}}
+\put(1441,-3751){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,0}Sequential Logic}%
+}}}}
+\put(1441,-2986){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\bfdefault}{\updefault}{\color[rgb]{0,0,0}Combinational Logic}%
+}}}}
+\put(1441,-4201){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\forall t,\; e(t+1)=if(b(t))\; then\; b(t)\; else\; 0$}%
+}}}}
+\put(1441,-4426){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\forall t,\; d(t+1)=e(t)+1$}%
+}}}}
+\put(1441,-4651){\makebox(0,0)[lb]{\smash{{\SetFigFont{12}{14.4}{\rmdefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\forall t,\; out(t+1)=d(t)*d(t)$}%
+}}}}
+\end{picture}%

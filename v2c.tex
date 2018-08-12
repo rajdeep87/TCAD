@@ -1,5 +1,26 @@
 \section{Translating RTL to Software Netlists}\label{sec:v2c}
 %
+Formal verification tools for hardware RTL~\cite{abc,DBLP:conf/fmcad/BradleyM07,vis} typically
+synthesize a design into a bit-level or word-level netlist.  In this section, we
+present an alternative method for synthesis of a Verilog RTL design into an ANSI-C program, which we
+call a \textit{software netlist}~\cite{mkm2015,mtk2016}. As will be seen, this new representation
+enables direct exploitation of software verification methods, such as
+abstract interpretation and path-based symbolic execution.
+
+Verilog and C have many operators in common, but  Verilog also has
+additional hardware-oriented operators such as part-select, bit-select from vectors, concatenation,
+and reduction. Additionally, many Verilog statements have no direct analogue in C. Examples include
+initial blocks, always blocks, generate statements, procedural assignments
+(blocking, non-blocking) and continuous assignments. Verilog also supports the 4-valued data types
+reg, wire, and integer.  All these constructs, combined with
+parallelism, make translation challenging.
+
+In view of these complexities, our translation is deliberately direct and transparent: we try to
+preserve the structure of the RTL and refrain from optimizations or abstractions. Fidelity of the
+resulting C code to the semantics of the original Verilog is prioritised---meaning that we rely on
+the downstream software analysis tools for efficiency, rather than obscure our translation with
+optimisations.
+
 Verilog and C have many operators in common, but  Verilog also has 
 additional hardware-oriented operators such as part-select, bit-select from vectors, concatenation, and reduction. Additionally, many Verilog statements have no direct analogue in C. Examples include
 initial blocks, always blocks, generate statements, procedural assignments
@@ -8,6 +29,9 @@ reg, wire, and integer.  All these constructs, combined with
 parallelism, make translation challenging.
 
 In view of these complexities, our translation is deliberately direct and transparent: we try to preserve the structure of the RTL and refrain from optimizations or abstractions. Fidelity of the resulting C code to the semantics of the original Verilog is prioritised---meaning that we rely on the downstream software analysis tools for efficiency, rather than obscure our translation with optimisations. 
+
+Fig.~\ref{ex1} shows an illustrative example. \tmcmt{Rajdeep, please provide a couple of sentences of commentary to explain the example. Also, is this example going to be confusing because the `always' part is not translated?}
+
 %
 \Omit{
 \begin{figure*}[t]
@@ -64,10 +88,9 @@ void top(_Bool clk, unsigned a) {
 \end{tabular}
 \caption{Example of Verilog Translated into C}
 \label{ex1}
-\end{figure*}
-}
-%
-\subsection{Translation Flow and Software Netlists}
+\end{figure*}}
+
+\subsection{Translation Flow and Software Netlist Structure}
 
 Our translation is implemented in a tool called V2C~\cite{mtk2016}.  
 The front-end performs Verilog parsing, macro preprocessing, and
@@ -76,7 +99,8 @@ This performs rule-based translation following the Verilog module hierarchy,
 according to synthesis semantics. Rule-based translation produces vectored
 assignments by mapping bit-operations to equivalent shift-and-mask operations in C, and
 performs a global analysis to determine inter-module and intra-modular
-dependencies.  The translation phase is followed by code-generation, 
+dependencies. \tmcmt{This last sentence seems to mention just two 'random' things
+that the rules do. Can some more general sketch be given?}  The translation phase is followed by code-generation, 
 where the intermediate vectored expressions and translated module items
 are converted to code in ANSI-C. 
 
@@ -363,9 +387,11 @@ which are immediately triggered when there is any change
 in the right-hand side inputs. The translation of continuous 
 assignments are discussed next. 
 
-
-
 \subsection{Bit-precise code generation}
+
+\tmcmt{This section seems to concentrate on bit-level expressions. But code generation must be
+more than that. How do we make this more complete?}
+
 V2C generate bit-precise software-netlist model in C.
 The tool automatically handles complex bit-level operators in Verilog, 
 like bit-select or part-select operators from a vector,

@@ -19,7 +19,10 @@ operating on RTL designs, and verification of  our software netlist representati
 \subsubsection{Bounded Model Checking} 
 %
 BMC~\cite{biere} is a bug-finding method that searches for bad states along a finite trace of 
-the transition system. Given a `depth' $k$ and a set of bad states defined by a predicate
+the transition system. 
+%
+\Omit{
+Given a `depth' $k$ and a set of bad states defined by a predicate
 $B$, BMC forms the logical characterization of a $k$-length chain of transitions along the 
 transition relation $T$,  starting from any initial state satisfying $I[X_0]$. 
 Conjoined to this is a predicate saying that one or more of the states encountered 
@@ -34,10 +37,9 @@ is bad:
 
 \noindent In BMC, this formula is checked for satisfiability using an efficient SAT procedure.
 If found satisfiable, a bad state---a potential design bug---has been idenified.
+}
 %
 
-
-\rmcmt{ 
 Given an unwinding `depth' $k$, BMC forms the logical characterization of a 
 $k$-length chain of transitions along the transition relation $T$,  starting 
 from any initial state satisfying $I[X_0]$. 
@@ -45,8 +47,7 @@ from any initial state satisfying $I[X_0]$.
 I[X_0] \wedge \delta_k \wedge \neg P_{k+1}
 \] 
 BMC tries to find a model of this formula for an unwind depth $k$ which correspond to 
-concrete counterexample of some length $t \leq k$.   
-}
+concrete counterexample of some length $t \leq k$.
 
 %-------------------------------------------------------------------------------
 \subsubsection{BMC with K-induction} 
@@ -85,7 +86,7 @@ computes a step-wise overapproximation of the reachable state-space,
 $Q$, for a fixed unrolling $k$ of $T$, which is shown as
 follows.
 %
-\[ Q \wedge_{i=0}^{k-1} (\delta_i \wedge P_i) \implies P_k \]
+\[ Q \wedge \delta_{k} \wedge P_{k+1} \implies P[X_{k+1}] \]
 %
 The value of $k$ is increased when the implication fails. This
 progressively yields better overapproximation by 

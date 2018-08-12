@@ -393,15 +393,15 @@ which are immediately triggered when there is any change
 in the right-hand side inputs. The translation of continuous 
 assignments are discussed next. 
 
-\subsection{Bit-precise code generation}
+\subsection{Handling Bit-manipulating operations}
 
 \tmcmt{This section seems to concentrate on bit-level expressions. But code generation must be
 more than that. How do we make this more complete?}
-
-V2C generate bit-precise software-netlist model in C.
-The tool automatically handles complex bit-level operators in Verilog, 
+\rmcmt{FIXED}
+V2C automatically handles complex bit-manipulating operators in Verilog, 
 like bit-select or part-select operators from a vector,
-concatenation operators, reduction OR and other operators. V2C retains 
+concatenation operators, reduction OR, and translates them to the 
+semantically equivalent expression in ANSI-C. V2C retains 
 the word-level structure of the Verilog RTL and generate 
 vectored expressions. Figure~\ref{figure:bit} shows 
 Verilog code (at the top) and the generated C expressions 

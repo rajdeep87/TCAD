@@ -1,11 +1,13 @@
 \section{Translating RTL to Software Netlists}\label{sec:v2c}
 %
+\rmcmt{ THIS PARAGRAPH NOT NEEDED, REPETITIVE 
 Formal verification tools for hardware RTL~\cite{abc,DBLP:conf/fmcad/BradleyM07,vis} typically
 synthesize a design into a bit-level or word-level netlist.  In this section, we
 present an alternative method for synthesis of a Verilog RTL design into an ANSI-C program, which we
 call a \textit{software netlist}~\cite{mkm2015,mtk2016}. As will be seen, this new representation
 enables direct exploitation of software verification methods, such as
 abstract interpretation and path-based symbolic execution.
+}
 
 Verilog and C have many operators in common, but  Verilog also has
 additional hardware-oriented operators such as part-select, bit-select from vectors, concatenation,
@@ -30,8 +32,8 @@ parallelism, make translation challenging.
 
 In view of these complexities, our translation is deliberately direct and transparent: we try to preserve the structure of the RTL and refrain from optimizations or abstractions. Fidelity of the resulting C code to the semantics of the original Verilog is prioritised---meaning that we rely on the downstream software analysis tools for efficiency, rather than obscure our translation with optimisations. 
 
+\rmcmt{ EXAMPLE CHANGED, SEE SECTION 4}
 Fig.~\ref{ex1} shows an illustrative example. \tmcmt{Rajdeep, please provide a couple of sentences of commentary to explain the example. Also, is this example going to be confusing because the `always' part is not translated?}
-
 %
 \Omit{
 \begin{figure*}[t]
@@ -94,15 +96,19 @@ void top(_Bool clk, unsigned a) {
 
 Our translation is implemented in a tool called V2C~\cite{mtk2016}.  
 The front-end performs Verilog parsing, macro preprocessing, and
-type-checking. The result is a type-annotated parse-tree, which is passed to the main translation phase. 
-This performs rule-based translation following the Verilog module hierarchy, 
-according to synthesis semantics. Rule-based translation produces vectored
-assignments by mapping bit-operations to equivalent shift-and-mask operations in C, and
-performs a global analysis to determine inter-module and intra-modular
-dependencies. \tmcmt{This last sentence seems to mention just two 'random' things
-that the rules do. Can some more general sketch be given?}  The translation phase is followed by code-generation, 
-where the intermediate vectored expressions and translated module items
-are converted to code in ANSI-C. 
+type-checking. The result is a type-annotated parse-tree, which is 
+passed to the translation unit.  The translation unit performs 
+rule-based translation following synthesis semantics while keeping 
+the Verilog module hierarchy intact.  Rule-based translation maps complex 
+bit-manipulating Verilog operations to the equivalent C semantics that use 
+shift-and-mask operations.  The inter-modular dependencies between the always 
+clocked blocks and the continuous assignment statements are resolved by 
+dependency analysis module in V2C (details in Section~\ref{dep}). \rmcmt{Fixed}
+. \tmcmt{This last sentence seems to mention just two 'random' things
+that the rules do. Can some more general sketch be given?}  
+The translation phase is followed by code-generation, where the 
+intermediate vectored expressions and translated module items are 
+converted to ANSI-C program syntax. 
 
 %
 \subsection{Handling Verilog Module Items}
@@ -479,7 +485,7 @@ sm.out = (((in2 >> 2)
 \end{figure*}
 %
 %%===============================================================================\
-\subsection{Dependency Analysis}
+\subsection{Dependency Analysis}~\label{dep}
 %%===============================================================================\
 %
 A hardware circuit specified in Verilog RTL may have two types of dependencies -- 

@@ -1,14 +1,5 @@
 \section{Translating RTL to Software Netlists}\label{sec:v2c}
-%
-\rmcmt{ THIS PARAGRAPH NOT NEEDED, REPETITIVE 
-Formal verification tools for hardware RTL~\cite{abc,DBLP:conf/fmcad/BradleyM07,vis} typically
-synthesize a design into a bit-level or word-level netlist.  In this section, we
-present an alternative method for synthesis of a Verilog RTL design into an ANSI-C program, which we
-call a \textit{software netlist}~\cite{mkm2015,mtk2016}. As will be seen, this new representation
-enables direct exploitation of software verification methods, such as
-abstract interpretation and path-based symbolic execution.
-}
-
+%  
 Verilog and C have many operators in common, but  Verilog also has
 additional hardware-oriented operators such as part-select, bit-select from vectors, concatenation,
 and reduction. Additionally, many Verilog statements have no direct analogue in C. Examples include
@@ -742,5 +733,96 @@ preserves the modular structure.
 Another example of inter-modular communication is a \emph{combinational feedback loop} 
 where participating modules exchange combinational data until a stability condition is reached.  
 %
-Determining this kind of stability condition completely automatically is difficult for large circuits.  Hence, manual translation is performed in such case.
-\rmcmt{state limitations of v2c (thesis sec 3.4)}
+Determining this kind of stability condition completely automatically 
+is difficult for large circuits.  Hence, manual translation is performed in such cases.
+%  
+\subsection{Limitations of V2C Translator}~\label{v2clim}
+%  
+V2C does not support automatic translation of RTL designs that contain 
+the following design features -- a) Multi-clock designs~\cite{multiclock}, 
+b) Transparent latches~\cite{DBLP:conf/glvlsi/ChandraWA98}, 
+c) Combinational feedback loop, and d) Circular module dependency. 
+%  
+%
+In this paper, we present an automatic translation and verification 
+of the RTL designs that do not contain the above design features.   
+%  
+We now briefly demonstrate the complexity of manually translating 
+a design that contains combinational feedback loop.  
+Figure~\ref{figure:comb-loop} gives a Verilog design with 
+combinational feedback loop on the left.  The right side of 
+Figure~\ref{figure:comb-loop} gives the equivalent software netlist, 
+which is translated manually. 
+%  
+The Verilog module {\em foo} is partitioned into two separate modules during
+translation -- a combinational module, {\em foo\_comb} and a sequential module,
+{\em foo\_seq}.  The combinational exchanges between the Verilog modules {\em top}
+and {\em foo} continues until the values of a and z becomes stable, which in 
+this case is equal to the width of these registers (32-bit).  This stability 
+condition is manually identified and modeled in the software netlist design 
+by invoking the procedure {\em foo\_comb} from the {\em main} routine
+32 times, followed by a call to the sequential module {\em foo\_seq} which simply
+updates the register $y$.  
+%  
+Note that the assertion given by $(y==loopback)$ in Figure~\ref{figure:comb-loop} 
+holds true in the RTL as well as the software netlist design, which is established 
+using off-the-shelf hardware and software model checkers respectively.   
+%
+\begin{figure}[htbp]
+\scriptsize
+\begin{tabular}{l|l}
+\hline
+Verilog & Software netlist \\
+\hline
+\begin{lstlisting}[mathescape=true,language=Verilog]
+module M(c,a,z,y);
+input c;
+input [31:0] a;
+output [31:0] z;
+output reg [31:0] y;
+assign z[0]=c;
+assign z[31:1]=a[30:0];
+always @(posedge clk)
+y<=z;
+endmodule
+
+module top();
+wire [31:0] loopback;
+wire [31:0] y;
+foo f(.c(1),.a(loopback),
+      .z(loopback),.y());
+assert property 
+       (y==loopback); 
+endmodule 
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+struct state_elements_M {
+  unsigned int y;
+};
+struct state_elements_M sM;
+
+void foo_comb(bool c, unsigned int a,
+unsigned int *z, unsigned int *y) {
+  *z=(*z&0xfffffffe) | (c & 0x1);
+  *z=(*z&0x00000001) | 
+     ((a&0x7fffffff)<<1); }
+void foo_seq(bool c, unsigned int a,
+unsigned int *z, unsigned int *y) {
+ sM.y = *z;
+}
+void top() {
+ unsigned int y, loopback;
+ for(i=1;i<33;i++)
+  foo_comb(1,loopback,&loopback,&y);
+  foo_seq(1,loopback,&loopback,&y);
+  assert(y==loopback); 
+}
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\caption{Manual translation of combinational feedback loop}
+\label{figure:comb-loop}
+\end{figure}
+%

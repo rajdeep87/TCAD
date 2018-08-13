@@ -19,13 +19,11 @@ A \textit{safety property} $P[X]$ is a predicate over the variables $X$ of $T$. 
 say a state $s$ is \textit{good} with respect to this safety property if $P(s)$; otherwise it is \textit{bad}. The predicate $B(s)$ is used to define that the state $s$ is a bad 
 state. A property $P$ is \textit{inductive} if $P[X] \wedge \delta[X,X']$ implies $P[X']$.    
 
-%
-\rmcmt{
+%  
 The abbreviation, $\delta_k = \underset{i \in [0,k-1]}{\bigwedge} \delta[X_i, X_{i+1}]$ 
 will be used to denote the $k$ steps of the transition system, and 
 $P_k = \underset{i \in [0,k-1]}{\bigwedge} \neg B(s_i)$, will be used to denote that the 
 first $k$ states are not bad states.    
-}
 
 \subsection{Problem Statement} 
 %

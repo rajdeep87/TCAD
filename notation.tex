@@ -9,7 +9,7 @@ the assignment $s$ makes the formula $F[X]$ true. That is, the state $s$ satisfi
 
 In a context in which a formula has been written $F[X]$, subsequent use of the notation $F[Y]$ for
 some other set of variables $Y = \{y_1, \dots, y_n\}$ should be understood to mean the
-result of substituting each variable in $Y$ for every occurrence of the corresponding variable in $X$ throughout the formula $F[X]$. Similarly, $R[X,X']$ may subsequently be written $R[Y,Y']$, denoting the result of substituting variables in $Y$ and $Y'$ for corresponding variables in $X$ and $X'$.
+result of substituting each variable in $Y$ for every occurrence of the corresponding variable in $X$ throughout the formula $F[X]$. Similarly, for $R[X,X']$ we may subsequently write $R[Y,Y']$, denoting the result of substituting variables in $Y$ and $Y'$ for corresponding variables in $X$ and $X'$.
 
 In a transition system $T$, the predicate $I[X]$ is a formula over the variables in 
 $X$ specifying the \textit{initial states} of the system; these are all the states 
@@ -22,13 +22,13 @@ if $\delta(s_i,s'_{i{+}1})$ for $i=j,\dots,k-1$.  Such a trace is
 said to be \textit{initialized} if $I(s_j)$.
   
 A \textit{safety property} $P[X]$ is a predicate over the variables $X$ of $T$.  We will 
-say a state $s$ is \textit{good} with respect to this safety property if $P(s)$; otherwise it is \textit{bad}. Similarly, a predicate $B[X]$ can be used to define set of bad states of a model.
-A property $P$ is \textit{inductive} if $P[X] \wedge \delta[X,X']$ implies $P[X']$.    
+say a state $s$ is \textit{good} with respect to this property if $P(s)$; otherwise it is \textit{bad}. Similarly, a predicate $B[X]$ can be used to designate a set of bad states explicitly. 
+We will use the abbreviation \[P_k = \underset{i \in [0,k-1]}{\bigwedge} \neg B(s_i)\]
+to say that the  first $k$ states are not bad states.  Finally, a property $P$ is \textit{inductive} if $P[X] \wedge \delta[X,X']$ implies $P[X']$.    
 
 %  
-, and 
-$P_k = \underset{i \in [0,k-1]}{\bigwedge} \neg B(s_i)$, will be used to denote that the 
-first $k$ states are not bad states.    
+
+
 
 \subsection{Problem Statement} 
 %

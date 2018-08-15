@@ -42,7 +42,7 @@ $k$-induction addresses this problem~\cite{fmcad2000}.
 In $k$-induction, we first use the BMC formula~(\ref{bmc-formula}) to check that the safety property
 holds in all states reachable within $k$ steps from any initial state. This will be the case if SAT determines that the formula is unsatisfiable. We then check the induction step below: 
 %
-\[ P[X_0] \wedge \delta_{k} \wedge P_{k+1} \wedge \neg P[X_{k+1}] \]
+\[\delta_{k} \wedge P_{k+1} \wedge \neg P[X_{k+1}] \]
 %
 If this is shown to be unsatisfiable, then no bad state is reachable from any sequence $k{+}1$ good states
 allowed by the transistion system. \tmcmt{Rajdeep - please see email.}

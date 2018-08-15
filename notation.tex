@@ -5,7 +5,7 @@ modelling is a 3-tuple $T = \langle I,X,\delta \rangle$, where $X = \{x_1,\dots 
 is a finite set of \textit{state variables} ranging over the Booleans $\mathbb{B}$. 
 Corresponding to the variables in $X$ is a set of primed \textit{next-state} variables  $X' = \{x_1', \dots, x_n'\}$.
 A \textit{state} $s$ of $T$ is an assignment of Boolean values to the variables in $X$. Likewise, a \textit{next state} is an assignment of Boolean values to the variables in $X'$.  For any state $s$ that assigns values to the  variables $X$, we write $s'$ to denote the next state that assigns the same values to the corresponding primed variables in $X'$. If $F[X]$ is a formula over the variables $X$, we write $F(s)$ to say that
-the assignment $s$ makes the formula $F[X]$ true. That is, the state $s$ satisfies $F$. Similarly, if $R[X,X']$ is a relation over the variables $X$ and $X'$, we write $R(s_1,s_2)$ to say that the state $s_1$ and the next state $s_2$ jointly satisfy the relation $R$.
+the assignment $s$ makes the formula $F[X]$ true. That is, the state $s$ satisfies $F$. Similarly, if $R[X,X']$ is a relation over the variables $X$ and $X'$, we write $R(s_1,s_2)$ to say that the state $s_1$ and the next state $s_2$ jointly satisfy the relation $R$. \tmcmt{Do we ever actually \textit{use} state notation?}
 
 In a context in which a formula has been written $F[X]$, subsequent use of the notation $F[Y]$ for
 some other set of variables $Y = \{y_1, \dots, y_n\}$ should be understood to mean the

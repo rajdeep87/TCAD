@@ -23,7 +23,7 @@ said to be \textit{initialized} if $I(s_j)$.
   
 A \textit{safety property} $P[X]$ is a predicate over the variables $X$ of $T$.  We will 
 say a state $s$ is \textit{good} with respect to this property if $P(s)$; otherwise it is \textit{bad}. Similarly, a predicate $B[X]$ can be used to designate a set of bad states explicitly. 
-We will use the abbreviation \[P_k = \underset{i \in [0,k-1]}{\bigwedge} \neg B(s_i)\]
+We will use the abbreviation \[P_k = \underset{i \in [0,k-1]}{\bigwedge} \neg B[X_i]\]
 to say that the  first $k$ states are not bad states.  Finally, a property $P$ is \textit{inductive} if $P[X] \wedge \delta[X,X']$ implies $P[X']$.    
 
 %  

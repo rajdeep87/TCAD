@@ -17,37 +17,19 @@ The techniques in this class are all used for experiments with both conventional
 operating on RTL designs, and verification of  our software netlist representation using software analysis tools.
 
 \subsubsection{Bounded Model Checking} 
-%
+
 BMC~\cite{biere} is a bug-finding method that searches for bad states along a finite trace of 
 the transition system. 
-%
-\Omit{
-Given a `depth' $k$ and a set of bad states defined by a predicate
-$B$, BMC forms the logical characterization of a $k$-length chain of transitions along the 
-transition relation $T$,  starting from any initial state satisfying $I[X_0]$. 
-Conjoined to this is a predicate saying that one or more of the states encountered 
-is bad:
-%
-\[ \begin{array}[t]{@{}l}
-   I[X_0] \wedge \delta[X_0, X'_1] \wedge \dots \wedge \delta(X_[k{-}1], X'_k)\\
-   \quad \wedge \\
-   (B[X_0] \vee \dots \vee B[X_k]) 
-   \end{array}
-\]
-
-\noindent In BMC, this formula is checked for satisfiability using an efficient SAT procedure.
-If found satisfiable, a bad state---a potential design bug---has been idenified.
-}
-%
-
 Given an unwinding `depth' $k$, BMC forms the logical characterization of a 
 $k$-length chain of transitions along the transition relation $T$,  starting 
 from any initial state satisfying $I[X_0]$. 
 \[
 I[X_0] \wedge \delta_k \wedge \neg P_{k+1}
 \] 
-BMC tries to find a model of this formula for an unwind depth $k$ which correspond to 
-concrete counterexample of some length $t \leq k$.
+
+In BMC, this formula is checked for satisfiability using an efficient SAT procedure.
+If found satisfiable, a chain of transitions of the system into a bad state has been found.
+And a potential design bug---a violation of the safety property---has been uncovered.
 
 %-------------------------------------------------------------------------------
 \subsubsection{BMC with K-induction} 

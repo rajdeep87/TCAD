@@ -1,4 +1,4 @@
-# Standard Makefile for US paper size.
+# Standard Makefile for US paper size. 
 
 TARGET=paper
 BIB=biblio

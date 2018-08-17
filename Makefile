@@ -1,19 +1,24 @@
-SHELL=bash
+# Standard Makefile for US paper size.
 
-SRC=intro.tex notation.tex background.tex example.tex v2c.tex bmc.tex paths.tex ubmc.tex concl.tex related_work.tex equivalence.tex experiment.tex 
 TARGET=paper
-BIB=biblio.bib
+BIB=biblio
 
-all: ${TARGET}.pdf
+all: clean ${TARGET}.pdf
 
-${TARGET}.pdf: ${TARGET}.tex ${BIB} ${SRC}
-	pdflatex ${TARGET}.tex
-	bibtex ${TARGET}.aux
-	pdflatex ${TARGET}.tex
-	pdflatex ${TARGET}.tex
+${TARGET}.dvi: ${TARGET}.tex ${BIB}.bib
+	latex ${TARGET}.tex
+	bibtex ${TARGET}
+	latex ${TARGET}.tex
+	latex ${TARGET}.tex
+
+${TARGET}.ps: ${TARGET}.dvi 
+	dvips -t letter -Ppdf -G0 -o ${TARGET}.ps ${TARGET}.dvi 
+
+${TARGET}.pdf: ${TARGET}.ps 
+	ps2pdf -sPAPERSIZE=letter  -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true  -dPDFSETTINGS=/prepress ${TARGET}.ps ${TARGET}.pdf
 
 clean:
-	rm -f ${TARGET}.{log,aux,dvi,bbl,blg,toc,ps,pdf,out,fls,fdb_latexmk} 
+	rm -f ${TARGET}.{log,aux,dvi,bbl,blg,toc,ps,pdf} 
 
 purge: clean
 	rm -f ${TARGET}.pdf

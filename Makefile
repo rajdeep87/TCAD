@@ -3,9 +3,9 @@
 TARGET=paper
 BIB=biblio
 
-all: clean ${TARGET}.pdf
+all: ${TARGET}.pdf
 
-${TARGET}.dvi: ${TARGET}.tex ${BIB}.bib
+${TARGET}.dvi: ${TARGET}.tex symbols.tex intro.tex notation.tex background.tex example.tex v2c.tex equivalence.tex experiment.tex related_work.tex concl.tex ${BIB}.bib plot-runtimes.tex solver-runtimes.tex
 	latex ${TARGET}.tex
 	bibtex ${TARGET}
 	latex ${TARGET}.tex
@@ -20,7 +20,5 @@ ${TARGET}.pdf: ${TARGET}.ps
 clean:
 	rm -f ${TARGET}.{log,aux,dvi,bbl,blg,toc,ps,pdf} 
 
-purge: clean
-	rm -f ${TARGET}.pdf
 
-PHONY : all clean purge
+

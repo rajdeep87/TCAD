@@ -6,35 +6,7 @@ Fig.~\ref{fig:example} shows a typical Verilog module with a variety of common c
 
 The details of the translation are explained in Sec.~\ref{sec:v2c}. In summary, however, all the state-holding registers in the Verilog design have been gathered into a C struct. A C function \texttt{top} is then defined that has the same paramaters as the Verilog module is represents. When invoked, this function executes a sequence of state updates that simulate a single clock-cycle of hardware execution, according to the Verilog synthesis semantics. Because this is a sequentialization of the parallel register updates modelled by the Verilog, some shadow variables are introduced that record register values at the start of the clock cycle for subsequent use. Note that the non-synthesizable Verilog initial block is not included here, as this is a testbench component. Note also that placement of the assignment to \texttt{c} at the end of the body of \texttt{top} follows the `read after write' semantics for Verilog combinational logic.
 
-In our experiments, we compare safety verification by common Verilog HDL verification tools and 
-
-The \texttt{main()} procedure of 
-the software netlist is shown on the right side of Figure~\ref{intro-fig3}, 
-which also contains the initial block.
-%  
-
-We are interested in verifying the correctness of the Verilog RTL design 
-against safety properties. 
-%
-
-Figure~\ref{intro-fig3} gives the safety properties that are checked 
-against the RTL design of Figure~\ref{intro-fig1}.  The column on the 
-left of Figure~\ref{intro-fig3} 
-gives the SVA properties denoted by the property identifier 
-$P0 \ldots P5$ and the column on the right gives the 
-corresponding assertions in the software netlist.  The properties 
-in Figure~\ref{intro-fig3} are of two types - global safety properties, 
-and temporal properties containing the implication construct \texttt{(|->)} of SVA.  
-The translation of SVA to assertions in the software netlist is described 
-in detail in Section~\ref{prop}. 
-%  
-Intuitively, the \texttt{\#\#N} delay operator in SVA is modeled by invoking 
-the top level procedure \texttt{top} in the software netlist $N$ times.  
-Since we are interested in property verification of RTL designs by translating 
-them to software netlist, so we consider the notion of equivalence between 
-the Verilog RTL and the software netlist that preserves both the 
-input-output behavior and the validity of all assertions of the RTL in the 
-software netlist. 
+In our experiments, we compare safety verification of SVA properties of Verilog RTL and software analysis tools of the corresponding C code. We therefore translate SVA into equivalent C code. Fig.~\ref{fig:sva} shows a typical collection of SVA properties that could be checked to hold for our example Verilog module with an RTL verification tool. They are all conditional properties over bounded but varying numbers of clock cycles. The corresponding C is shown on the right. After a block of assignments that do the initialization, we have a non-terminating while-loop that models an infinitely-running system. In each iteration, there is a sequence of calls to the function \texttt{top} that, in effect, advances the clock. These are interspersed with checks of the consequents of the SVA implications, in the right clock cycle and under each implication's antecedet. We discuss property translation in more detail in Sec.~\ref{sec:props}.
 
 \begin{figure*}[t]
 \begin{center}

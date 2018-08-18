@@ -36,7 +36,7 @@ as well as in the software netlist design.
 We first present the property specification language and then define the 
 property-based observable equivalence. 
 % 
-\subsection{Properties}~\label{prop}
+\subsection{Properties}~\label{properties}
 %
 System Verilog Assertions (SVA) property specification language is most commonly used 
 to write properties of RTL designs.  The SVA properties can be translated 
@@ -68,7 +68,7 @@ described in Section~\ref{eq-sw-hw}.
 }
 %
 
-Figure~\ref{prop} gives an example of SVA, its equivalent LTL, 
+Figure~\ref{fig:prop} gives an example of SVA, its equivalent LTL, 
 and the corresponding assertion in the software netlist for the 
 design of Figure~\ref{figure:equivalence}.
 %
@@ -105,7 +105,7 @@ if(sM.out2) {
 \hline
 \end{tabular}
 \caption{LTL and its corresponding C assertion}
-\label{prop}
+\label{fig:prop}
 \end{figure}
 %
 %The goal of this translation is to perform formal property verification 

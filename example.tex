@@ -1,12 +1,8 @@
-\section{Motivating Example} 
 
-\tmcmt{Need a better run-in to this section - TFM to write.}
+\section{Introductory Example} 
 
-\tmcmt{Rajdeep, is this this a running example for section IV only? It doesn't get referred to later. Can we discuss please?}
+We now present a simple example to give an overview our Verilog to C translation (Sec.~\ref{sec:v2c}) and the translation of properties for safety verification~(Sec.~\ref{sec:props}). We assume the reader is familiar with the basics of Verilog and with System Verilog Assertions (SVA)~\cite{verilog}.
 
-%
-We present a motivating example. 
-%  
 Figure~\ref{intro-fig2} gives a Verilog RTL design (on the left) with 
 two sequential blocks (modeled with always blocks) and a combinational block 
 (modeled with an assign statement). It also contains an initial block that 
@@ -52,13 +48,13 @@ them to software netlist, so we consider the notion of equivalence between
 the Verilog RTL and the software netlist that preserves both the 
 input-output behavior and the validity of all assertions of the RTL in the 
 software netlist. 
-%
-\begin{figure}[t]
+
+\begin{figure*}[t]
+\begin{center}
 \centering
-\scriptsize
-\begin{tabular}{|l|l|}
+\begin{tabular}{|l|c|l|}
 \hline
- Verilog RTL & Software netlist \\
+\textbf{Verilog RTL} & \multicolumn{1}{|l|}{\textbf{Synthesized Hardware}} & \textbf{Software Netlist} \\
 \hline
 \begin{lstlisting}[mathescape=true,language=Verilog,basicstyle=\footnotesize\ttfamily]
 module top(clk, a, c, out); 
@@ -85,7 +81,12 @@ end
 endmodule
 \end{lstlisting}
 &
-\begin{lstlisting}[mathescape=true,language=C]
+\begin{minipage}{4.3cm}
+\centering
+\scalebox{.6}{\import{figures/example/}{ckt.pspdftex}}
+\end{minipage}
+&
+\begin{lstlisting}[mathescape=true,language=C,basicstyle=\small\ttfamily]
 struct state_elements_top {
   unsigned int b,e;
   unsigned char d,out;
@@ -113,14 +114,15 @@ void top(unsigned int clk,
  *out = u1.out&0xF;
  *c = u1.e ? 0 : (u1.d&0x3);
 }
-\end{lstlisting}
-\\
+\end{lstlisting}\\
 \hline
 \end{tabular}
-\caption{Circuit to software}
-\label{intro-fig2}
-\end{figure}
-%
+\caption{Circuit to Software}\label{intro-fig1}
+\end{center}
+\end{figure*}
+
+
+
 \begin{figure}[t]
 \scriptsize	
 \centering

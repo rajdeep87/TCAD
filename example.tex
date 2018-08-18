@@ -1,31 +1,18 @@
-
 \section{Introductory Example} 
 
-We now present a simple example to give an overview our Verilog to C translation (Sec.~\ref{sec:v2c}) and the translation of properties for safety verification~(Sec.~\ref{sec:props}). We assume the reader is familiar with the basics of Verilog and with System Verilog Assertions (SVA)~\cite{verilog}.
+Inj this section, we present a simple example to give an overview our Verilog to C translation and to illustrate how properties for safety verification written in System Verilog Assertions (SVA) will also be translated also C code for our experiments. We assume the reader is familiar with the basics of Verilog and SVA~\cite{verilog}. \tmcmt{Rajdeep: what is the best reference?}
 
-Figure~\ref{intro-fig2} gives a Verilog RTL design (on the left) with 
-two sequential blocks (modeled with always blocks) and a combinational block 
-(modeled with an assign statement). It also contains an initial block that 
-initializes the state-holding elements. The procedural blocks contain 
-non-blocking statements, shown as \texttt{(<=)}.  Figure~\ref{intro-fig1} 
-gives the synthesized hardware (on the left) for the Verilog RTL design 
-of Figure~\ref{intro-fig2}, while the formal semantics of the RTL is given 
-on the right side of Figure~\ref{intro-fig1}.  The adder circuit and 
-multiplier circuit in the synthesized hardware are shown in vertical boxes, 
-denoted by \texttt{ADDER} and \texttt{MUL}, respectively.  While the 
-registers are shown as square boxes with the name of register marked 
-inside the box and the two Multiplier circuits are denoted by trapezium 
-shapes, with two input lines, one select line and one output line.  
-The formal semantics on the right side of Figure~\ref{intro-fig1} 
-contains the semantics of the combinational logic and sequential logic, 
-with respect to the temporal variable $t$. 
-%
-The Verilog RTL is translated into software netlist in C, as shown on the 
-right side of Figure~\ref{intro-fig2}.  The \texttt{main()} procedure of 
+Fig.~\ref{fig:example} shows a Verilog module with a variety of typical constructs: register datatypes, initialization,
+non-blocking and blocking assignments, an assign statement, and procedural blocks.  The synthesized hardware is the simple circuit shown in the centre.  On the right is the result of our translation of this Verilog RTL code into C.
+
+The details of the translation are explained in Sec.~\ref{sec:v2c}. In summary, however, all the state-holding registers
+in the Verilog design have been gathered into a C struct. A C function \texttt{top} is then defined that has the same paramaters as the Verilog module is represents. When invoked, this function executes a sequence of state updates that simulate a single clock-cycle of hardware execution, according to the Verilog synthesis semantics. Because this is a sequentialization of the parallel register updates modelled by the Verilog, some shadow variables are introduced that record register values at the start of the clock cycle for subsequent use. Note that the non-synthesizable Verilog initial block is not included here, as this is a testbench component. Note also that placement of the assignment to \texttt{c} at the end of the body of \texttt{top} follows the `read after write' semantics for Verilog combinational logic.
+
+The \texttt{main()} procedure of 
 the software netlist is shown on the right side of Figure~\ref{intro-fig3}, 
 which also contains the initial block.
 %  
-The details of the translation are explained in subsequent sections.  
+
 We are interested in verifying the correctness of the Verilog RTL design 
 against safety properties. 
 %
@@ -51,12 +38,12 @@ software netlist.
 
 \begin{figure*}[t]
 \begin{center}
-\centering
-\begin{tabular}{|l|c|l|}
+\small
+\begin{tabular}{@{}lcl@{}} 
+\hline\noalign{\vskip0.25ex}
+\textbf{Verilog RTL} & \multicolumn{1}{l}{\textbf{Synthesized Hardware}} & \textbf{Software Netlist} \\
 \hline
-\textbf{Verilog RTL} & \multicolumn{1}{|l|}{\textbf{Synthesized Hardware}} & \textbf{Software Netlist} \\
-\hline
-\begin{lstlisting}[mathescape=true,language=Verilog,basicstyle=\footnotesize\ttfamily]
+\begin{lstlisting}[mathescape=true,language=Verilog,basicstyle=\scriptsize\ttfamily]
 module top(clk, a, c, out); 
 input clk , a;
 output [1:0] c;
@@ -86,7 +73,7 @@ endmodule
 \scalebox{.6}{\import{figures/example/}{ckt.pspdftex}}
 \end{minipage}
 &
-\begin{lstlisting}[mathescape=true,language=C,basicstyle=\small\ttfamily]
+\begin{lstlisting}[mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
 struct state_elements_top {
   unsigned int b,e;
   unsigned char d,out;
@@ -117,20 +104,20 @@ void top(unsigned int clk,
 \end{lstlisting}\\
 \hline
 \end{tabular}
-\caption{Circuit to Software}\label{intro-fig1}
+\caption{Translation of a Simple Circuit in Verilog HDL to a Software Netlist in C}\label{fig:example}
 \end{center}
 \end{figure*}
 
 
 
-\begin{figure}[t]
-\scriptsize	
-\centering
-\begin{tabular}{|l|l|}
+\begin{figure}[bth]
+\small
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\hline\noalign{\vskip0.25ex}
+\textbf{System Verilog Assertions} & \textbf{C Translation} \\
 \hline
-  System Verilog Assertions & Assertions in Software netlist \\
-\hline
-\begin{lstlisting}[mathescape=true,language=Verilog]
+\begin{lstlisting}[mathescape=true,language=Verilog,basicstyle=\scriptsize\ttfamily]
 P0: assert property (d >= e);
 P1: assert property ((a == 1) 
     |-> ##1 (b == 1));
@@ -144,7 +131,7 @@ P5: assert property ((a == 1)
     |-> ##4 (out == 4));
 \end{lstlisting}
 &
-\begin{lstlisting}[mathescape=true,language=C]
+\begin{lstlisting}[mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
 int main() {
  unsigned int clk, a;
  unsigned char c, out;
@@ -169,40 +156,13 @@ int main() {
    P4:assert(u1.out==1); } 
  }
 }
-\end{lstlisting}
-\\
+\end{lstlisting}\\
 \hline
 \end{tabular}
-	\caption{Property specification in SVA (on the left) and assertions of the software netlist (on the right)}
-\label{intro-fig3}
+	\caption{Property Specification in SVA and C}
+\label{fig:sva}
+\end{center}
 \end{figure}
-%
-\begin{figure}[t]
-%\scriptsize  
-\centering
-\begin{tabular}{|l|l|}
-\hline
-  Synthesized Hardware & Formal Semantics \\
-\hline
-\begin{minipage}{3.9cm}
-\centering
-\vspace{1mm}
-\scalebox{.5}{\import{figures/example/}{ckt.pspdftex}}
-\vspace{1mm}
-\end{minipage}
-&
-\begin{minipage}{4.1cm}
-%\centering
-\scalebox{.55}{\import{figures/example/}{semantics.pspdftex}}
-\end{minipage}
-\\
-\hline
-\end{tabular}
-\caption{Hardware circuit and its formal semantics}
-\label{intro-fig1}
-\end{figure}
-%
-
 
 The waveform in Figure~\ref{intro-waveform} captures the input-output behavior of the RTL design. 
 %The input-output behavior of the software netlist and the RTL in figure~\ref{intro-fig2} matches 

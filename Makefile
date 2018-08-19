@@ -1,7 +1,7 @@
 # Standard Makefile for US paper size. 
 
 TARGET=paper
-BIB=biblio
+BIB=paper
 
 all: ${TARGET}.pdf
 

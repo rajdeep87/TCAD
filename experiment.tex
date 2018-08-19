@@ -11,9 +11,9 @@
 %\subsection{Software Verifiers at the heart of Hardware Verification}
 %===============================================================================
 %
-Figure~\ref{fig:toolflow} gives the tool flow for hardware RTL 
+Fig.~\ref{fig:toolflow} gives the tool flow for hardware RTL 
 verification using bit-level netlist, word-level netlist and software netlist.  
-The bottom flow of Figure~\ref{fig:toolflow} shows the bit-level 
+The bottom flow of Fig.~\ref{fig:toolflow} shows the bit-level 
 verification flow using ABC.
 ABC does not support Verilog, so we use an open-source synthesis tool,
 \yosys\footnote{http://www.clifford.at/yosys/} to translate Verilog
@@ -23,7 +23,7 @@ which is then passed to ABC for verification.
 %along with the property and the resultant netlist is expressed in AIG.  
 %The AIG is represented in AIGER format  which is one of the standards 
 %andmost prevalant format used by the majority of verification tools.
-Whereas, the middle flow of Figure~\ref{fig:toolflow} shows the 
+Whereas, the middle flow of Fig.~\ref{fig:toolflow} shows the 
 bit/word-level verification using the tool 
 EBMC \footnote{www.cprover.org/hardware/ebmc}. 
 EBMC supports IEEE 1364.1 Verilog 2005 standards.  EBMC synthesize 
@@ -32,7 +32,7 @@ word-level netlist represented in format that resembles the
 SMT-LIB standard. The word-level synthesis flow in EBMC is not mature yet. 
 So, we only use the bit-level flow in EBMC. 
 %
-The top flow of Figure~\ref{fig:toolflow} shows the verification 
+The top flow of Fig.~\ref{fig:toolflow} shows the verification 
 of the software netlist designs. 
 %verification which translate RTL into software netlist using the tool V2C.  
 %
@@ -106,7 +106,7 @@ Below, we present few examples of the concurrent assertions in SVA
 and corresponding assertions in the software netlist design.  
 
 
-Figure~\ref{figure:prop1} and Figure~\ref{figure:prop2} gives 
+Fig.~\ref{figure:prop1} and Fig.~\ref{figure:prop2} gives 
 the SVA property on the left and the corresponding assertions 
 in software netlist on the right for the vending machine benchmark 
 and Huffman encoder/decoder benchmark, respectively. For the purpose 
@@ -202,9 +202,9 @@ among the bit-level and word-level hardware verification tools.
 %
 We categorize the unbounded approaches into three classes:
 \begin{itemize}
-\item $k$-induction (Figure~\ref{fig:kind})
-\item interpolation (Figure~\ref{fig:impact}), and 
-\item PDR together with other hybrid techniques (Figure~\ref{fig:hybrid}).  
+\item $k$-induction (Fig.~\ref{fig:kind})
+\item interpolation (Fig.~\ref{fig:impact}), and 
+\item PDR together with other hybrid techniques (Fig.~\ref{fig:hybrid}).  
 \end{itemize}
 By hybrid techniques, we refer to predicate
 abstraction as implemented in \cpachecker and a combination of
@@ -230,13 +230,13 @@ compute the inductive invariant sufficient to prove the property. For
 the unsafe benchmarks, for example DAIO and the traffic light controller, where
 the bugs are manifested only at 64 and 65 clock cycles respectively,
 the verification times using ABC and EBMC's $k$-induction engine 
-are comparable to \cbmcv and \textsc{2LS}. Figure~\ref{fig:kind} 
+are comparable to \cbmcv and \textsc{2LS}. Fig.~\ref{fig:kind} 
 reports the time taken by the $k$-induction engine in 
 ABC, \ebmcv, \cbmcv and \textsc{2LS}.  We did not report
 the time for \cpachecker since the results suggest that 
 its $k$-induction engine is not as mature yet. 
 
-\subsection{Analysis using Interpolation} Figure~\ref{fig:impact} reports
+\subsection{Analysis using Interpolation} Fig.~\ref{fig:impact} reports
 the time taken by the interpolation engine in ABC, \textsc{IMPARA}
 and \cpachecker. ABC is the fastest in 9 out of 12
 designs. However, it timed out on three complex benchmarks, RCU, FIFO
@@ -247,7 +247,7 @@ ran out of memory for the remaining designs.  \cpachecker solved
 5 out of 12 cases.  None of the interpolation engines was able to
 prove RCU and BufAl.
 
-\subsection{Analysis using Hybrid techniques} Figure~\ref{fig:hybrid}
+\subsection{Analysis using Hybrid techniques} Fig.~\ref{fig:hybrid}
 reports the time taken by the IC3/PDR engine in ABC, \emph{SeaHorn}
 and other hybrid techniques as implemented in \cpachecker and
 \textsc{2LS}. ABC~is the clear winner here; it is the only tool that
@@ -426,7 +426,7 @@ Comparison of hybrid techniques
 \subsection{Bit-level versus Word-level Analysis}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-Figure~\ref{fig:solverruntimes} gives the runtime comparison between bit-level 
+Fig.~\ref{fig:solverruntimes} gives the runtime comparison between bit-level 
 model checking using SAT solvers and word-level model checking using SMT solvers.  
 % 
 The SAT (in DIMACS format) and SMT (in SMT-LIB2 format) benchmarks are obtained 
@@ -439,7 +439,7 @@ than Z3~\cite{z32008} SMT solver.
 %  
 The timeout was set to~200 seconds per benchmark.  
 %
-The runtimes in Figure~\ref{fig:solverruntimes} are obtained for 
+The runtimes in Fig.~\ref{fig:solverruntimes} are obtained for 
 a pre-determined unwind bound of~70.  The bit-level engine in CBMC 
 wins consistently over the word-level engine, except for the 5~cases 
 where Boolector was faster than the bit-level solvers.   
@@ -467,17 +467,17 @@ Astr{\'e}e~\cite{DBLP:conf/esop/CousotCFMMMR05} is a commercial abstract
 interpretation tool developed by AbsInt~\footnote{https://www.absint.com/}.  
 It is primarily used for static analysis of safety-critical softwares 
 such as avionics software~\cite{DBLP:journals/corr/abs-cs-0701193}.
-Astr{\'e}e employs numeric abstract domains, such as intervals that  
-abstract variable values as ranges, as well as relational domains that  
-infer linear and non-linear relationships between variables. These abstractions are  
-well-suited for programs performing integer and float arithmetic, but  
-less so for bit-level Boolean operators, bit-shifts, and bitfields  
+Astr{\'e}e employs numeric abstract domains, such as intervals that 
+abstract variable values as ranges, as well as relational domains that 
+infer linear and non-linear relationships between variables. These abstractions are 
+well-suited for programs performing integer and float arithmetic, but 
+less so for bit-level Boolean operators, bit-shifts, and bitfields 
 packing several values in words.  The non-linear abstract domains in 
 Astr{\'e}e such as quadratic and exponential functions are mostly useful 
 for aerospace applications~\cite{DBLP:journals/ftpl/BertraneCCFMMR15}.  
-Moreover, Astr{\'e}e features BDD-based abstract 
+Moreover, Astr{\'e}e features BDD-based abstract 
 domains~\cite{bdd-domain} that can represent non-convex invariants, 
-but they are currently limited to Boolean variables and cannot perform  
+but they are currently limited to Boolean variables and cannot perform
 bit-blasting on integer variables.  For bit manipulating programs 
 generated by \textsc{v2c}, Astr{\'e}e uses default abstract domains 
 for integer values such as interval domain, octagon domain, integer 
@@ -493,7 +493,7 @@ in case there are no states satisfying the assertion at all, hence, the
 instructions following the assertion are never executed.
 
 
-Figure~\ref{fig:runtimes} gives the runtime comparison between 
+Fig.~\ref{fig:runtimes} gives the runtime comparison between 
 ABC, \textsc{UltimateAutomizer} and Astr{\'e}e.  We choose 
 the ABC PDR engine for comparison with abstraction-based software 
 analyzers since it performs better than the other verification engines 
@@ -516,12 +516,12 @@ were restricted to 32\,GB RAM per benchmark.
 ABC proved a total of~30 benchmarks and timed out for 4 benchmarks.  
 On the other hand, Astr{\'e}e reported a total of~7 false alarm out of~34 
 benchmarks (shown by the blue triangles corresponding to the timeout axis in 
-Figure~\ref{fig:runtimes}). However, Astr{\'e}e was faster than ABC on~8 benchmarks (23\% cases).
+Fig.~\ref{fig:runtimes}). However, Astr{\'e}e was faster than ABC on~8 benchmarks (23\% cases).
 %
 Among these~8 benchmarks,~3 are unsafe for which Astr{\'e}e reported bugs
 earlier than ABC. For the remaining~5 benchmarks, ABC timed out in 4 cases, 
 whereas Astr{\'e}e proved all~5 benchmarks within the time limit (see the plots 
-on the extreme right side of Figure~\ref{fig:runtimes}).  
+on the extreme right side of Fig.~\ref{fig:runtimes}).  
 %
 Overall, the runtimes of Astr{\'e}e are very close to ABC for most benchmarks. 
 %

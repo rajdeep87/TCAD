@@ -15,7 +15,7 @@ In our experiments, we compare safety verification of SVA properties of Verilog 
 \hline\noalign{\vskip0.25ex}
 \textbf{Verilog RTL} & \multicolumn{1}{l}{\textbf{Synthesized Hardware}} & \textbf{Software Netlist} \\
 \hline
-\begin{lstlisting}[mathescape=true,language=Verilog,basicstyle=\scriptsize\ttfamily]
+\begin{lstlisting}[boxpos=t,mathescape=true,language=Verilog,basicstyle=\scriptsize\ttfamily]
 module top(clk, a, c, out); 
 input clk , a;
 output [1:0] c;
@@ -40,12 +40,9 @@ end
 endmodule
 \end{lstlisting}
 &
-\begin{minipage}{4.3cm}
-\centering
-\scalebox{.6}{\includegraphics{figures/example/ckt_pspdftex.eps}}
-\end{minipage}
+\raisebox{-\totalheight}{\includegraphics[width=0.28\textwidth]{figures/example/ckt_pspdftex.eps}}
 &
-\begin{lstlisting}[mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
+\begin{lstlisting}[boxpos=t,mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
 struct state_elements_top {
   unsigned int b,e;
   unsigned char d,out;
@@ -83,26 +80,13 @@ void top(unsigned int clk,
 \begin{figure*}[bth]
 \small
 \begin{center}
-\begin{tabular}{@{}ll@{}}
-\hline\noalign{\vskip0.25ex}
-\textbf{System Verilog Assertions} & \textbf{C Translation} \\
+\begin{tabular}{@{}lll@{}}
+% \hline\noalign{\vskip0.25ex}
+% \multicolumn{3}{@{}l@{}}{\textbf{C Translation}} \\
 \hline
-\begin{lstlisting}[mathescape=true,language=Verilog,basicstyle=\scriptsize\ttfamily]
-P0: assert property (d >= e);
-P1: assert property ((a == 1) 
-    |-> ##1 (b == 1));
-P2: assert property ((a == 1) 
-    |-> ##2 (e == 1));
-P3: assert property ((a == 1) 
-    |-> ##3 (d == 2));
-P4: assert property ((a == 0) 
-    |-> ##4 (out == 1));
-P5: assert property ((a == 1) 
-    |-> ##4 (out == 4));
-\end{lstlisting}
-&
-\begin{lstlisting}[mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
-_Bool Search_highA(int *highA, unsigned int cycle)
+\begin{lstlisting}[boxpos=t,mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
+_Bool Search_highA(int *highA, 
+                   unsigned int cycle)
 {
  for(int i=0;i<100;i++) { 
    if(highA[i]==cycle) { return 1; }
@@ -110,14 +94,17 @@ _Bool Search_highA(int *highA, unsigned int cycle)
  return 0;
 } 
 
-_Bool Search_lowA(int *lowA, unsigned int cycle)
+_Bool Search_lowA(int *lowA, 
+                  unsigned int cycle)
 {
  for(int i=0;i<100;i++) { 
    if(lowA[i]==cycle) { return 1; }
  }
  return 0;
 } 
-
+\end{lstlisting}
+&
+\begin{lstlisting}[boxpos=t,mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
 int main() 
 {
  unsigned int i=1,j=0,k=0;
@@ -139,9 +126,11 @@ int main()
    lowA[k]=i;
    k++;
   }
+\end{lstlisting}
+& 
+\begin{lstlisting}[boxpos=t,mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
   top(clk,a,&c,&out);
   i=i+1; 
- 
   P0:assert(u1.d>=u1.e);
   // properties with antecedent a==1 
   // property with 1 cycle delay
@@ -169,6 +158,96 @@ int main()
 \label{fig:sva}
 \end{center}
 \end{figure*}
+
+% \begin{figure*}[bth]
+% \small
+% \begin{center}
+% \begin{tabular}{@{}ll@{}}
+% \hline\noalign{\vskip0.25ex}
+% \textbf{System Verilog Assertions} & \textbf{C Translation} \\
+% \hline
+% \begin{lstlisting}[mathescape=true,language=Verilog,basicstyle=\scriptsize\ttfamily]
+% P0: assert property (d >= e);
+% P1: assert property ((a == 1) 
+%     |-> ##1 (b == 1));
+% P2: assert property ((a == 1) 
+%     |-> ##2 (e == 1));
+% P3: assert property ((a == 1) 
+%     |-> ##3 (d == 2));
+% P4: assert property ((a == 0) 
+%     |-> ##4 (out == 1));
+% P5: assert property ((a == 1) 
+%     |-> ##4 (out == 4));
+% \end{lstlisting}
+% &
+% \begin{lstlisting}[mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
+% _Bool Search_highA(int *highA, unsigned int cycle)
+% {
+%  for(int i=0;i<100;i++) { 
+%    if(highA[i]==cycle) { return 1; }
+%  }
+%  return 0;
+% } 
+% 
+% _Bool Search_lowA(int *lowA, unsigned int cycle)
+% {
+%  for(int i=0;i<100;i++) { 
+%    if(lowA[i]==cycle) { return 1; }
+%  }
+%  return 0;
+% } 
+% 
+% int main() 
+% {
+%  unsigned int i=1,j=0,k=0;
+%  int highA[100], lowA[100];
+%  // initialize highA and lowA
+%  for(int i=0;i<100;i++) { 
+%    highA[i]=999; lowA[i]=999;
+%  }
+%  unsigned int clk, a;
+%  unsigned char c, out;
+%  // initial block 
+%  u1.b=0;u1.d=0; u1.e=0;u1.out=0; 
+%  while(i <= 100) {
+%   if(a==1) {  
+%    highA[j]=i; 
+%    j++;
+%   } 
+%   else if(a==0) {
+%    lowA[k]=i;
+%    k++;
+%   }
+%   top(clk,a,&c,&out);
+%   i=i+1; 
+%  
+%   P0:assert(u1.d>=u1.e);
+%   // properties with antecedent a==1 
+%   // property with 1 cycle delay
+%   if (Search_highA(highA, i-1)) 
+%    P1:assert(u1.b==1);
+%   // property with 2 cycle delay
+%   if (Search_highA(highA, i-2))
+%    P2:assert(u1.e==1); 
+%   // property with 3 cycle delay
+%   if (Search_highA(highA, i-3))
+%    P3:assert(u1.d==2); 
+%   // property with 4 cycle delay
+%   if (Search_highA(highA, i-4))
+%    P5:assert(u1.out==4); 
+%   // properties with antecedent a==0
+%   // property with 4 cycle delay
+%   if (Search_lowA(lowA, i-4)) 
+%    P4:assert(u1.out==1);
+%  }
+% }
+% \end{lstlisting}\\
+% \hline
+% \end{tabular}
+% 	\caption{Property Specification in SVA and C}
+% \label{fig:sva}
+% \end{center}
+% \end{figure*}
 
 The waveform in Figure~\ref{intro-waveform} captures the input-output behavior of the RTL design. 
 %The input-output behavior of the software netlist and the RTL in figure~\ref{intro-fig2} matches 

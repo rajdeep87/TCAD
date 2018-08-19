@@ -25,23 +25,23 @@ which is then passed to ABC for verification.
 %andmost prevalant format used by the majority of verification tools.
 Whereas, the middle flow of Figure~\ref{fig:toolflow} shows the 
 bit/word-level verification using the tool 
-\ebmc~\footnote{www.cprover.org/hardware/ebmc}. 
-\ebmc supports IEEE 1364.1 Verilog 2005 standards.  \ebmc synthesize 
+EBMC \footnote{www.cprover.org/hardware/ebmc}. 
+EBMC supports IEEE 1364.1 Verilog 2005 standards.  EBMC synthesize 
 the design in Verilog into a bit-level netlist represented in AIGER or a 
 word-level netlist represented in format that resembles the 
-SMT-LIB standard. The word-level synthesis flow in \ebmc is not mature yet. 
-So, we only use the bit-level flow in \ebmc. 
+SMT-LIB standard. The word-level synthesis flow in EBMC is not mature yet. 
+So, we only use the bit-level flow in EBMC. 
 %
 The top flow of Figure~\ref{fig:toolflow} shows the verification 
 of the software netlist designs. 
-%verification which translate RTL into software netlist using the tool \emph{v2c}.  
+%verification which translate RTL into software netlist using the tool V2C.  
 %
 A wide range of representative software 
 verification techniques is applied to determine the safety of the
 software netlist. In particular, we use $k$-induction~\cite{fmcad2000}
 (implemented in the tools CBMC~\cite{cbmc.tacas:2004} and
 2LS~\cite{BJKS15}), interpolation
-(CPAChecker~\cite{DBLP:conf/cav/BeyerK11}, IMPARA~\cite{impara}), 
+(\cpachecker~\cite{DBLP:conf/cav/BeyerK11}, IMPARA~\cite{impara}), 
 Abstract Interpretation (Ast{\'r}ee~\cite{DBLP:conf/esop/CousotCFMMMR05}), 
 IC3/PDR (SeaHorn~\cite{DBLP:conf/cav/GurfinkelKKN15}) and Automata-theoretic 
 verification (UltimateAutomizer~\cite{DBLP:conf/tacas/HeizmannDGLMSP16}).
@@ -196,7 +196,7 @@ verification techniques employed by verification tools at bit-level, word-level,
 and software-level.  The plots in these figures reports the runtimes of~12 
 representative circuits which are most difficult to solve out of a total~34 
 circuits.  Note that ABC does not implement word-level verification flow, 
-so we perform word-level verification using our in-house tool \ebmc.
+so we perform word-level verification using our in-house tool EBMC.
 Figures~\ref{fig:kind}--\ref{fig:hybrid} reports the best runtimes 
 among the bit-level and word-level hardware verification tools.  
 %
@@ -207,7 +207,7 @@ We categorize the unbounded approaches into three classes:
 \item PDR together with other hybrid techniques (Figure~\ref{fig:hybrid}).  
 \end{itemize}
 By hybrid techniques, we refer to predicate
-abstraction as implemented in \emph{CPAChecker} and a combination of
+abstraction as implemented in \cpachecker and a combination of
 $k$-induction, BMC and abstract interpretation as implemented in
 \emph{2LS}~\cite{kiki}.  On the $x$-axis is the analysis time in
 seconds and on the $y$-axis we list the benchmarks. The vertical red lines on
@@ -229,33 +229,33 @@ on $k$-induction either timeout or took long time to
 compute the inductive invariant sufficient to prove the property. For
 the unsafe benchmarks, for example DAIO and the traffic light controller, where
 the bugs are manifested only at 64 and 65 clock cycles respectively,
-the verification times using ABC and \ebmc's $k$-induction engine 
+the verification times using ABC and EBMC's $k$-induction engine 
 are comparable to \cbmcv and \textsc{2LS}. Figure~\ref{fig:kind} 
 reports the time taken by the $k$-induction engine in 
 ABC, \ebmcv, \cbmcv and \textsc{2LS}.  We did not report
-the time for \emph{CPAChecker} since the results suggest that 
+the time for \cpachecker since the results suggest that 
 its $k$-induction engine is not as mature yet. 
 
 \subsection{Analysis using Interpolation} Figure~\ref{fig:impact} reports
 the time taken by the interpolation engine in ABC, \textsc{IMPARA}
-and \emph{CPAChecker}. ABC is the fastest in 9 out of 12
+and \cpachecker. ABC is the fastest in 9 out of 12
 designs. However, it timed out on three complex benchmarks, RCU, FIFO
 and BufAl, whereas the software interpolation tool, \textsc{IMPARA},
 which implements IMPACT algorithm solved three instances out of which
 one is the complex FIFO design; yet \textsc{IMPARA} either timed out or
-ran out of memory for the remaining designs.  \emph{CPAChecker} solved
+ran out of memory for the remaining designs.  \cpachecker solved
 5 out of 12 cases.  None of the interpolation engines was able to
 prove RCU and BufAl.
 
 \subsection{Analysis using Hybrid techniques} Figure~\ref{fig:hybrid}
 reports the time taken by the IC3/PDR engine in ABC, \emph{SeaHorn}
-and other hybrid techniques as implemented in \emph{CPAChecker} and
+and other hybrid techniques as implemented in \cpachecker and
 \textsc{2LS}. ABC~is the clear winner here; it is the only tool that
 proves the FIFO and BufAl benchmarks safe within the given 5h timeout.
 \emph{SeaHorn}'s PDR engine solves half of the benchmarks, but
 produces false negatives on the other half due to limited support for
 bitvectors. \textsc{2LS} successfully solved 8 benchmarks and times 
-out on four benchmarks.  \emph{CPAChecker}'s predicate abstraction reliably
+out on four benchmarks.  \cpachecker's predicate abstraction reliably
 solves 7 benchmarks, but timed out on two benchmarks and reports three
 wrong results. Note that none of the tools was able to prove RCU.
 
@@ -497,7 +497,7 @@ Figure~\ref{fig:runtimes} gives the runtime comparison between
 ABC, \textsc{UltimateAutomizer} and Astr{\'e}e.  We choose 
 the ABC PDR engine for comparison with abstraction-based software 
 analyzers since it performs better than the other verification engines 
-and is superior than \ebmc on our benchmarks. The tools can be distinguished 
+and is superior than EBMC on our benchmarks. The tools can be distinguished 
 by the shape as well as by colour. 
 %
 We verified a total of~34 circuits given in Verilog RTL. 
@@ -623,7 +623,7 @@ guide the tool to precisely prove a property of the software netlist model.
 %strategies that might enable the analysis to prove the properties under verification. 
 %For our experiments, we ran the analysis using the existing heuristics and manual 
 %partitioning on data as well as control that target automatically-generated 
-%software netlist obtained from \textsc{v2c} and 
+%software netlist obtained from V2C and 
 %was sufficient to precisely prove the properties. 
 
 
@@ -685,7 +685,7 @@ a problem that is not addressed by software analyzers.
 \subsection{Analysis using Precise SAT/SMT based Software Analyzers}
 %
 Though the invariant inference techniques employed by precise software 
-analyzers such as \textsc{CPAChecker} and \textsc{2LS} have never
+analyzers such as \cpachecker and 2LS have never
 been optimized for hardware analysis, the results in this chapter 
 show that these tools are within one order of magnitude compared to
 bit-level hardware model checkers for detecting bugs as well as 
@@ -760,11 +760,11 @@ Thirdly, our experiments compare formal verification of RTL designs by
 translating them to bit-level netlist and software netlist.  
 %
 For some of the designs (8 out of 34), we used the word-level synthesis 
-flow in \ebmc.  
-We observed that the result of the word-level verification in \ebmc 
+flow in EBMC.  
+We observed that the result of the word-level verification in EBMC 
 using Z3 theorem prover is absolutely the same as the bit-level 
 verification for these 8 benchmarks. The translation of word-level 
-netlist to SMT-LIB2 format is not mature yet in \ebmc (we could not 
+netlist to SMT-LIB2 format is not mature yet in EBMC (we could not 
 translate the remaining 26 benchmarks), so we could not give the 
 word-level verification results in this paper. Furthermore, 
 ABC does not fully support word-level verification.  

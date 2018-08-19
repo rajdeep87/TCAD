@@ -4,95 +4,26 @@ Verilog and C have many operators in common, but  Verilog also has
 additional hardware-oriented operators such as part-select, bit-select from vectors, concatenation,
 and reduction. Additionally, many Verilog statements have no direct analogue in C. Examples include
 initial blocks, always blocks, generate statements, procedural assignments
-(blocking, non-blocking) and continuous assignments. Verilog also supports the 4-valued data types
+(blocking and non-blocking) and continuous assignments. Verilog also supports the 4-valued data types
 reg, wire, and integer.  All these constructs, combined with
 parallelism, make translation challenging.
 
 In view of these complexities, our translation is deliberately direct and transparent: we try to
 preserve the structure of the RTL and refrain from optimizations or abstractions. Fidelity of the
-resulting C code to the semantics of the original Verilog is prioritised---meaning that we rely on
+resulting C code to the semantics of the original Verilog is prioritised, and we rely on
 the downstream software analysis tools for efficiency, rather than obscure our translation with
 optimisations.
 
-%
-\Omit{
-\begin{figure*}[t]
-\scriptsize  
-\centering
-%\begin{tabular}{|l|l|l|l|}
-\begin{tabular}{|l|l|l|}
-\hline
-%  Verilog & Formal Semantics & Synthesized Hardware & Software netlist \\
-\textbf{Verilog} & \textbf{Synthesized Hardware} & \textbf{Software Netlist} \\
-\hline
-\begin{lstlisting}[mathescape=true,language=Verilog]
-module top(clk, a);
-input clk, a;
-reg b,d,e; 
-wire c,cond;
-assign c = e ? 1'b0:d;
-assign cond = a;
-always @(posedge clk) 
- begin
-  b<=a;
-  if(cond && b)
-   e<=b;
-  else 
-   e<=0;
-  d<=c;
- end
-endmodule
-\end{lstlisting}
-&
-\begin{minipage}{4.0cm}
-\centering
-\scalebox{.5}{\import{figures/}{ckt.pspdftex}}
-\end{minipage}
-&
-\begin{lstlisting}[mathescape=true,language=C]
-struct state_elements_top {
- unsigned int b, d, e; };
-struct state_elements_top  u1;
-void top(_Bool clk, unsigned a) {
-  _Bool c,cond;
-  _Bool b_old=u1.b;
-  cond = a;
-  c = (u1.e)?0:u1.d;
-  u1.b = a;
-  if(cond && b_old)
-    u1.e = b_old;
-  else
-    u1.e = 0;
-  u1.d = c;  
-}
-\end{lstlisting}\\
-\hline
-\end{tabular}
-\caption{Example of Verilog Translated into C}
-\label{ex1}
-\end{figure*}}
+Our translation is implemented in a tool called V2C~\cite{mtk2016}. The front-end performs Verilog parsing, macro preprocessing, and
+type-checking. The result is a type-annotated parse-tree, which is then translated into C. There are two main parts to the translation. The first deals
+largely with the represetation in C of Verilog data values---for example, Verilog data types, wires and registers, and Verilog expressions with bit-manipulating operations. This part is explained in Sec.~\ref{sec:data}.
 
-\subsection{Translation Flow and Software Netlist Structure}
+The second is concerned with the scheduling of non-blocking and blocking  assignments that occur the Verlog code into a suitable C sequentialization, depending on the their syntactic context. The inter-modular dependencies between the always clocked blocks and the continuous assignment statements are resolved by a dependency analysis. The detail of this part are explained in Section~\ref{sec:dep}.
 
-Our translation is implemented in a tool called V2C~\cite{mtk2016}.  
-The front-end performs Verilog parsing, macro preprocessing, and
-type-checking. The result is a type-annotated parse-tree, which is 
-passed to the translation unit.  The translation unit performs 
-rule-based translation following synthesis semantics while keeping 
-the Verilog module hierarchy intact.  Rule-based translation maps complex 
-bit-manipulating Verilog operations to the equivalent C semantics that use 
-shift-and-mask operations.  The inter-modular dependencies between the always 
-clocked blocks and the continuous assignment statements are resolved by 
-dependency analysis module in V2C (details in Section~\ref{dep}). \rmcmt{Fixed}
-. \tmcmt{This last sentence seems to mention just two 'random' things
-that the rules do. Can some more general sketch be given?}  
-The translation phase is followed by code-generation, where the 
-intermediate vectored expressions and translated module items are 
-converted to ANSI-C program syntax. 
+Translation is followed by code-generation, in which the intermediate vectored \tmcmt{Rejdeep: `vectored'? Whart is this?} expressions and translated module items are converted to ANSI-C program syntax.
 
-%
-\subsection{Handling Verilog Module Items}
-%
+\subsection{Verilog Data, Circuit Structures, and Expressions}\label{sec:data}
+
 \subsubsection{Data Model} The data model in Verilog is significantly 
 different from C.  Each bit of a C integer value can have 
 only two states, namely 0 and 1.  The Verilog HDL
@@ -104,6 +35,15 @@ for $X$ is treating it as a don't-care assignment, which allows the
 synthesis to choose a 0 or 1 to further improve logic minimization.
 V2C treat $X$ and $Z$ states to be non-deterministic as there is no
 corresponding C state. 
+
+\Omit{
+\subsubsection{Variable declaration} Variables of specific 
+bit-width (register, wire) in Verilog is translated 
+to the next largest native data-types in C such as 
+char, short int, long, long long etc. The default 
+variable declaration in C is \texttt{unsigned} except for 
+the integer declaration in Verilog which is signed.
+}
 
 \subsubsection{Registers, wires, parameters and constants} Verilog supports structural 
 data types called \emph{nets}, which are \emph{wire}
@@ -121,81 +61,85 @@ Verilog also allows the definition of the global constants
 using \texttt{`define} construct, for eg., \texttt{`define STATE 2'b00;},
 which is same as the \#define preprocessor directives in C.
 
-\subsubsection{Always and Initial blocks}
-Always blocks are the concurrent statements which execute when a 
-variable in the sensitivity list changes. The statements enclosed inside the 
-always block within $begin \ldots end$ construct are executed in parallel
-or sequentially depending on whether it is non-blocking or blocking statement 
-respectively.   The behavior of an initial block is same as the always blocks, 
-except that they are executed exactly once, before the execution of any 
-always block. Figure~\ref{figure:always-init} shows the translation of always
-and initial block (shown in top) to C (shown in bottom). All code-snippets are
-partial and complete C code could not be accommodated due to space limit.
+\subsubsection{Handling Bit-manipulating operations}
+V2C automatically handles complex bit-manipulating operators in Verilog, 
+like bit-select or part-select operators from a vector,
+concatenation operators, reduction OR, and translates them to the 
+semantically equivalent expression in ANSI-C. V2C retains 
+the word-level structure of the Verilog RTL and generate 
+vectored expressions. Figure~\ref{figure:bit} shows 
+Verilog code (at the top) and the generated C expressions 
+(at the bottom) which are combinations of bitwise and 
+arithmetic operators like bitwise OR, AND, multiplication, 
+subtraction, shifts and other C operators.     
+
 %
-\begin{figure}[htbp]
+\begin{figure*}[htbp]
 \scriptsize
-\begin{tabular}{l|l}
+\centering
+\begin{tabular}{l|l|l}
 \hline
-Always and initial block & Multiple always and initial block\\
+Bit-select & Part-select (System Verilog) & Concatenation \\
 \hline
 \begin{lstlisting}[mathescape=true,language=Verilog]
-reg [7:0] x,y,z;
-initial begin  
-  x=0xFF;y=0;z=0; 
-end
-always @(posedge clk) 
- begin y=x; z=y;
+wire [7:0] in1,in2;
+reg [7:0] out1,out2;
+out1[7:5] = in1[4:2];
+out2[6] = in2[4];
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=Verilog]
+reg [31:0] in, out;
+for(i=0;i<=3;i++) begin
+out[8*i +: 8]=in[8*i +: 8];
 end
 \end{lstlisting}
-& 
+&
 \begin{lstlisting}[mathescape=true,language=Verilog]
-reg [7:0] x,y,z;
-initial begin  
- x=0xFF;y=0;z=0; 
-end
-always @(y) z=y+1;
-always @(posedge clk) 
- begin y=x; end
+wire [7:0] in1, in2;
+reg [9:0] out;
+out = {in2[5:2],in1[6:1]};
 \end{lstlisting}
 \\
-\hline 
+\hline
 \begin{lstlisting}[mathescape=true,language=C]
-struct st {
- unsigned char x,y,z;} 
-streg;
-void initial() {
- streg.x=255;streg.y=0;
- streg.z=0;}
-int clock_block() {
-  streg.y=streg.x; 
-  streg.z=streg.y;}
-int main() {
- initial();
- while(1) clock_block();
+unsigned char in1,in2;
+struct smain { 
+ unsigned char out1,out2;
+} sm;
+sm.out1 = sm.out1 & 0x1f | 
+(((in1 & 0x1c)>>2)<<5);
+sm.out2 = (sm.out2 & 0xbf)| 
+(((in2 & 0x10)>>4)<<6); 
+\end{lstlisting}
+&
+\begin{lstlisting}[mathescape=true,language=C]
+struct smain {
+ unsigned int in,out;
+} sm;
+for(i=0;i<=3;i++) {
+ x=8*i+(8-1); y=8*i;
+ sm.out=(sm.out&!(2^31-2^y))
+ |(sm.in&(2^31-2^y)); 
 }
 \end{lstlisting}
 &
 \begin{lstlisting}[mathescape=true,language=C]
-struct st {
- unsigned char x,y,z;} 
-streg;
-void initial() { 
- streg.x=255;streg.y=0;
- streg.z=0;}
-int clock_block() {
-  streg.y = streg.x; 
-  streg.z = streg.y+1;}
-int main() {
- initial();
- while(1) clock_block();
-} 
+unsigned char in1,in2;
+struct smain { 
+ unsigned char out; 
+} sm;
+sm.out = (((in2 >> 2)
+ & 0xF) << 6)|
+ ((in1 >> 1) & 0x3F);
 \end{lstlisting}
 \\
 \hline
 \end{tabular}
-\caption{Handling always and initial blocks}
-\label{figure:always-init}
-\end{figure}
+\caption{Handling Bit-select, part-select from vectors and concatenation}
+\label{figure:bit}
+\end{figure*}
+%
 
 \subsubsection{Module Hierarchy with Input/Output Port}
 The communication between modules takes place through 
@@ -261,6 +205,8 @@ void main() {
 \caption{Handling Module hierarchy with I/O ports}
 \label{figure:module-hierarchy}
 \end{figure}
+
+\subsection{Assignments and Dependency Analysis}~\label{sec:dep}
 
 \subsubsection{Procedural Assignments}
 %
@@ -373,100 +319,84 @@ which are immediately triggered when there is any change
 in the right-hand side inputs. The translation of continuous 
 assignments are discussed next. 
 
-\subsection{Handling Bit-manipulating operations}
 
-\tmcmt{This section seems to concentrate on bit-level expressions. But code generation must be
-more than that. How do we make this more complete?}
-\rmcmt{FIXED}
-V2C automatically handles complex bit-manipulating operators in Verilog, 
-like bit-select or part-select operators from a vector,
-concatenation operators, reduction OR, and translates them to the 
-semantically equivalent expression in ANSI-C. V2C retains 
-the word-level structure of the Verilog RTL and generate 
-vectored expressions. Figure~\ref{figure:bit} shows 
-Verilog code (at the top) and the generated C expressions 
-(at the bottom) which are combinations of bitwise and 
-arithmetic operators like bitwise OR, AND, multiplication, 
-subtraction, shifts and other C operators.     
+\subsubsection{Always and Initial blocks}
+Always blocks are the concurrent statements which execute when a 
+variable in the sensitivity list changes. The statements enclosed inside the 
+always block within $begin \ldots end$ construct are executed in parallel
+or sequentially depending on whether it is non-blocking or blocking statement 
+respectively.   The behavior of an initial block is same as the always blocks, 
+except that they are executed exactly once, before the execution of any 
+always block. Figure~\ref{figure:always-init} shows the translation of always
+and initial block (shown in top) to C (shown in bottom). All code-snippets are
+partial and complete C code could not be accommodated due to space limit.
 %
-\Omit{
-\subsubsection{Variable declaration} Variables of specific 
-bit-width (register, wire) in Verilog is translated 
-to the next largest native data-types in C such as 
-char, short int, long, long long etc. The default 
-variable declaration in C is \texttt{unsigned} except for 
-the integer declaration in Verilog which is signed.
-}
-%
-\begin{figure*}[htbp]
+\begin{figure}[htbp]
 \scriptsize
-\centering
-\begin{tabular}{l|l|l}
+\begin{tabular}{l|l}
 \hline
-Bit-select & Part-select (System Verilog) & Concatenation \\
+Always and initial block & Multiple always and initial block\\
 \hline
 \begin{lstlisting}[mathescape=true,language=Verilog]
-wire [7:0] in1,in2;
-reg [7:0] out1,out2;
-out1[7:5] = in1[4:2];
-out2[6] = in2[4];
-\end{lstlisting}
-&
-\begin{lstlisting}[mathescape=true,language=Verilog]
-reg [31:0] in, out;
-for(i=0;i<=3;i++) begin
-out[8*i +: 8]=in[8*i +: 8];
+reg [7:0] x,y,z;
+initial begin  
+  x=0xFF;y=0;z=0; 
+end
+always @(posedge clk) 
+ begin y=x; z=y;
 end
 \end{lstlisting}
-&
+& 
 \begin{lstlisting}[mathescape=true,language=Verilog]
-wire [7:0] in1, in2;
-reg [9:0] out;
-out = {in2[5:2],in1[6:1]};
+reg [7:0] x,y,z;
+initial begin  
+ x=0xFF;y=0;z=0; 
+end
+always @(y) z=y+1;
+always @(posedge clk) 
+ begin y=x; end
 \end{lstlisting}
 \\
-\hline
+\hline 
 \begin{lstlisting}[mathescape=true,language=C]
-unsigned char in1,in2;
-struct smain { 
- unsigned char out1,out2;
-} sm;
-sm.out1 = sm.out1 & 0x1f | 
-(((in1 & 0x1c)>>2)<<5);
-sm.out2 = (sm.out2 & 0xbf)| 
-(((in2 & 0x10)>>4)<<6); 
-\end{lstlisting}
-&
-\begin{lstlisting}[mathescape=true,language=C]
-struct smain {
- unsigned int in,out;
-} sm;
-for(i=0;i<=3;i++) {
- x=8*i+(8-1); y=8*i;
- sm.out=(sm.out&!(2^31-2^y))
- |(sm.in&(2^31-2^y)); 
+struct st {
+ unsigned char x,y,z;} 
+streg;
+void initial() {
+ streg.x=255;streg.y=0;
+ streg.z=0;}
+int clock_block() {
+  streg.y=streg.x; 
+  streg.z=streg.y;}
+int main() {
+ initial();
+ while(1) clock_block();
 }
 \end{lstlisting}
 &
 \begin{lstlisting}[mathescape=true,language=C]
-unsigned char in1,in2;
-struct smain { 
- unsigned char out; 
-} sm;
-sm.out = (((in2 >> 2)
- & 0xF) << 6)|
- ((in1 >> 1) & 0x3F);
+struct st {
+ unsigned char x,y,z;} 
+streg;
+void initial() { 
+ streg.x=255;streg.y=0;
+ streg.z=0;}
+int clock_block() {
+  streg.y = streg.x; 
+  streg.z = streg.y+1;}
+int main() {
+ initial();
+ while(1) clock_block();
+} 
 \end{lstlisting}
 \\
 \hline
 \end{tabular}
-\caption{Handling Bit-select, part-select from vectors and concatenation}
-\label{figure:bit}
-\end{figure*}
-%
-%%===============================================================================\
-\subsection{Dependency Analysis}~\label{dep}
-%%===============================================================================\
+\caption{Handling always and initial blocks}
+\label{figure:always-init}
+\end{figure}
+
+
 %
 A hardware circuit specified in Verilog RTL may have two types of dependencies -- 
 1) \emph{Intra-modular dependency} and b) \emph{Inter-modular dependency}. 

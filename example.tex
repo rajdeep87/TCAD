@@ -23,6 +23,8 @@ P5: assert property ((a == 1) |-> ##4 (out == 4));
 
 \noindent These are all conditional properties over bounded but varying numbers of clock cycles. The corresponding C is shown in Fig.~\ref{fig:sva}. 
 
+The justification is as follows. An SVA property is valid (true) if it holds at every cycle. On the C side, the corresponding translated C assertion should also hold at every iteration of the while loop.  This is accomplished
+by invoking the ``top'' function in software netlist only once for each iteration of the while loop. Each invocation of top() simulates the advancement of the hardware clock by one. Hence, for any implication property of the form \texttt{(P |-> \#\#N Q)}, the clock cycles at which the event P holds is recorded in a buffer, say Buf, for every iteration of the while loop.  Subsequently, as the while loop progresses, Buf is scanned at every iteration `Iter' to find whether there are any matching cycles (Iter - N) already stored in Buf. A matching entry denotes that the event Q in the consequent need to be asserted in iteration Iter of the while loop.  Hence, the correlation between the clock cycle at which P occurs and the clock cycle at which Q is asserted is maintained through Buf.  Note that the arrays highA, lowA are used as fixed-length buffers of length 100 in Figure 2 and functions \texttt{HighA} and \texttt{LowA} are used to scan the respective buffers to search for matching cycles. We use a bound of 100 for the while loop and so the arrays do not exceed the size of the loop bound.
 
 After a block of assignments that do the initialization, we have a non-terminating while-loop that models an infinitely-running system. In each iteration, there is a sequence of calls to the function \texttt{top} that, in effect, advances the clock. These are interspersed with checks of the consequents of the SVA implications, in the right clock cycle and under each implication's antecedet. We discuss property translation in more detail in Sec.~\ref{sec:props}.
 
@@ -103,8 +105,7 @@ void top(unsigned int clk,
 % \multicolumn{3}{@{}l@{}}{\textbf{C Translation}} \\
 \hline
 \begin{lstlisting}[boxpos=t,mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
-_Bool Search_highA(int *highA, 
-                   unsigned int cycle)
+_Bool HighA(int *highA, unsigned int cycle)
 {
  for(int i=0;i<100;i++) { 
    if(highA[i]==cycle) { return 1; }
@@ -112,8 +113,7 @@ _Bool Search_highA(int *highA,
  return 0;
 } 
 
-_Bool Search_lowA(int *lowA, 
-                  unsigned int cycle)
+_Bool LowA(int *lowA, unsigned int cycle)
 {
  for(int i=0;i<100;i++) { 
    if(lowA[i]==cycle) { return 1; }
@@ -152,20 +152,20 @@ int main()
   P0:assert(u1.d>=u1.e);
   // properties with antecedent a==1 
   // property with 1 cycle delay
-  if (Search_highA(highA, i-1)) 
+  if (HighA(highA, i-1)) 
    P1:assert(u1.b==1);
   // property with 2 cycle delay
-  if (Search_highA(highA, i-2))
+  if (HighA(highA, i-2))
    P2:assert(u1.e==1); 
   // property with 3 cycle delay
-  if (Search_highA(highA, i-3))
+  if (HighA(highA, i-3))
    P3:assert(u1.d==2); 
   // property with 4 cycle delay
-  if (Search_highA(highA, i-4))
+  if (HighA(highA, i-4))
    P5:assert(u1.out==4); 
   // properties with antecedent a==0
   // property with 4 cycle delay
-  if (Search_lowA(lowA, i-4)) 
+  if (LowA(lowA, i-4)) 
    P4:assert(u1.out==1);
  }
 }

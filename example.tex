@@ -6,7 +6,25 @@ Fig.~\ref{fig:example} shows a typical Verilog module with a variety of common c
 
 The details of the translation are explained in Sec.~\ref{sec:v2c}. In summary, however, all the state-holding registers in the Verilog design have been gathered into a C struct. A C function \texttt{top} is then defined that has the same paramaters as the Verilog module is represents. When invoked, this function executes a sequence of state updates that simulate a single clock-cycle of hardware execution, according to the Verilog synthesis semantics. Because this is a sequentialization of the parallel register updates modelled by the Verilog, some shadow variables are introduced that record register values at the start of the clock cycle for subsequent use. Note that the non-synthesizable Verilog initial block is not included here, as this is a testbench component. Note also that placement of the assignment to \texttt{c} at the end of the body of \texttt{top} follows the `read after write' semantics for Verilog combinational logic.
 
-In our experiments, we compare safety verification of SVA properties of Verilog RTL and software analysis tools of the corresponding C code. We therefore translate SVA into equivalent C code. Fig.~\ref{fig:sva} shows a typical collection of SVA properties that could be checked to hold for our example Verilog module with an RTL verification tool. They are all conditional properties over bounded but varying numbers of clock cycles. The corresponding C is shown on the right. After a block of assignments that do the initialization, we have a non-terminating while-loop that models an infinitely-running system. In each iteration, there is a sequence of calls to the function \texttt{top} that, in effect, advances the clock. These are interspersed with checks of the consequents of the SVA implications, in the right clock cycle and under each implication's antecedet. We discuss property translation in more detail in Sec.~\ref{sec:props}.
+In our experiments, we compare safety verification of SVA properties of Verilog RTL and software analysis tools of the corresponding C code. We therefore translate SVA into equivalent C code. A collection of typical SVA properties is shown below:
+
+\begin{center}
+\begin{tabular}[t]{@{}l@{}}
+\begin{lstlisting}[mathescape=true,language=Verilog,basicstyle=\scriptsize\ttfamily]
+P0: assert property (d >= e);
+P1: assert property ((a == 1) |-> ##1 (b == 1));
+P2: assert property ((a == 1) |-> ##2 (e == 1));
+P3: assert property ((a == 1) |-> ##3 (d == 2));
+P4: assert property ((a == 0) |-> ##4 (out == 1));
+P5: assert property ((a == 1) |-> ##4 (out == 4));
+\end{lstlisting}
+\end{tabular}
+\end{center}
+
+\noindent These are all conditional properties over bounded but varying numbers of clock cycles. The corresponding C is shown in Fig.~\ref{fig:sva}. 
+
+
+After a block of assignments that do the initialization, we have a non-terminating while-loop that models an infinitely-running system. In each iteration, there is a sequence of calls to the function \texttt{top} that, in effect, advances the clock. These are interspersed with checks of the consequents of the SVA implications, in the right clock cycle and under each implication's antecedet. We discuss property translation in more detail in Sec.~\ref{sec:props}.
 
 \begin{figure*}[t]
 \begin{center}

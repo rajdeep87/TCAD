@@ -25,7 +25,7 @@ P5: assert property ((a == 1) |-> ##4 (out == 4));
  
 The corresponding C is shown in Fig.~\ref{fig:sva}. After a block of assignments that do the initialization, we have a non-terminating while-loop that models a continuously-running system. In each iteration of the loop, we invoke the \texttt{top} function of the software netlist to simulating advancement of the hardware clock by one cycle.   We model the varying input signal \texttt{a} by assigning a fresh, `non-deterministic' value at the start of each iteration. The history of values on this input is recorded in an array \texttt{hist}; we set a bound of 100 for the while loop, and so this array has only 100 elements. 
 
-An SVA property is valid (true) if it holds at the start \tmcmt{?} of every clock cycle. In the C code, the corresponding assertion must also hold at every iteration of the while loop. An SVA implication of the form \texttt{(P |-> \#\#N Q)}, where \texttt{P} is a condition on input \texttt{a}, therefore gets translated into a C assertion that the conseqent \texttt{Q} holds whenever the relevant past values of \texttt{a} satisfy \texttt{P}. We discuss property translation in more detail in Sec.~\ref{sec:props}.
+An SVA property is valid (true) if it holds at the start \tmcmt{?} of every clock cycle. In the C code, the corresponding assertion must also hold at every iteration of the loop. An SVA implication of the form \texttt{(P |-> \#\#N Q)}, where \texttt{P} is a condition on input \texttt{a}, therefore gets translated into a C assertion that \texttt{Q} holds whenever the relevant past values of \texttt{a} satisfy \texttt{P}. We discuss property translation in more detail in Sec.~\ref{sec:props}.
 
 \begin{figure*}[t]
 \begin{center}

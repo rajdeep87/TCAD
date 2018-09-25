@@ -4,7 +4,7 @@ We now present a simple example to give an overview our Verilog to C translation
 
 Fig.~\ref{fig:example} shows a typical Verilog module with a variety of common constructs: register datatypes, initialization, non-blocking and blocking assignments, an assign statement, and procedural blocks.  The synthesized hardware is the simple circuit shown in the centre.  On the right is the result of our translation of this Verilog RTL code into C.
 
-The details of the translation are explained in Sec.~\ref{sec:v2c}. In summary, however, all the state-holding registers in the Verilog design have been gathered into a C struct. A C function \texttt{top} is then defined that has the same parameters as the Verilog module it represents. When invoked, this function executes a sequence of state updates that simulate a single clock-cycle of hardware execution, according to the Verilog synthesis semantics. Because this is a sequentialization of the parallel register updates modelled by the Verilog, some shadow variables are introduced that record register values at the start of the clock cycle for subsequent use. Note that the non-synthesizable Verilog initial block is not included here, as this is a testbench component. Note also that placement of the assignment to \texttt{c} at the end of the body of \texttt{top} follows the `read after write' semantics for Verilog combinational logic.
+The details of the translation are explained in Sec.~\ref{sec:v2c}. In summary, however, all the state-holding registers in the Verilog design have been gathered into a C struct. A function \texttt{top} is then defined that has the same parameters as the Verilog module it represents. When invoked, this function executes a sequence of state updates that simulate a single clock-cycle of hardware execution, according to the Verilog synthesis semantics. Because this is a sequentialization of the parallel register updates modelled by the Verilog, some shadow variables are introduced that record register values at the start of the clock cycle for subsequent use.  The non-synthesizable Verilog initial block is not included here, as this is a testbench component.  Placement of the assignment to \texttt{c} at the end of the body of \texttt{top} follows the `read after write' semantics for Verilog combinational logic.
 
 In our experiments, we compare safety verification of SVA properties of Verilog RTL and software analysis tools of the corresponding C code. We therefore translate SVA into equivalent C code. A collection of typical SVA properties is shown below:
 
@@ -21,9 +21,7 @@ P5: assert property ((a == 1) |-> ##4 (out == 4));
 \end{tabular}
 \end{center}
 
-\noindent These are all conditional properties over bounded but varying numbers of clock cycles. The corresponding C is shown in Fig.~\ref{fig:sva}. 
-
-\tmcmt{From here to end of section to be revised.}
+\noindent These are all conditional properties over bounded numbers of clock cycles. The corresponding C is shown in Fig.~\ref{fig:sva}. 
 
 The justification is as follows. An SVA property is valid (true) if it holds at every cycle. On the C side, the corresponding translated C assertion should also hold at every iteration of the while loop.  This is accomplished
 by invoking the ``top'' function in software netlist only once for each iteration of the while loop. Each invocation of top() simulates the advancement of the hardware clock by one. Hence, for any implication property of the form \texttt{(P |-> \#\#N Q)}, the clock cycles at which the event P holds is recorded in a buffer, say Buf, for every iteration of the while loop.  Subsequently, as the while loop progresses, Buf is scanned at every iteration `Iter' to find whether there are any matching cycles (Iter - N) already stored in Buf. A matching entry denotes that the event Q in the consequent need to be asserted in iteration Iter of the while loop.  Hence, the correlation between the clock cycle at which P occurs and the clock cycle at which Q is asserted is maintained through Buf.  Note that the arrays highA, lowA are used as fixed-length buffers of length 100 in Fig.~\ref{fig:sva} and functions \texttt{HighA} and \texttt{LowA} are used to scan the respective buffers to search for matching cycles. We use a bound of 100 for the while loop and so the arrays do not exceed the size of the loop bound.
@@ -102,73 +100,74 @@ void top(unsigned int clk,
 \begin{figure*}[bth]
 \small
 \begin{center}
-\begin{tabular}{@{}lll@{}}
+\begin{tabular}{@{}ll@{}}
 \hline\noalign{\vskip0.25ex}
-\multicolumn{3}{@{}l@{}}{\textbf{C Translation}} \\
+\multicolumn{2}{@{}l@{}}{\textbf{C Translation}} \\
 \hline
 \begin{lstlisting}[boxpos=t,mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
-_Bool HighA(int *highA, unsigned int cycle)
-{
- for(int i=0;i<100;i++) { 
-   if(highA[i]==cycle) { return 1; }
- }
- return 0;
-} 
+#include <stdio.h>
+#include <assert.h>
 
-_Bool LowA(int *lowA, unsigned int cycle)
-{
- for(int i=0;i<100;i++) { 
-   if(lowA[i]==cycle) { return 1; }
- }
- return 0;
-} 
-\end{lstlisting}
-&
-\begin{lstlisting}[boxpos=t,mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
-int main() 
-{
- unsigned int i=1,j=0,k=0;
- int highA[100], lowA[100];
- // initialize highA and lowA
- for(int i=0;i<100;i++) { 
-   highA[i]=999; lowA[i]=999;
- }
- unsigned int clk, a;
- unsigned char c, out;
- // initial block 
- u1.b=0;u1.d=0; u1.e=0;u1.out=0; 
- while(i <= 100) {
-  if(a==1) {  
-   highA[j]=i; 
-   j++;
-  } 
-  else if(a==0) {
-   lowA[k]=i;
-   k++;
-  }
+_Bool nondet_bool(); 
+
+struct state_elements_top 
+{ unsigned int b,e; unsigned char d,out;};
+struct state_elements_top u1;
+void top(_Bool clk, _Bool a,
+unsigned char *c, unsigned char *out) {
+ // shadow variables
+unsigned int b_old = u1.b&0x1; 
+unsigned char d_old = u1.d&0x3; 
+unsigned int e_old = u1.e&0x1;
+u1.b = a; if(b_old)
+  u1.e = b_old&0x1;
+else
+u1.e = 0;
+u1.d = (e_old+1)&0x3;
+// update the output
+u1.out = (d_old&0x3) * (d_old&0x3); *out = u1.out&0xF;
+*c = u1.e ? 0 : (u1.d&0x3);
+}
 \end{lstlisting}
 & 
 \begin{lstlisting}[boxpos=t,mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
-  top(clk,a,&c,&out);
-  i=i+1; 
-  P0:assert(u1.d>=u1.e);
-  // properties with antecedent a==1 
-  // property with 1 cycle delay
-  if (HighA(highA, i-1)) 
-   P1:assert(u1.b==1);
-  // property with 2 cycle delay
-  if (HighA(highA, i-2))
-   P2:assert(u1.e==1); 
-  // property with 3 cycle delay
-  if (HighA(highA, i-3))
-   P3:assert(u1.d==2); 
-  // property with 4 cycle delay
-  if (HighA(highA, i-4))
-   P5:assert(u1.out==4); 
-  // properties with antecedent a==0
-  // property with 4 cycle delay
-  if (LowA(lowA, i-4)) 
-   P4:assert(u1.out==1);
+int main() 
+{
+ _Bool buf_a[100];
+ _Bool clk, a;
+ unsigned char c, out;
+ unsigned int cycle=1;
+ // initial block for top module
+ u1.b=0;u1.d=0; u1.e=0;u1.out=0; 
+ 
+ while(cycle <= 100) {
+   // read non-deterministic value of 'a'
+   a = nondet_bool(); 
+   // record value of 'a' in current cycle
+   buf_a[cycle] = a;
+   // invoke top-level function
+   top(clk,a,&c,&out);
+   // increment cycle count
+   cycle=cycle+1; 
+   // assert global properties 
+   P0:assert(u1.d>=u1.e);
+   // properties with antecedent a==1 
+   // property with 1 cycle delay
+   if (cycle>1 && buf_a[cycle-1]==1) 
+     P1:assert(u1.b==1);
+   // property with 2 cycle delay
+   if (cycle>2 && buf_a[cycle-2]==1)
+      P2:assert(u1.e==1); 
+   // property with 3 cycle delay
+   if (cycle>3 && buf_a[cycle-3]==1)
+      P3:assert(u1.d==2); 
+   // property with 4 cycle delay
+   if (cycle>4 && buf_a[cycle-4]==1)
+      P5:assert(u1.out==4); 
+   // properties with antecedent a==0
+   // property with 4 cycle delay
+   if (cycle>4 && buf_a[cycle-4]==0) 
+     P4:assert(u1.out==1);
  }
 }
 \end{lstlisting}\\

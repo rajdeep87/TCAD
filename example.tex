@@ -4,7 +4,7 @@ We now present a simple example to give an overview of our Verilog to C translat
 
 Fig.~\ref{fig:example} shows a typical Verilog module with a variety of common constructs: register datatypes, initialization, non-blocking and blocking assignments, an assign statement, and procedural blocks.  The synthesized hardware is the simple circuit shown in the centre.  On the right is the result of our translation of this Verilog RTL code into C.
 
-The details of the translation are explained in Sec.~\ref{sec:v2c}. In summary, however, all the state-holding registers in the Verilog design have been gathered into a C struct. A function \texttt{top} is then defined that has the same parameters as the Verilog module it represents. When invoked, this function executes a sequence of state updates that simulate a single clock-cycle of hardware execution, according to the Verilog synthesis semantics. Because this is a sequentialization of the parallel register updates modelled by the Verilog, some shadow variables are introduced that record register values at the start of the clock cycle for subsequent use.  The non-synthesizable Verilog initial block is not included here, as this is a testbench component.  Placement of the assignment to \texttt{c} at the end of the body of \texttt{top} follows the `read after write' semantics for Verilog combinational logic. \rmcmt{The initial block in Software netlist is encoded in Figure 2. Note that Column 2 of Figure 2 contains the main() function that invokes top() as well as initializes state-holding elements. So, Figure 1 column 3 together with Figure 2 column 2 constitutes the whole software netlist along with property encoding. We need to clarify this in the text.}     
+The details of the translation are explained in Sec.~\ref{sec:v2c}. In summary, however, all the state-holding registers in the Verilog design have been gathered into a C struct. A function \texttt{top} is then defined that has the same parameters as the Verilog module it represents. When invoked, this function executes a sequence of state updates that simulate a single clock-cycle of hardware execution, according to the Verilog synthesis semantics. Because this is a sequentialization of the parallel register updates modelled by the Verilog, some shadow variables are introduced that record register values at the start of the clock cycle for subsequent use.  The non-synthesizable Verilog initial block is not included here, as this is a testbench component.  Placement of the assignment to \texttt{c} at the end of the body of \texttt{top} follows the `read after write' semantics for Verilog combinational logic.
 
 %In our experiments, we compare safety verification of SVA properties of Verilog RTL and software analysis tools of the corresponding C code.  
 %We translate SVA into equivalent C code. A collection of typical SVA properties is shown below:
@@ -27,7 +27,7 @@ P5: assert property ((a == 1) |-> ##4 (out == 4));
  
 The corresponding C is shown in Fig.~\ref{fig:sva}. After a block of assignments that do the initialization, we have a non-terminating while-loop that models a continuously-running system. In each iteration of the loop, we invoke the \texttt{top} function of the software netlist for simulating advancement of the hardware clock by one cycle.   We model the varying input signal \texttt{a} by assigning a fresh, `non-deterministic' value at the start of each iteration. The history of values on this input is recorded in an array \texttt{hist}; we set a bound of 100 for the while loop, and so this array can hold the values of the input signal upto first 100 clock cycles. 
 
-An SVA property is valid (true) if it holds at the start \tmcmt{?} of every clock cycle. In the C code, the corresponding assertion must also hold at every iteration of the loop. An SVA implication of the form \texttt{(P |-> \#\#N Q)}, where \texttt{P} is a condition on input \texttt{a}, therefore gets translated into a C assertion that \texttt{Q} holds whenever the relevant past values of \texttt{a} satisfy \texttt{P}. We discuss property translation in more detail in Sec.~\ref{sec:props}.
+An SVA property is valid (true) if it holds at the end of every clock cycle. In the C code, the corresponding assertion must also hold at every iteration of the loop. An SVA implication of the form \texttt{(P |-> \#\#N Q)}, where \texttt{P} is a condition on input \texttt{a}, therefore gets translated into a C assertion that \texttt{Q} holds whenever the relevant past values of \texttt{a} satisfy \texttt{P}. We discuss property translation in more detail in Sec.~\ref{sec:props}.
 
 \begin{figure*}[t]
 \begin{center}
@@ -98,39 +98,13 @@ void top(unsigned int clk,
 \end{center}
 \end{figure*}
 
-\begin{figure*}[bth]
+\begin{figure}[bth]
 \small
 \begin{center}
-\begin{tabular}{@{}ll@{}}
+\begin{tabular}{@{}l@{}}
 \hline\noalign{\vskip0.25ex}
-\multicolumn{2}{@{}l@{}}{\textbf{C Translation}} \\
+\textbf{C Translation} \\
 \hline
-\begin{lstlisting}[boxpos=t,mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
-#include <stdio.h>
-#include <assert.h>
-
-_Bool nondet_bool(); 
-
-struct state_elements_top 
-{ unsigned int b,e; unsigned char d,out;};
-struct state_elements_top u1;
-void top(_Bool clk, _Bool a,
-unsigned char *c, unsigned char *out) {
- // shadow variables
-unsigned int b_old = u1.b&0x1; 
-unsigned char d_old = u1.d&0x3; 
-unsigned int e_old = u1.e&0x1;
-u1.b = a; if(b_old)
-  u1.e = b_old&0x1;
-else
-u1.e = 0;
-u1.d = (e_old+1)&0x3;
-// update the output
-u1.out = (d_old&0x3) * (d_old&0x3); *out = u1.out&0xF;
-*c = u1.e ? 0 : (u1.d&0x3);
-}
-\end{lstlisting}
-& 
 \begin{lstlisting}[boxpos=t,mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
 int main() 
 {
@@ -177,7 +151,7 @@ int main()
 \caption{Property Specification in C}
 \label{fig:sva}
 \end{center}
-\end{figure*}
+\end{figure}
 
 The waveform in Fig.~\ref{intro-waveform} shows the input-output behavior of the RTL design. 
 Using state-of-the-art verifiers, we prove that the result of all the SVA properties 

@@ -1,18 +1,17 @@
 \section{Background on Property Checking Methods}\label{sec:background}
-%
+
 In this section, we briefly sketch the verification methods for property checking that
 we explore in our experiments. These are all well-established techniques and we refer 
 the reader standard references for in-depth explanation~\cite{mc,hbmc}.
 For clarity, we give bit-level descriptions of these verification techniques, but
 many of them have analogues at word-level.
 
-We group techniques into two classes, based on whether 
-they use bit-level decision procedures or abstract domains. We call these 
-\textit{SAT/SMT-based Verification} and \textit{Abstraction-based Verification}, 
-respectively.
+We group techniques into two classes, based on whether they use bit-level decision procedures 
+or abstract domains. We call these \textit{SAT/SMT-based Verification} and 
+\textit{Abstraction-based Verification}, respectively.
 
 \subsection{SAT/SMT-based Verification}
-%
+
 The methods in this class are all used for experiments with both conventional verification tools,
 operating on RTL designs, and verification of  our software netlist representation using software analysis tools.
 
@@ -29,23 +28,26 @@ I[X_0] \wedge \delta_k \wedge \neg P_{k+1}
 \end{equation}
 
 With BMC, this formula is checked for satisfiability using an efficient SAT procedure.
-If found satisfiable, a chain of transitions of the system into a bad state has been found.
-And a potential design bug---a violation of the safety property---has been uncovered.
+If found satisfiable, a chain of transitions into a bad state has been found;
+a potential design bug---a violation of the safety property---has been uncovered.
 
-%-------------------------------------------------------------------------------
-\subsubsection{BMC with K-induction} 
+\subsubsection{K-induction} 
 
-BMC is incomplete, as it searches for bad states only within a bounded trace of the system, 
+BMC is incomplete: it searches for bad states only within a bounded trace of the system, 
 which underapproximates the set of  all reachable states.  The method of 
 $k$-induction addresses this problem~\cite{fmcad2000}.
   
 In $k$-induction, we first use the BMC formula~(\ref{bmc-formula}) to check that the safety property
-holds in all states reachable within $k$ steps from any initial state. This will be the case if SAT determines that the formula is unsatisfiable. We then check the induction step below: 
+holds in all states reachable within $k$ steps from any initial state. This 'base case' of the induction will be established if SAT determines the formula is \textit{unsatisfiable}. We then check the step case below: 
 %
 \[\delta_{k} \wedge P_{k+1} \wedge \neg P[X_{k+1}] \]
 %
-If this is shown to be unsatisfiable, then no bad state is reachable from any sequence $k{+}1$ good states
-allowed by the transistion system. \tmcmt{Rajdeep - please see email.}
+If this formula is unsatisfiable, then no bad state is reachable from any sequence $k{+}1$ good states
+allowed by the transistion system. This together with the base case confirms that no bad state is reachable from any initial state.
+
+If the step case formula is satisfiable, then no conclusion about the property can be made. The method of k-induction then proceeds by checking both the base and step cases for a larger value of $k$. 
+% K-induction can be made complete by adding constraints that ensure any trace that satisfies the step case is 
+% loop-free~\cite{mc}.
 
 %-------------------------------------------------------------------------------
 \subsubsection{Interpolation-based Model Checking} 

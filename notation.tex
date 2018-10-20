@@ -1,5 +1,5 @@
 \section{Notation and Problem Statement}~\label{sec:notation}
-%
+
 A Boolean \textit{transition system} for bit-level hardware
 modelling is a 3-tuple $T = \langle I,X,\delta \rangle$, where $X = \{x_1,\dots ,x_n\}$
 is a finite set of \textit{state variables} ranging over the Booleans $\mathbb{B}$. 
@@ -26,12 +26,8 @@ say a state $s$ is \textit{good} with respect to this property if $P(s)$; otherw
 We will use the abbreviation \[P_k = \underset{i \in [0,k-1]}{\bigwedge} \neg B[X_i]\]
 to say that the  first $k$ states are not bad states.  Finally, a property $P$ is \textit{inductive} if $P[X] \wedge \delta[X,X']$ implies $P[X']$.    \tmcmt{Rajdeep - do we ever use the concept of `inductive'?}
 
-%  
-
-
-
 \subsection{Problem Statement} 
-%
+
 We now define the \textit{safety verification} of a transition system~$T = \langle I,X,\delta\rangle$.
 This is commonly known as the \textit{hardware model checking problem}.  
 Given a safety property $P[X]$, the problem is to decide whether, starting from any initial state, a bad state can be reached following any sequence of transitions allowed by $\delta[X,X']$. In other words, is there an initialized trace of the system whose final state is bad?

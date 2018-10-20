@@ -134,7 +134,79 @@ removing the counterexamples-to-induction states in property-directed
 fashion.  Thus, the technique computes an overapproximation of the set of 
 reachable states in successive steps until it finds an inductive 
 strengthening assertion sufficient to prove the property. 
-%
+
+
+\begin{figure*}[tb]
+\begin{center}
+\small
+\begin{tabular}{lcl} 
+\hline\noalign{\vskip0.25ex}
+\textbf{Verilog RTL} & \multicolumn{1}{l}{\textbf{Synthesized Hardware}} & \textbf{Software Netlist} \\
+\hline
+\begin{lstlisting}[boxpos=t,mathescape=true,language=Verilog,basicstyle=\scriptsize\ttfamily]
+module top(clk, a, c, out); 
+input clk , a;
+output [1:0] c;
+output reg [3:0] out;
+reg b,e; reg [1:0] d;
+initial begin
+  b=0;d=2'b0;
+  e=0;out=4'b0;
+end
+assign c = e ? 1'b0 : d; 
+always @(posedge clk) 
+begin
+ b<=a;
+ if(b) e <= b; 
+ else  e <= 0; 
+ d <= e + 1;
+end
+always @(posedge clk) 
+begin
+  out <= d*d;
+end  
+endmodule
+\end{lstlisting}
+&
+\raisebox{-\totalheight}{\includegraphics[width=0.28\textwidth]{figures/example/ckt_pspdftex.eps}}
+&
+\begin{lstlisting}[boxpos=t,mathescape=true,language=C,basicstyle=\scriptsize\ttfamily]
+struct state_elements_top {
+  unsigned int b,e;
+  unsigned char d,out;
+};
+struct state_elements_top u1;
+
+void top(unsigned int clk, 
+ unsigned int a, 
+ unsigned char *c, 
+ unsigned char *out) {
+ // shadow variables 
+ unsigned int b_old = u1.b&0x1;
+ unsigned char d_old = u1.d&0x3;
+ unsigned int e_old = u1.e&0x1;
+  
+ u1.b = a;
+ if(b_old) 
+  u1.e = b_old&0x1;
+ else
+  u1.e = 0;
+ u1.d = (e_old+1)&0x3;
+ // update the output 
+ u1.out = 
+ (d_old&0x3) * (d_old&0x3);
+ *out = u1.out&0xF;
+ *c = u1.e ? 0 : (u1.d&0x3);
+}
+\end{lstlisting}\\
+\hline
+\end{tabular}
+\caption{Translation of a Simple Circuit in Verilog HDL to a Software Netlist in C}\label{fig:example}
+\end{center}
+\end{figure*}
+
+
+
 \subsection{Abstraction-based Verification}~\label{software-verif}
 %
 We now describe few well-known abstraction-based verification 
@@ -200,6 +272,8 @@ work of~\cite{DBLP:journals/todaes/LiuV14} analyzes the
 feasibility of every path in the RTL program using a hybrid 
 of concrete and symbolic execution and property based pruning.
 }
+
+
 %
 %-------------------------------------------------------------------------------
 \subsubsection{Automata based Trace Abstraction with Interpolants}

@@ -45,9 +45,9 @@ holds in all states reachable within $k$ steps from any initial state. This 'bas
 If this formula is unsatisfiable, then no bad state is reachable from any sequence $k{+}1$ good states
 allowed by the transistion system. This together with the base case confirms that no bad state is reachable from any initial state.
 
-If the step case formula is satisfiable, then no conclusion about the property can be made. The method of k-induction then proceeds by checking both the base and step cases for a larger value of $k$. 
-% K-induction can be made complete by adding constraints that ensure any trace that satisfies the step case is 
-% loop-free~\cite{mc}.
+If the step case formula is satisfiable, then no conclusion about the property can be made. The method of k-induction then proceeds by restarting with a larger value of $k$. 
+K-induction can be made complete by adding constraints that ensure any trace that satisfies the step case is 
+loop-free~\cite{mc}.
 
 %-------------------------------------------------------------------------------
 \subsubsection{Interpolation-based Model Checking} 

@@ -25,6 +25,7 @@ A \textit{safety property} $P[X]$ is a predicate over the variables $X$ of $T$. 
 say a state $s$ is \textit{good} with respect to this property if $P(s)$; otherwise it is \textit{bad}. 
 We will use the abbreviation \[P_k = \underset{i \in [0,k-1]}{\bigwedge} B[X_i]\]
 in conjunction with $\delta_k$ to say that every trace of $k$ states are good.  Finally, a property $P$ is \textit{inductive} if $P[X] \wedge \delta[X,X']$ implies $P[X']$.    \tmcmt{Rajdeep - do we ever use the concept of `inductive'?}
+\rmcmt{Yes, we use it later while explaining the various algorithms. Also, in the experimental results, where we find inductive invariants for some designs.}
 
 \subsection{Problem Statement} 
 

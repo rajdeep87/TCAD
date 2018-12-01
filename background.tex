@@ -21,10 +21,10 @@ BMC~\cite{biere} is a bug-finding method that searches for bad states along a fi
 the transition system. 
 Given an unwinding `depth' $k$, BMC forms the logical characterization of a 
 $k$-length chain of transitions along the transition relation $T$,  starting 
-from any initial state satisfying $I[X_0]$. This is conjoined with a predicate saying that a bad state is encountered somewhere along the chain:
+from any initial state satisfying $I[V_0]$. This is conjoined with a predicate saying that a bad state is encountered somewhere along the chain:
 
 \begin{equation}\label{bmc-formula}
-I[X_0] \wedge \delta_k \wedge \neg P_{k+1}
+I[V_0] \wedge \bigwedge_{i{=}0}^{k{-}1}\delta[V_i, V_{i+1}] \wedge \bigvee_{i{=}0}^{k{-}1} \neg P[V_i]
 \end{equation}
 
 With BMC, this formula is checked for satisfiability using an efficient SAT procedure.
@@ -40,10 +40,10 @@ $k$-induction addresses this problem~\cite{fmcad2000}.
 In $k$-induction, we first use the BMC formula~(\ref{bmc-formula}) to check that the safety property
 holds in all states reachable within $k$ steps from any initial state. This 'base case' of the induction will be established if SAT determines the formula is \textit{unsatisfiable}. We then check the step case below: 
 %
-\[\delta_{k} \wedge P_{k+1} \wedge \neg P[X_{k+1}] \]
+\[\bigwedge_{i{=}0}^{k{-}1}\delta[V_i, V_{i+1}] \wedge \bigwedge_{i{=}0}^{k{-}1} P[V_i] \wedge \neg P[V_{k+1}] \]
 %
 If this formula is unsatisfiable, then no bad state is reachable from any sequence $k{+}1$ good states
-allowed by the transistion system. This together with the base case confirms that no bad state is reachable from any initial state.
+allowed by the transistion system. This, together with the base case, confirm that no bad state is reachable from any initial state.
 
 If the step case formula is satisfiable, then no conclusion about the property can be made. The method of k-induction then proceeds by restarting with a larger value of $k$. 
 K-induction can be made complete by adding constraints that ensure any trace that satisfies the step case is 
@@ -57,7 +57,7 @@ computes a step-wise overapproximation of the reachable state-space,
 $Q$, for a fixed unrolling $k$ of $T$, which is shown as
 follows.
 %
-\[ Q \wedge \delta_{k} \wedge P_{k+1} \implies P[X_{k+1}] \]
+\[ Q \wedge \delta_{k} \wedge P_{k+1} \implies P[V_{k+1}] \]
 %
 The value of $k$ is increased when the implication fails. This
 progressively yields better overapproximation by 

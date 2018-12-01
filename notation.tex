@@ -1,35 +1,35 @@
 \section{Notation and Problem Statement}~\label{sec:notation}
 
-A Boolean \textit{transition system} for bit-level hardware
-modelling is a 3-tuple $T = \langle I,X,\delta \rangle$, where $X = \{x_1,\dots ,x_n\}$
-is a finite set of \textit{state variables} ranging over the Booleans $\mathbb{B}$. 
-Corresponding to the variables in $X$ is a set of primed \textit{next-state} variables  $X' = \{x_1', \dots, x_n'\}$.
-A \textit{state} $s$ of $T$ is an assignment of Boolean values to the variables in $X$. Likewise, a \textit{next state} is an assignment of Boolean values to the variables in $X'$.  For any state $s$ that assigns values to the  variables $X$, we write $s'$ to denote the next state that assigns the same values to the corresponding primed variables in $X'$. If $F[X]$ is a formula over the variables $X$, we write $F(s)$ to say that
-the assignment $s$ makes the formula $F[X]$ true. That is, the state $s$ satisfies $F$. Similarly, if $R[X,X']$ is a relation over the variables $X$ and $X'$, we write $R(s_1,s_2)$ to say that the state $s_1$ and the next state $s_2$ jointly satisfy the relation $R$. \tmcmt{Do we ever actually \textit{use} state notation?} \rmcmt{We use it in Section III}
+A \textit{transition system} for bit-level hardware
+modelling is a 3-tuple $T = \langle I,V,\delta \rangle$, where $V = \{v_1,\dots ,v_n\}$
+is a finite set of \textit{state variables} ranging over the Booleans.
+The propositional formula $I[V]$ over the variables in 
+$V$ specifies the \textit{initial states} of the system. 
+Corresponding to the variables in $V$ is a set of primed \textit{next-state} variables $V' = \{v_1', \dots, v_n'\}$.
+The formula $\delta[V,V']$ represents the system's \textit{transition relation}; it specifies the relationship that the system realizes between current and next states at each discrete step of operation.
 
-In a context in which a formula has been written $F[X]$, subsequent use of the notation $F[Y]$ for
-some other set of variables $Y = \{y_1, \dots, y_n\}$ should be understood to mean the
-result of substituting each variable in $Y$ for every occurrence of the corresponding variable in $X$ throughout the formula $F[X]$. Similarly, for $R[X,X']$ we may subsequently write $R[Y,Y']$, denoting the result of substituting variables in $Y$ and $Y'$ for corresponding variables in $X$ and $X'$.
+A \textit{state} $s$ of $T$ is an assignment of Boolean values to the variables in $V$.
+If $F[V]$ is a formula over the variables $V$, we write $F(s)$ to say that $s$ makes the formula true.
+So, for example, the initial states of a system are all the states $s$ for which $I(s)$. Similarly, if $R[V,V']$ is a relation over the variables $V$ and $V'$, we write $R(s_1,s_2)$ to say that the states $s_1$ and $s_2$ jointly satisfy this relation. Here, $s_2$ will, of course, be an assignment of values to the variables in $V'$. In general, when we mention a state $s$
+it will be clear from context what underlying set of variables $s$ assigns Boolean values to.
 
-In a transition system $T$, the predicate $I[X]$ is a formula over the variables in 
-$X$ specifying the \textit{initial states} of the system; these are all the states 
-$s$ for which $I(s)$. The formula $\delta[X,X']$ represents the \textit{transition relation} of the system; it stipulates the relationship that the system
-realizes between current and next states at each discrete step of its operation.
-Given a sequence of state variables $X_0, \dots, X_k$, the abbreviation \[ \delta_k = \underset{i \in [0,k-1]}{\bigwedge} \delta[X_i, X_{i+1}]\] 
-will be used to denote $k$ steps of the transition system.
+In the verification methods we investigate, it is common to analyse sequences of state transitions chained together.
+We introduce sets of state variables $V_0, \dots, V_k$, where the variables in $V_0$ encode the initial state of the system and the vaiables in $V_i$, encode the state reached after $i>0$ transitions. With this encoding, the formula
+
+\[ \underset{i \in [0,k-1]}{\bigwedge} \delta[V_i, V_{i+1}]\] 
+
+\noindent can be used to characterize $k$ steps of the transition system.
 We call a sequence of states $(s_j,\dots,s_k)$ a~\textit{trace}
-if $\delta(s_i,s'_{i{+}1})$ for $i=j,\dots,k-1$.  Such a trace is
+if $\delta(s_i,s_{i{+}1})$ for $i=j,\dots,k-1$.  A trace is
 said to be \textit{initialized} if $I(s_j)$.
   
-A \textit{safety property} $P[X]$ is a predicate over the variables $X$ of $T$.  We will 
-say a state $s$ is \textit{good} with respect to this property if $P(s)$; otherwise it is \textit{bad}. 
-We will use the abbreviation \[P_k = \underset{i \in [0,k-1]}{\bigwedge} B[X_i]\]
-in conjunction with $\delta_k$ to say that every trace of $k$ states are good.  Finally, a property $P$ is \textit{inductive} if $P[X] \wedge \delta[X,X']$ implies $P[X']$.    \tmcmt{Rajdeep - do we ever use the concept of `inductive'?}
-\rmcmt{Yes, we use it later while explaining the various algorithms. Also, in the experimental results, where we find inductive invariants for some designs.}
+A \textit{safety property} $P[V]$ is a predicate over the variables $V$ of $T$.  We will
+say a state $s$ is \textit{good} with respect to this property if $P(s)$; otherwise it is \textit{bad}.
+Finally, a property $P$ is \textit{inductive} if $P[V] \wedge \delta[V,V']$ implies $P[V']$.
 
 \subsection{Problem Statement} 
 
-We now define the \textit{safety verification} of a transition system~$T = \langle I,X,\delta\rangle$.
+We now define the \textit{safety verification} of a transition system~$T = \langle I,V,\delta\rangle$.
 This is commonly known as the \textit{hardware model checking problem}.  
-Given a safety property $P[X]$, the problem is to decide whether, starting from any initial state, a bad state can be reached following any sequence of transitions allowed by $\delta[X,X']$. In other words, is there an initialized trace of the system whose final state is bad?
+Given a safety property $P[V]$, the problem is to decide whether, starting from any initial state, a bad state can be reached following any sequence of transitions allowed by $\delta[V,V']$. In other words, is there an initialized trace of the system whose final state is bad?
 

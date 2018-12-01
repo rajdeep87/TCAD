@@ -46,32 +46,23 @@ If this formula is unsatisfiable, then no bad state is reachable from any sequen
 allowed by the transistion system. This, together with the base case, confirm that no bad state is reachable from any initial state.
 
 If the step case formula is satisfiable, then no conclusion about the property can be made. The method of k-induction then proceeds by restarting with a larger value of $k$. 
-K-induction can be made complete by adding constraints that ensure any trace that satisfies the step case is 
-loop-free~\cite{mc}.
 
-%-------------------------------------------------------------------------------
+% K-induction can be made complete by adding constraints that ensure any trace that satisfies the step case is 
+% loop-free~\cite{mc}.
+
 \subsubsection{Interpolation-based Model Checking} 
+
+Interpolation-based model checking~\cite{cav03} iteratively computes an overapproximation, $Q$, of the set of states reachable from the initial states of the system, aiming to find an inductive invariant for a given safety property $P$. It begins by checking that all initial states satisfy $P$. The candidate invariant, $Q$, is then set to $I$. At each subsequent step, a conjunction of formulas
 %
-Interpolation-based model checking~\cite{cav03} 
-computes a step-wise overapproximation of the reachable state-space,
-$Q$, for a fixed unrolling $k$ of $T$, which is shown as
-follows.
-%
-\[ Q \wedge \delta_{k} \wedge P_{k+1} \implies P[V_{k+1}] \]
-%
-The value of $k$ is increased when the implication fails. This
-progressively yields better overapproximation by 
-generating an interpolant between the $i$-th 
-overapproximation and $k$-step unrolling.
-%which may be sufficient to prove the property $P$. 
-Thus, the interpolation technique computes an abstraction 
-of the postcondition with respect to the property $P$, 
-by deriving interpolants from the failure of the
-BMC problem.
-%
-Interpolation-based model checking is a complete method 
-for reachability analysis of finite-state systems. 
-%
+\[ Q[V_0] \wedge \delta[V_0,V_1] \quad\textrm{and}\quad
+\bigwedge_{i{=}1}^{k{-}1}\delta[V_i, V_{i+1}] \wedge 
+\bigvee_{i{=}1}^{k{-}1} \neg P[V_i] \]
+
+\noindent is tested for satisfiability, beginning with $k{=}1$. If this is unsatisfiable, an \textit{interpolant}~\cite{mc} for the two formulas is computed; this has the property of overapproximating the set of states reachable in one step from the states that satisfy $Q$. If $Q$ implies this interpolant, then an indictive invariant for $P$ has been found. Otherwise, Q is enlarged to include the states that satisfy the interpolant, and the conjunction of formulas is checked again. If the conjunction is ever found to be satisfiable at a step when $Q$ is still $I$, then a bad state has been found. Otherwise, $Q$ is reset to $I$ and $k$ is increased.
+
+
+% Interpolation-based model checking is a complete method for reachability analysis of finite-state systems.  
+
 
 %-------------------------------------------------------------------------------
 \subsubsection{Predicate Abstraction with CEGAR}

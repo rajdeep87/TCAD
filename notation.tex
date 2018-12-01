@@ -11,10 +11,10 @@ The formula $\delta[V,V']$ represents the system's \textit{transition relation};
 A \textit{state} $s$ of $T$ is an assignment of Boolean values to the variables in $V$.
 If $F[V]$ is a formula over the variables $V$, we write $F(s)$ to say that $s$ makes the formula true.
 So, for example, the initial states of a system are all the states $s$ for which $I(s)$. Similarly, if $R[V,V']$ is a relation over the variables $V$ and $V'$, we write $R(s_1,s_2)$ to say that the states $s_1$ and $s_2$ jointly satisfy this relation. Here, $s_2$ will, of course, be an assignment of values to the variables in $V'$. In general, when we mention a state $s$
-it will be clear from context what underlying set of variables $s$ assigns Boolean values to.
+it will be clear from contexts the underlying set of variables $s$ that assigns Boolean values to.
 
 In the verification methods we investigate, it is common to analyse sequences of state transitions chained together.
-We introduce sets of state variables $V_0, \dots, V_k$, where the variables in $V_0$ encode the initial state of the system and the vaiables in $V_i$, encode the state reached after $i>0$ transitions. With this encoding, the formula
+We introduce sets of state variables $V_0, \dots, V_k$, where the variables in $V_0$ encode the initial state of the system and the variables in $V_i$, encode the state reached after $i>0$ transitions. With this encoding, the formula
 
 \[ \underset{i \in [0,k-1]}{\bigwedge} \delta[V_i, V_{i+1}]\] 
 

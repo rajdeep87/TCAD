@@ -1,26 +1,19 @@
 \section{Translating RTL to Software Netlists}\label{sec:v2c}
-%  
-Verilog and C have many operators in common, but  Verilog also has
-additional hardware-oriented operators such as part-select, bit-select from vectors, concatenation,
-and reduction. Additionally, many Verilog statements have no direct analogue in C. Examples include
-initial blocks, always blocks, generate statements, procedural assignments
-(blocking and non-blocking) and continuous assignments. Verilog also supports the 4-valued data types
-reg, wire, and integer.  All these constructs, combined with
-parallelism, make translation challenging.
 
-In view of these complexities, our translation is deliberately direct and transparent: we try to
-preserve the structure of the RTL and refrain from optimizations or abstractions. Fidelity of the
-resulting C code to the semantics of the original Verilog is prioritised, and we rely on
-the downstream software analysis tools for efficiency, rather than obscure our translation with
-optimisations.
+The main challenges in translating Verilog faithfully into C are presented by its hardware-oriented elements. Many Verilog statements have no direct analogue in C.  Examples include
+initial blocks, always blocks, generate statements, and procedural assignments
+(blocking and non-blocking). Verilog also has special hardware-oriented operators, such as part-select, bit-select from vectors, concatenation, and reduction. Finally, Verilog supports the 4-valued data types
+reg, wire, and integer.  And all these constructs are combined with
+parallelism.
 
-Our translation is implemented in a tool called V2C~\cite{mtk2016}. The front-end performs Verilog parsing, macro preprocessing, and
-type-checking. The result is a type-annotated parse-tree, which is then translated into C. There are two main parts to the translation. The first deals
-largely with the represetation in C of Verilog data values---for example, Verilog data types, wires and registers, and Verilog expressions with bit-manipulating operations. This part is explained in Sec.~\ref{sec:data}.
+In view of this complexity, our translation is deliberately direct and transparent: we aim to
+preserve the RTL's structure and refrain from optimization and abstraction. Fidelity of the
+resulting C to the semantics of the Verilog is prioritised, and we rely on
+downstream software analysis tools for efficiency.
 
-The second is concerned with the scheduling of non-blocking and blocking  assignments that occur the Verlog code into a suitable C sequentialization, depending on the their syntactic context. The inter-modular dependencies between the always clocked blocks and the continuous assignment statements are resolved by a dependency analysis. The detail of this part are explained in Section~\ref{sec:dep}.
+Our translation is implemented in a tool called V2C~\cite{mtk2016}. The front-end performs Verilog parsing, macro preprocessing, and type-checking. The result is a type-annotated parse-tree, which is then translated into C. There are two main aspects to the translation. The first deals largely with the representation in C of Verilog data values---for example Verilog data types, wires and registers, and Verilog expressions with bit-manipulating operations. This is explained in Sec.~\ref{sec:data}. The second aspect is the scheduling of non-blocking and blocking assignments in Verlog code into a suitable C sequentialization, depending on the their syntactic context. Inter-modular dependencies between the always clocked blocks and the continuous assignment statements are resolved by a dependency analysis. The detail of this part are explained in Section~\ref{sec:dep}.
 
-Translation is followed by code-generation, in which the intermediate \tmcmt{Rejdeep: `vectored'? Whart is this?} \rmcmt{removed} expressions and translated module items are converted to ANSI-C program syntax.
+Translation is followed by code-generation, in which the intermediate expressions and translated module items are converted to ANSI-C program syntax.
 
 \subsection{Verilog Data, Circuit Structures, and Expressions}\label{sec:data}
 

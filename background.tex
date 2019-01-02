@@ -56,7 +56,7 @@ Interpolation-based model checking~\cite{cav03} iteratively computes an overappr
 %
 \[ Q[V_0] \wedge \delta[V_0,V_1] \quad\textrm{and}\quad
 \bigwedge_{i{=}1}^{k{-}1}\delta[V_i, V_{i+1}] \wedge 
-\bigvee_{i{=}1}^{k{-}1} \neg P[V_i] \]
+\bigvee_{i{=}1}^{k} \neg P[V_i] \]
 
 \noindent is tested for satisfiability, beginning with $k{=}1$. If this is unsatisfiable, an \textit{interpolant}~\cite{mc} for the two formulas is computed; this has the property of overapproximating the set of states reachable in one step from the states that satisfy $Q$. If $Q$ implies this interpolant, then an indictive invariant for $P$ has been found. Otherwise, Q is enlarged to include the states that satisfy the interpolant, and the conjunction of formulas is checked again. If the conjunction is ever found to be satisfiable at a step when $Q$ is still $I$, then a bad state has been found. Otherwise, $Q$ is reset to $I$ and $k$ is increased.
 

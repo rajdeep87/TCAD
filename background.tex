@@ -42,7 +42,7 @@ holds in all states reachable within $k$ steps from any initial state. This 'bas
 %
 \[\bigwedge_{i{=}0}^{k}\delta[V_i, V_{i+1}] \wedge \bigwedge_{i{=}0}^{k} P[V_i] \wedge \neg P[V_{k+1}] \]
 %
-If this formula is unsatisfiable, then no bad state is reachable from any sequence $k{+}1$ good states
+If this formula is unsatisfiable, then no bad state is reachable from the final state of any trace of $k{+}1$ good states
 allowed by the transistion system. This, together with the base case, confirm that no bad state is reachable from any initial state.
 
 If the step case formula is satisfiable, then no conclusion about the property can be made. The method of k-induction then proceeds by restarting with a larger value of $k$. 

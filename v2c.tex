@@ -195,7 +195,7 @@ void main() {
 \label{figure:module-hierarchy}
 \end{figure}
 
-\subsection{Assignments and Dependency Analysis}~\label{sec:dep}
+\subsection{Assignment Sequentialization}~\label{seq}
 
 \subsubsection{Procedural Assignments}
 %
@@ -385,6 +385,7 @@ int main() {
 \label{figure:always-init}
 \end{figure}
 
+\subsection{Dependency Analysis}~\label{sec:dep}
 
 %
 A hardware circuit specified in Verilog RTL may have two types of dependencies -- 
@@ -647,8 +648,8 @@ is difficult for large circuits.  Hence, manual translation is performed in such
 \subsection{Limitations of V2C Translator}~\label{v2clim}
 %  
 V2C does not support automatic translation of RTL designs that contain 
-the following design features -- a) Multi-clock designs~\cite{multiclock}, 
-b) Transparent latches~\cite{DBLP:conf/glvlsi/ChandraWA98}, 
+the following design features -- a) Multi-clock designs,
+b) Transparent latches, 
 c) Combinational feedback loop, and d) Circular module dependency. 
 %  
 %

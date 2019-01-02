@@ -1,6 +1,6 @@
 \section{Introductory Example} 
 
-We now present a simple example to give an overview of Verilog to C translation and show how properties for safety verification written in System Verilog Assertions (SVA) will be translated into C code for our experiments. We assume the reader knows the basics of Verilog~\cite{verilog} and SVA~\cite{sva_ref}. 
+We present a simple example to give an overview of Verilog to C translation and show how properties for safety verification written in System Verilog Assertions (SVA) will be translated into C code for our experiments. We assume the reader knows the basics of Verilog~\cite{verilog} and SVA~\cite{sva_ref}. 
 
 Fig.\ \ref{fig:example} shows a Verilog module with a variety of common constructs: register datatypes, initialization, non-blocking and blocking assignments, an assign statement, and procedural blocks.  The synthesized hardware is the simple circuit shown in the centre, which consists of 2 multiplexers, 1 adder, 1 multiplier, and 4 registers.  On the right is the result of our translation of this Verilog RTL code into C.
 

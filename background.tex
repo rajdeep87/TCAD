@@ -24,7 +24,7 @@ $k$-length chain of transitions along the transition relation $T$,  starting
 from any initial state satisfying $I[V_0]$. This is conjoined with a predicate saying that a bad state is encountered somewhere along the chain:
 
 \begin{equation}\label{bmc-formula}
-I[V_0] \wedge \bigwedge_{i{=}0}^{k{-}1}\delta[V_i, V_{i+1}] \wedge \bigvee_{i{=}0}^{k{-}1} \neg P[V_i]
+I[V_0] \wedge \bigwedge_{i{=}0}^{k{-}1}\delta[V_i, V_{i+1}] \wedge \bigvee_{i{=}0}^{k} \neg P[V_i]
 \end{equation}
 
 With BMC, this formula is checked for satisfiability using an efficient SAT procedure.
@@ -40,7 +40,7 @@ $k$-induction addresses this problem~\cite{fmcad2000}.
 In $k$-induction, we first use the BMC formula~(\ref{bmc-formula}) to check that the safety property
 holds in all states reachable within $k$ steps from any initial state. This 'base case' of the induction will be established if SAT determines the formula is \textit{unsatisfiable}. We then check the step case below: 
 %
-\[\bigwedge_{i{=}0}^{k{-}1}\delta[V_i, V_{i+1}] \wedge \bigwedge_{i{=}0}^{k{-}1} P[V_i] \wedge \neg P[V_{k+1}] \]
+\[\bigwedge_{i{=}0}^{k}\delta[V_i, V_{i+1}] \wedge \bigwedge_{i{=}0}^{k} P[V_i] \wedge \neg P[V_{k+1}] \]
 %
 If this formula is unsatisfiable, then no bad state is reachable from any sequence $k{+}1$ good states
 allowed by the transistion system. This, together with the base case, confirm that no bad state is reachable from any initial state.

@@ -96,51 +96,47 @@ The uncommon value $\const{Z}$ is outside the scope of our translation.
 \subsubsection{Bit-Manipulating Operations}
 V2C translates complex bit-manipulating Verilog operators, such as 
 bit-select and part-select from a vector,
-concatenation, reduction OR, to semantically equivalent expression in ANSI-C. The translation retains 
+concatenation, reduction OR, to semantically equivalent expressions in ANSI-C. The translation retains 
 the word-level structure of the Verilog RTL.  Fig.~\ref{figure:bit} shows 
 some typical examples.
 
-\subsubsection{Variable declaration} Variables of specific 
-bit-width (register, wire) in Verilog is translated 
-to the next largest native data-types in C such as 
-char, short int, long, long long etc. The default 
-variable declaration in C is \texttt{unsigned} except for 
-the integer declaration in Verilog which is signed.
+\subsubsection{Variable declaration} Verilog variables of specific 
+bit-width (register, wire) are translated 
+to the next largest native data-types in C---such as  char, short int, long, and long long. The default 
+variable declaration in C is \texttt{unsigned}, except for 
+the integer \tmcmt{Rajdeep: should ``integer'' be in tt font? Is this a Verilog keyword?} declaration in Verilog, which is signed.
 
 \subsubsection{Registers, wires, parameters and constants} Verilog supports structural 
-data types called \emph{nets}, which are \emph{wire}
-and \emph{reg}. The value of wire variables changes 
-continuously as the input value changes.  Whereas, 
-the \emph{reg} types hold their values until another value is 
-assigned to them.  A structure containing all state holding
-elements of a module is declared in C to store the register
-variables. Wires are declared as local variables in C.  
-Verilog Parameters are constants which 
-are typically used to specify the width of variables,
-for eg., \texttt{parameter identifier = constant\_expression;}.
-Parameters are declared as constants in C.  
+data types called \emph{nets}, which comprise \emph{wire}
+and \emph{reg}. The value of a wire variable changes 
+continuously as the input value changes.  Variables of
+\emph{reg} type hold their values until another is 
+assigned to them.  In the translation, a C structure containing all state-holding
+elements is declared to store the register values. Wires are represented in C by local variables.  
+Verilog parameters are constants that are
+typically used to specify the width of bit-vector variables.
+Such parameters are declared as constants in C.  
 Verilog also allows the definition of the global constants 
-using \texttt{`define} construct, for eg., \texttt{`define STATE 2'b00;},
-which is same as the \#define preprocessor directives in C.
+using \texttt{define} construct; these translate to \texttt{\#define}
+preprocessor directives in C.
 
 \subsubsection{Module Hierarchy with Input/Output Port}
-The communication between modules takes place through 
-ports, which are signals listed in the parameter list at the 
-top of the module. Ports can be of type in, out, and inout. 
-Figure~\ref{figure:module-hierarchy} shows an example of 
-Verilog module hierarchy on the left and the translated 
-code block in C on the right. The output ports are passed 
-as reference to reflect the changes in the parent module.
+Communication between Verilog modules takes place through 
+ports, which are signals listed among the parameters at the 
+top of the module. Ports can be of type \texttt{in}, \texttt{out}, and \texttt{inout}. 
+Fig.~\ref{figure:module-hierarchy} shows an example of 
+the translation of a Verilog module hierarchy to C.
+The output ports are passed as references 
+to propogate changes back to the parent module.
 The generated C code preserves the module hierarchy of 
-the RTL and produce structurally identical code which 
-often helps in mapping C-RTL operations for easier debugging. 
+the RTL. 
 
-\begin{figure}[htbp]
+\begin{figure}[bhtp]
 \scriptsize
 \centering
 \begin{tabular}{l|l}
 \hline
-Module Hierarchy &  Code block in C \\
+Module Hierarchy &  Code Block in C \\
 \hline
 \begin{lstlisting}[mathescape=true,language=Verilog]
 module top(in1, in2);
@@ -184,7 +180,7 @@ void main() {
 \\
 \hline
 \end{tabular}
-\caption{Handling Module hierarchy with I/O ports}
+\caption{Handling Module Hierarchy with I/O Ports}
 \label{figure:module-hierarchy}
 \end{figure}
 

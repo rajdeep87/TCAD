@@ -76,7 +76,7 @@ sm.out = (((in2 >> 2)
 \\
 \hline
 \end{tabular}
-\caption{Handling Bit-select, part-select from vectors and concatenation}
+\caption{Handling Bit-Select, Part-Select from Vectors, and Concatenation}
 \label{figure:bit}
 \end{figure*}
 
@@ -89,22 +89,16 @@ different from C. Single-bit Verilog data comprises four values: $0$, $1$, $\con
 and 1 represents low and high voltage---logical false and true.
 The further values $X$ and $\const{Z}$ represent an unknown but binary logic level and an electrical
 high impedance state, respectively.  The simplest synthesis semantics
-for $\const{X}$ is to treate it as a don't-care assignment, which allows the
-synthesis to choose a 0 or 1 to improve logic minimization.
-V2C translates the value $\const{X}$ to a non-deterministic Boolean value in C.
+for $\const{X}$ is to treate it as a don't-care; this allows synthesis to improve logic minimization.
+But V2C translates $\const{X}$ to a non-deterministic Boolean value in C.
 The uncommon value $\const{Z}$ is outside the scope of our translation.
 
-\subsubsection{Handling Bit-manipulating operations}
-V2C automatically handles complex bit-manipulating operators in Verilog, 
-like bit-select or part-select operators from a vector,
-concatenation operators, reduction OR, and translates them to the 
-semantically equivalent expression in ANSI-C. V2C retains 
-the word-level structure of the Verilog RTL and generate 
-vectored expressions. Fig.~\ref{figure:bit} shows 
-Verilog code (at the top) and the generated C expressions 
-(at the bottom) which are combinations of bitwise and 
-arithmetic operators like bitwise OR, AND, multiplication, 
-subtraction, shifts and other C operators.
+\subsubsection{Bit-Manipulating Operations}
+V2C translates complex bit-manipulating Verilog operators, such as 
+bit-select and part-select from a vector,
+concatenation, reduction OR, to semantically equivalent expression in ANSI-C. The translation retains 
+the word-level structure of the Verilog RTL.  Fig.~\ref{figure:bit} shows 
+some typical examples.
 
 \subsubsection{Variable declaration} Variables of specific 
 bit-width (register, wire) in Verilog is translated 

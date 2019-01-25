@@ -10,7 +10,7 @@ preserve the RTL's structure and refrain from optimization and abstraction. Fide
 resulting C to the semantics of the Verilog is prioritised, and we rely on
 downstream software analysis tools for efficiency.
 
-Our translation is implemented in a tool called V2C~\cite{mtk2016}. The front-end performs Verilog parsing, macro preprocessing, and type-checking. The result is a type-annotated parse-tree, which is then translated into C. There are two main aspects to the translation. The first deals largely with the representation in C of Verilog data values---for example Verilog data types, wires and registers, and Verilog expressions with bit-manipulating operations. This is explained in Sec.~\ref{sec:data}. The second is the scheduling of non-blocking and blocking assignments in Verlog code into a suitable C sequentialization, depending on the their syntactic context. Inter-modular dependencies between the always clocked blocks and the continuous assignment statements are resolved by a dependency analysis. The detail of this part are explained in Section~\ref{sec:dep}.
+Our translation is implemented in a tool called V2C~\cite{mtk2016}. The front-end performs Verilog parsing, macro preprocessing, and type-checking. The result is a type-annotated parse-tree, which is then translated into C. There are two main aspects to the translation. The first deals largely with the representation in C of Verilog data values---for example Verilog data types, wires and registers, and Verilog expressions with bit-manipulating operations. This is explained in Sec.~\ref{sec:data}. The second is the scheduling of non-blocking and blocking assignments in Verlog code into a suitable C sequentialization, depending on the their syntactic context, which is explained in Section~\ref{seq}. Inter-modular dependencies between the always clocked blocks and the continuous assignment statements are resolved by a dependency analysis. The detail of this part are explained in Section~\ref{sec:dep}.
 
 Translation is followed by code-generation, in which the intermediate expressions and translated module items are converted to ANSI-C program syntax.
 
@@ -87,24 +87,25 @@ The first elements of our translation deal with data and hardware-oriented struc
 \subsubsection{Data Model} The data model in Verilog is significantly 
 different from C. Single-bit Verilog data comprises four values: $0$, $1$, $\const{X}$, and $\const{Z}$.  The values 0
 and 1 represents low and high voltage---logical false and true.
-The further values $X$ and $\const{Z}$ represent an unknown but binary logic level and an electrical
+The further values $X$ and $\const{Z}$ represent an unknown but binary logic level \rmcmt{not clear what this means ``but binary logic level"?} and an electrical
 high impedance state, respectively.  The simplest synthesis semantics
 for $\const{X}$ is to treate it as a don't-care; this allows synthesis to improve logic minimization.
 But V2C translates $\const{X}$ to a non-deterministic Boolean value in C.
-The uncommon value $\const{Z}$ is outside the scope of our translation.
+The uncommon value $\const{Z}$ is rarely used in real Verilog circuits aimed for syntheis and hence it is outside the scope of our translation.
 
 \subsubsection{Bit-Manipulating Operations}
 V2C translates complex bit-manipulating Verilog operators, such as 
 bit-select and part-select from a vector,
 concatenation, reduction OR, to semantically equivalent expressions in ANSI-C. The translation retains 
 the word-level structure of the Verilog RTL.  Fig.~\ref{figure:bit} shows 
-some typical examples.
+some code snippets of typical bit-manipulating operations in 
+Verilog RTL in top row and the corresponding ANSI-C operations is shown in bottom row.
 
 \subsubsection{Variable declaration} Verilog variables of specific 
 bit-width (register, wire) are translated 
 to the next largest native data-types in C---such as  char, short int, long, and long long. The default 
 variable declaration in C is \texttt{unsigned}, except for 
-the integer \tmcmt{Rajdeep: should ``integer'' be in tt font? Is this a Verilog keyword?} declaration in Verilog, which is signed.
+the \texttt{integer} \tmcmt{Rajdeep: should ``integer'' be in tt font? Is this a Verilog keyword?} \rmcmt{Yes, I changed the font} declaration in Verilog, which is signed.
 
 \subsubsection{Registers, wires, parameters and constants} Verilog supports structural 
 data types called \emph{nets}, which comprise \emph{wire}

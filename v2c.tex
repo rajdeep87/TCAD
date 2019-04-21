@@ -87,9 +87,10 @@ The first elements of our translation deal with data and hardware-oriented struc
 \subsubsection{Data Model} The data model in Verilog is significantly 
 different from C. Single-bit Verilog data comprises four values: $0$, $1$, $\const{X}$, and $\const{Z}$.  The values 0
 and 1 represents low and high voltage---logical false and true.
-The further values $X$ and $\const{Z}$ represent an unknown but binary logic level \rmcmt{not clear what this means ``but binary logic level"?} and an electrical
-high impedance state, respectively.  The simplest synthesis semantics
-for $\const{X}$ is to treate it as a don't-care; this allows synthesis to improve logic minimization.
+The further values $X$ and $\const{Z}$ represent an unknown 
+and an electrical high impedance state, respectively.  The 
+simplest synthesis semantics for $\const{X}$ is to treate it 
+as a don't-care; this allows synthesis to improve logic minimization.  
 But V2C translates $\const{X}$ to a non-deterministic Boolean value in C.
 The uncommon value $\const{Z}$ is rarely used in real Verilog circuits aimed for syntheis and hence it is outside the scope of our translation.
 
@@ -105,7 +106,7 @@ Verilog RTL in top row and the corresponding ANSI-C operations is shown in botto
 bit-width (register, wire) are translated 
 to the next largest native data-types in C---such as  char, short int, long, and long long. The default 
 variable declaration in C is \texttt{unsigned}, except for 
-the \texttt{integer} \tmcmt{Rajdeep: should ``integer'' be in tt font? Is this a Verilog keyword?} \rmcmt{Yes, I changed the font} declaration in Verilog, which is signed.
+the \texttt{integer} declaration in Verilog, which is signed.
 
 \subsubsection{Registers, wires, parameters and constants} Verilog supports structural 
 data types called \emph{nets}, which comprise \emph{wire}
